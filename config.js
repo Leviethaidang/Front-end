@@ -1,5 +1,5 @@
 window.APP_CONFIG = {
-    USER_SERVICE_URL: "http://54.254.200.109:3000"
+    USER_SERVICE_URL: ""
 };
 //tuong lai
 /*window.APP_CONFIG = {
