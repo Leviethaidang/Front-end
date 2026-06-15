@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>HaShop - Trang Chủ</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; background: #333; color: white; padding: 12px 24px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 12px; }
+        .dropdown { position: relative; cursor: pointer; }
+        .dropdown-content { display: none; position: absolute; right: 0; background: white; min-width: 150px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; }
+        .dropdown-content a { color: black; padding: 12px 16px; display: block; margin: 0; }
+        .dropdown-content a:hover { background: #f1f1f1; }
+        .show { display: block; }
+        .hero { text-align: center; margin-top: 60px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong>HaShop</strong></div>
+        <div id="auth-section">
+            <a href="login.html">Đăng nhập</a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Chào mừng bạn đến với HaShop 🚀</h1>
+        <p>Frontend App gọi các microservices phía sau.</p>
+    </div>
+
+    <script>
+        const accessToken = localStorage.getItem("accessToken");
+        const fullName = localStorage.getItem("fullName") || "Thành viên";
+
+        if (accessToken) {
+            document.getElementById("auth-section").innerHTML = `
+                <div class="dropdown" onclick="toggleDropdown(event)">
+                    <span>Xin chào, ${fullName} ▼</span>
+                    <div id="dropdown-menu" class="dropdown-content">
+                        <a href="profile.html">Profile</a>
+                        <a href="#" onclick="logout(event)">Đăng xuất</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            document.getElementById("dropdown-menu").classList.toggle("show");
+        }
+
+        function logout(event) {
+            event.preventDefault();
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+
+        window.onclick = () => {
+            const menu = document.getElementById("dropdown-menu");
+            if (menu) menu.classList.remove("show");
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>HaShop - Profile</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        .profile-card { border: 1px solid #ccc; padding: 24px; max-width: 520px; border-radius: 8px; background: #fafafa; }
+        .btn { display: inline-block; padding: 10px 15px; background: #333; color: white; text-decoration: none; border-radius: 5px; margin-top: 16px; }
+        .danger { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Hồ sơ cá nhân</h2>
+    <div id="profile-content" class="profile-card">
+        Đang tải dữ liệu...
+    </div>
+
+    <a href="index.html" class="btn">Trang chủ</a>
+
+    <script src="config.js"></script>
+    <script>
+        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
+        const accessToken = localStorage.getItem("accessToken");
+        const profileContent = document.getElementById("profile-content");
+
+        async function loadProfile() {
+            if (!accessToken) {
+                profileContent.innerHTML = `<p class="danger">Bạn chưa đăng nhập.</p>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    profileContent.innerHTML = `<p class="danger">${data.error}</p>`;
+                    return;
+                }
+
+                const profile = data.profile;
+                localStorage.setItem("fullName", profile.full_name);
+
+                profileContent.innerHTML = `
+                    <p><strong>User ID:</strong> ${profile.user_id}</p>
+                    <p><strong>Họ và tên:</strong> ${profile.full_name}</p>
+                    <p><strong>Email:</strong> ${profile.email}</p>
+                    <p><strong>Số điện thoại:</strong> ${profile.phone_number || "Chưa cập nhật"}</p>
+                    <p><strong>Địa chỉ giao hàng:</strong> ${profile.default_shipping_address || "Chưa cập nhật"}</p>
+                `;
+            } catch {
+                profileContent.innerHTML = `<p class="danger">Không thể kết nối User Service.</p>`;
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
