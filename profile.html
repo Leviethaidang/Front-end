@@ -5,18 +5,28 @@
     <title>HaShop - Profile</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 40px; }
-        .profile-card { border: 1px solid #ccc; padding: 24px; max-width: 560px; border-radius: 8px; background: #fafafa; }
-        .profile-card p { margin: 10px 0; }
-        label { display: block; margin-top: 12px; font-weight: bold; }
-        input, textarea { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 6px; }
-        textarea { min-height: 80px; }
-        .btn { display: inline-block; padding: 10px 15px; background: #333; color: white; text-decoration: none; border: none; border-radius: 5px; margin-top: 16px; cursor: pointer; }
+        .profile-card {
+            border: 1px solid #ccc;
+            padding: 24px;
+            max-width: 560px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .profile-card p { margin: 14px 0; }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            margin-top: 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
         .btn-blue { background: #007bff; }
-        .btn-green { background: #28a745; }
         .danger { color: red; }
-        .success { color: green; }
-        .warning { color: #b36b00; }
-        .section { margin-top: 24px; padding-top: 16px; border-top: 1px dashed #ccc; }
     </style>
 </head>
 <body>
@@ -27,12 +37,14 @@
     </div>
 
     <a href="index.html" class="btn">Trang chủ</a>
+    <a href="edit-profile.html" class="btn btn-blue" id="edit-button" style="display:none;">Chỉnh sửa thông tin</a>
 
     <script src="config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
         const accessToken = localStorage.getItem("accessToken");
         const profileContent = document.getElementById("profile-content");
+        const editButton = document.getElementById("edit-button");
 
         function escapeHtml(value) {
             if (value === null || value === undefined) return "";
@@ -42,14 +54,6 @@
                 .replaceAll(">", "&gt;")
                 .replaceAll('"', "&quot;")
                 .replaceAll("'", "&#039;");
-        }
-
-        function setMessage(message, type = "success") {
-            const messageBox = document.getElementById("message-box");
-            if (!messageBox) return;
-
-            messageBox.className = type;
-            messageBox.textContent = message;
         }
 
         async function loadProfile() {
@@ -77,137 +81,22 @@
                 }
 
                 const profile = data.profile;
+
                 localStorage.setItem("fullName", profile.full_name || "");
 
                 profileContent.innerHTML = `
                     <p><strong>User ID:</strong> ${escapeHtml(profile.user_id)}</p>
-
-                    <div class="section">
-                        <h3>Chỉnh sửa thông tin</h3>
-
-                        <label>Họ và tên</label>
-                        <input id="fullName" value="${escapeHtml(profile.full_name)}">
-
-                        <label>Email</label>
-                        <input id="email" type="email" value="${escapeHtml(profile.email)}">
-
-                        <label>Số điện thoại</label>
-                        <input id="phoneNumber" value="${escapeHtml(profile.phone_number || "")}" placeholder="+84901234567">
-
-                        <label>Địa chỉ giao hàng mặc định</label>
-                        <textarea id="defaultShippingAddress" placeholder="Nhập địa chỉ giao hàng">${escapeHtml(profile.default_shipping_address || "")}</textarea>
-
-                        <button class="btn btn-green" onclick="updateProfile()">Lưu thay đổi</button>
-
-                        <p id="message-box"></p>
-                    </div>
-
-                    <div id="email-verify-box" class="section" style="display:none;">
-                        <h3>Xác minh email mới</h3>
-                        <p class="warning">Cognito đã gửi mã xác minh tới email mới. Hãy nhập mã bên dưới.</p>
-                        <input id="emailVerifyCode" placeholder="Mã xác minh email">
-                        <button class="btn btn-blue" onclick="verifyNewEmail()">Xác minh email</button>
-                    </div>
+                    <p><strong>Họ và tên:</strong> ${escapeHtml(profile.full_name)}</p>
+                    <p><strong>Email:</strong> ${escapeHtml(profile.email)}</p>
+                    <p><strong>Số điện thoại:</strong> ${escapeHtml(profile.phone_number || "Chưa cập nhật")}</p>
+                    <p><strong>Địa chỉ giao hàng:</strong> ${escapeHtml(profile.default_shipping_address || "Chưa cập nhật")}</p>
                 `;
 
+                editButton.style.display = "inline-block";
+
             } catch (error) {
+                console.error(error);
                 profileContent.innerHTML = `<p class="danger">Không thể kết nối User Service.</p>`;
-            }
-        }
-
-        async function updateProfile() {
-            const fullName = document.getElementById("fullName").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const phoneNumber = document.getElementById("phoneNumber").value.trim();
-            const defaultShippingAddress = document.getElementById("defaultShippingAddress").value.trim();
-
-            if (!fullName) {
-                setMessage("Họ và tên không được để trống.", "danger");
-                return;
-            }
-
-            if (!email) {
-                setMessage("Email không được để trống.", "danger");
-                return;
-            }
-
-            if (!phoneNumber || !phoneNumber.startsWith("+")) {
-                setMessage("Số điện thoại phải dùng định dạng quốc tế, ví dụ +84901234567.", "danger");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({
-                        fullName,
-                        email,
-                        phoneNumber,
-                        defaultShippingAddress
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Cập nhật thất bại.", "danger");
-                    return;
-                }
-
-                if (data.profile && data.profile.full_name) {
-                    localStorage.setItem("fullName", data.profile.full_name);
-                }
-
-                setMessage(data.message || "Cập nhật profile thành công.", data.emailVerificationRequired ? "warning" : "success");
-
-                if (data.emailVerificationRequired) {
-                    document.getElementById("email-verify-box").style.display = "block";
-                } else {
-                    document.getElementById("email-verify-box").style.display = "none";
-                    await loadProfile();
-                }
-
-            } catch (error) {
-                setMessage("Không thể kết nối User Service.", "danger");
-            }
-        }
-
-        async function verifyNewEmail() {
-            const code = document.getElementById("emailVerifyCode").value.trim();
-
-            if (!code) {
-                setMessage("Vui lòng nhập mã xác minh email.", "danger");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile/verify-email`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({ code })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Xác minh email thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Xác minh email mới thành công.", "success");
-
-                document.getElementById("email-verify-box").style.display = "none";
-                await loadProfile();
-
-            } catch (error) {
-                setMessage("Không thể kết nối User Service.", "danger");
             }
         }
 
