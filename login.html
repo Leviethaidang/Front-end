@@ -2,92 +2,123 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Tài khoản</title>
+    <title>HaShop - Đăng nhập</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; gap: 40px; justify-content: center; margin-top: 50px; }
-        .form-box { border: 1px solid #ccc; padding: 24px; width: 320px; border-radius: 8px; }
-        input { width: 100%; box-sizing: border-box; padding: 10px; margin: 8px 0; }
-        button { width: 100%; padding: 10px; border: none; cursor: pointer; color: white; background: #28a745; }
-        .btn-blue { background: #007bff; }
-        .message { margin-top: 10px; font-size: 14px; }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            margin-top: 70px;
+            background: #f5f5f5;
+        }
+
+        .form-box {
+            border: 1px solid #ccc;
+            padding: 28px;
+            width: 340px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            margin: 9px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            background: #007bff;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #0069d9;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 14px;
+            color: red;
+            text-align: center;
+        }
+
+        .small-text {
+            margin-top: 16px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .small-text a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .small-text a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="form-box">
-        <h2>Đăng ký</h2>
-        <input id="reg-name" placeholder="Họ và tên">
-        <input id="reg-email" type="email" placeholder="Email">
-        <input id="reg-phone" placeholder="Số điện thoại, ví dụ +84901234567">
-        <input id="reg-password" type="password" placeholder="Mật khẩu">
-        <button onclick="register()">Đăng ký</button>
-
-        <div id="otp-box" style="display:none; margin-top:16px;">
-            <input id="otp-code" placeholder="Mã xác nhận">
-            <button class="btn-blue" onclick="confirmRegister()">Xác nhận</button>
-        </div>
-
-        <div id="register-message" class="message"></div>
-    </div>
-
-    <div class="form-box">
         <h2>Đăng nhập</h2>
+
         <input id="login-email" type="email" placeholder="Email">
         <input id="login-password" type="password" placeholder="Mật khẩu">
-        <button class="btn-blue" onclick="login()">Đăng nhập</button>
+
+        <button onclick="login()">Đăng nhập</button>
+
         <div id="login-message" class="message"></div>
+
+        <div class="small-text">
+            Chưa có tài khoản?
+            <a href="register.html">Nhấn vào đây để đăng ký</a>
+        </div>
+
+        <a class="home-link" href="index.html">← Quay về trang chủ</a>
     </div>
 
     <script src="config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
 
-        async function register() {
-            const body = {
-                fullName: document.getElementById("reg-name").value.trim(),
-                email: document.getElementById("reg-email").value.trim(),
-                phoneNumber: document.getElementById("reg-phone").value.trim(),
-                password: document.getElementById("reg-password").value
-            };
-
-            const message = document.getElementById("register-message");
-
+        function parseJwt(token) {
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/auth/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
+                const base64Url = token.split(".")[1];
+                const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split("")
+                        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join("")
+                );
 
-                const data = await response.json();
-                message.textContent = data.message || data.error;
-
-                if (response.ok) {
-                    document.getElementById("otp-box").style.display = "block";
-                }
+                return JSON.parse(jsonPayload);
             } catch {
-                message.textContent = "Không thể kết nối User Service.";
-            }
-        }
-
-        async function confirmRegister() {
-            const body = {
-                email: document.getElementById("reg-email").value.trim(),
-                code: document.getElementById("otp-code").value.trim()
-            };
-
-            const message = document.getElementById("register-message");
-
-            try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/auth/confirm-register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-                message.textContent = data.message || data.error;
-            } catch {
-                message.textContent = "Không thể xác nhận tài khoản.";
+                return {};
             }
         }
 
@@ -98,11 +129,19 @@
             };
 
             const message = document.getElementById("login-message");
+            message.textContent = "";
+
+            if (!body.email || !body.password) {
+                message.textContent = "Vui lòng nhập email và mật khẩu.";
+                return;
+            }
 
             try {
                 const response = await fetch(`${USER_SERVICE_URL}/api/auth/login`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify(body)
                 });
 
@@ -116,8 +155,19 @@
                 localStorage.setItem("accessToken", data.tokens.AccessToken);
                 localStorage.setItem("idToken", data.tokens.IdToken);
 
+                if (data.tokens.RefreshToken) {
+                    localStorage.setItem("refreshToken", data.tokens.RefreshToken);
+                }
+
+                localStorage.setItem("email", body.email);
+
+                const idPayload = parseJwt(data.tokens.IdToken);
+                localStorage.setItem("fullName", idPayload.name || "Thành viên");
+
                 window.location.href = "profile.html";
-            } catch {
+
+            } catch (error) {
+                console.error(error);
                 message.textContent = "Không thể kết nối User Service.";
             }
         }

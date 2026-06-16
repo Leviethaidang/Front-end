@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>HaShop - Đăng ký</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+            background: #f5f5f5;
+        }
+
+        .form-box {
+            border: 1px solid #ccc;
+            padding: 28px;
+            width: 360px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            margin: 9px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            background: #28a745;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .btn-blue {
+            background: #007bff;
+        }
+
+        .btn-blue:hover {
+            background: #0069d9;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .danger {
+            color: red;
+        }
+
+        .small-text {
+            margin-top: 16px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .small-text a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .small-text a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: -4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>Đăng ký tài khoản</h2>
+
+        <input id="reg-name" placeholder="Họ và tên">
+        <input id="reg-email" type="email" placeholder="Email">
+        <input id="reg-phone" placeholder="Số điện thoại, ví dụ +84901234567">
+        <div class="hint">Số điện thoại nên dùng định dạng quốc tế, ví dụ: +8454084697</div>
+        <input id="reg-password" type="password" placeholder="Mật khẩu">
+
+        <button onclick="register()">Đăng ký</button>
+
+        <div id="otp-box" style="display:none; margin-top:18px;">
+            <hr>
+            <p>Nhập mã xác nhận được gửi về email/số điện thoại:</p>
+            <input id="otp-code" placeholder="Mã xác nhận">
+            <button class="btn-blue" onclick="confirmRegister()">Xác nhận tài khoản</button>
+        </div>
+
+        <div id="register-message" class="message"></div>
+
+        <div class="small-text">
+            Đã có tài khoản?
+            <a href="login.html">Đăng nhập</a>
+        </div>
+
+        <a class="home-link" href="index.html">← Quay về trang chủ</a>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
+
+        async function register() {
+            const body = {
+                fullName: document.getElementById("reg-name").value.trim(),
+                email: document.getElementById("reg-email").value.trim(),
+                phoneNumber: document.getElementById("reg-phone").value.trim(),
+                password: document.getElementById("reg-password").value
+            };
+
+            const message = document.getElementById("register-message");
+            message.className = "message";
+            message.textContent = "";
+
+            if (!body.fullName || !body.email || !body.phoneNumber || !body.password) {
+                message.classList.add("danger");
+                message.textContent = "Vui lòng nhập đầy đủ thông tin.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${USER_SERVICE_URL}/api/auth/register`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    message.classList.add("danger");
+                    message.textContent = data.error || "Đăng ký thất bại.";
+                    return;
+                }
+
+                message.classList.add("success");
+                message.textContent = data.message || "Đăng ký thành công. Vui lòng nhập mã xác nhận.";
+
+                document.getElementById("otp-box").style.display = "block";
+
+            } catch (error) {
+                console.error(error);
+                message.classList.add("danger");
+                message.textContent = "Không thể kết nối User Service.";
+            }
+        }
+
+        async function confirmRegister() {
+            const body = {
+                email: document.getElementById("reg-email").value.trim(),
+                code: document.getElementById("otp-code").value.trim()
+            };
+
+            const message = document.getElementById("register-message");
+            message.className = "message";
+            message.textContent = "";
+
+            if (!body.email || !body.code) {
+                message.classList.add("danger");
+                message.textContent = "Vui lòng nhập email và mã xác nhận.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${USER_SERVICE_URL}/api/auth/confirm-register`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    message.classList.add("danger");
+                    message.textContent = data.error || "Xác nhận thất bại.";
+                    return;
+                }
+
+                message.classList.add("success");
+                message.textContent = "Xác nhận thành công! Đang chuyển sang trang đăng nhập...";
+
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1500);
+
+            } catch (error) {
+                console.error(error);
+                message.classList.add("danger");
+                message.textContent = "Không thể xác nhận tài khoản.";
+            }
+        }
+    </script>
+</body>
+</html>
