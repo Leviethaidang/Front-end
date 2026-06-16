@@ -31,17 +31,33 @@
     <script>
         const accessToken = localStorage.getItem("accessToken");
         const fullName = localStorage.getItem("fullName") || "Thành viên";
+        const authSection = document.getElementById("auth-section");
 
         if (accessToken) {
-            document.getElementById("auth-section").innerHTML = `
+            const payload = getTokenPayload(accessToken);
+            const groups = payload["cognito:groups"] || [];
+            const isAdmin = groups.includes("Admin");
+
+            authSection.innerHTML = `
                 <div class="dropdown" onclick="toggleDropdown(event)">
                     <span>Xin chào, ${fullName} ▼</span>
                     <div id="dropdown-menu" class="dropdown-content">
                         <a href="profile.html">Profile</a>
+                        ${isAdmin ? '<a href="admin.html">Quản lý users</a>' : ''}
                         <a href="#" onclick="logout(event)">Đăng xuất</a>
                     </div>
                 </div>
             `;
+        }
+        
+        function getTokenPayload(token) {
+            try {
+                const base64Payload = token.split('.')[1];
+                const jsonPayload = atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/'));
+                return JSON.parse(jsonPayload);
+            } catch {
+                return {};
+            }
         }
 
         function toggleDropdown(event) {
