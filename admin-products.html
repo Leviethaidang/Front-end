@@ -174,13 +174,14 @@
                 const products = data.products || [];
 
                 if (products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7">Chưa có sản phẩm nào.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="9">Chưa có sản phẩm nào.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = products.map(product => `
                     <tr>
                         <td>${escapeHtml(product.product_id)}</td>
+
                         <td>
                             ${
                                 product.imageUrl
@@ -188,11 +189,36 @@
                                     : "Không có ảnh"
                             }
                         </td>
-                        <td>${escapeHtml(product.product_name)}</td>
-                        <td>${escapeHtml(product.category_name || "Chưa phân loại")}</td>
-                        <td>${formatPrice(product.price)}</td>
-                        <td>${escapeHtml(product.stock_quantity)}</td>
-                        <td class="small-text">${escapeHtml(product.image_key || "")}</td>
+
+                        <td>
+                            <input id="product-name-${product.product_id}" value="${escapeHtml(product.product_name)}">
+                        </td>
+
+                        <td>
+                            <input id="product-category-${product.product_id}" type="number" value="${product.category_id || ""}" placeholder="Có thể trống">
+                            <div class="small-text">${escapeHtml(product.category_name || "Chưa phân loại")}</div>
+                        </td>
+
+                        <td>
+                            <input id="product-price-${product.product_id}" type="number" value="${escapeHtml(product.price)}">
+                        </td>
+
+                        <td>
+                            <input id="product-stock-${product.product_id}" type="number" value="${escapeHtml(product.stock_quantity)}">
+                        </td>
+
+                        <td class="small-text">
+                            <span id="product-image-key-${product.product_id}">${escapeHtml(product.image_key || "")}</span>
+                        </td>
+
+                        <td>
+                            <input id="product-image-file-${product.product_id}" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+                        </td>
+
+                        <td>
+                            <button class="btn btn-blue" onclick="updateProduct('${product.product_id}')">Lưu</button>
+                            <button class="btn btn-red" onclick="deleteProduct('${product.product_id}')">Xóa</button>
+                        </td>
                     </tr>
                 `).join("");
 
@@ -262,6 +288,99 @@
             } catch (error) {
                 console.error("Lỗi tạo sản phẩm:", error);
                 setMessage(error.message || "Không thể tạo sản phẩm.", "danger");
+            }
+        }
+
+        async function updateProduct(productId) {
+            if (!checkAdmin()) return;
+
+            const productName = document.getElementById(`product-name-${productId}`).value.trim();
+            const categoryIdRaw = document.getElementById(`product-category-${productId}`).value.trim();
+            const priceRaw = document.getElementById(`product-price-${productId}`).value.trim();
+            const stockRaw = document.getElementById(`product-stock-${productId}`).value.trim();
+            const currentImageKey = document.getElementById(`product-image-key-${productId}`).textContent.trim();
+            const fileInput = document.getElementById(`product-image-file-${productId}`);
+            const file = fileInput.files[0];
+
+            if (!productName || !priceRaw || stockRaw === "") {
+                setMessage("Vui lòng nhập tên sản phẩm, giá và số lượng kho.", "danger");
+                return;
+            }
+
+            if (Number(priceRaw) <= 0) {
+                setMessage("Giá sản phẩm phải lớn hơn 0.", "danger");
+                return;
+            }
+
+            if (Number(stockRaw) < 0) {
+                setMessage("Số lượng kho không được nhỏ hơn 0.", "danger");
+                return;
+            }
+
+            try {
+                setMessage("Đang cập nhật sản phẩm...", "success");
+
+                let imageKey = currentImageKey || null;
+
+                // Nếu admin chọn ảnh mới thì upload ảnh mới trước
+                if (file) {
+                    imageKey = await uploadProductImage(file);
+                }
+
+                const body = {
+                    productName,
+                    categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
+                    price: Number(priceRaw),
+                    stockQuantity: Number(stockRaw),
+                    imageKey
+                };
+
+                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/${productId}`, {
+                    method: "PUT",
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setMessage(data.error || "Cập nhật sản phẩm thất bại.", "danger");
+                    return;
+                }
+
+                setMessage(data.message || "Cập nhật sản phẩm thành công.", "success");
+                await loadProducts();
+
+            } catch (error) {
+                console.error("Lỗi cập nhật sản phẩm:", error);
+                setMessage(error.message || "Không thể cập nhật sản phẩm.", "danger");
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!checkAdmin()) return;
+
+            if (!confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/${productId}`, {
+                    method: "DELETE"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setMessage(data.error || "Xóa sản phẩm thất bại.", "danger");
+                    return;
+                }
+
+                setMessage(data.message || "Xóa sản phẩm thành công.", "success");
+                await loadProducts();
+
+            } catch (error) {
+                console.error("Lỗi xóa sản phẩm:", error);
+                setMessage(error.message || "Không thể xóa sản phẩm.", "danger");
             }
         }
 
