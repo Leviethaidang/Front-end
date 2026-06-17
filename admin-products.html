@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>HaShop - Admin Products</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #f2f2f2; }
+        input, textarea, select { width: 100%; box-sizing: border-box; padding: 8px; margin: 6px 0; }
+        textarea { min-height: 60px; }
+        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 24px; max-width: 700px; }
+        .btn { padding: 8px 12px; border: none; cursor: pointer; color: white; border-radius: 4px; margin: 2px; }
+        .btn-blue { background: #007bff; }
+        .btn-green { background: #28a745; }
+        .btn-red { background: #dc3545; }
+        .danger { color: red; }
+        .success { color: green; }
+
+        .product-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .preview-img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: #666;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h2>Admin - Quản lý sản phẩm</h2>
+    <p>
+        <a href="index.html">← Trang chủ</a> |
+        <a href="admin-users.html">Quản lý users</a>
+    </p>
+
+    <p id="message"></p>
+
+    <div class="box">
+        <h3>Thêm sản phẩm mới</h3>
+        <input id="newProductName" placeholder="Tên sản phẩm">
+        <input id="newCategoryId" type="number" placeholder="Category ID, có thể để trống">
+        <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
+        <input id="newStockQuantity" type="number" placeholder="Số lượng kho, ví dụ 10">
+        <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        <img id="productPreviewImage" class="preview-img" alt="Preview">
+        <button class="btn btn-green" onclick="createProduct()">Tạo sản phẩm</button>
+    </div>
+
+    <h3>Danh sách sản phẩm</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Category</th>
+                <th>Giá</th>
+                <th>Tồn kho</th>
+                <th>Image Key</th>
+            </tr>
+        </thead>
+        <tbody id="productTableBody">
+            <tr><td colspan="7">Đang tải...</td></tr>
+        </tbody>
+    </table>
+
+    <script src="config.js"></script>
+    <script>
+        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL || "";
+        const PRODUCT_SERVICE_URL = window.APP_CONFIG.PRODUCT_SERVICE_URL || "";
+        const accessToken = localStorage.getItem("accessToken");
+        const message = document.getElementById("message");
+
+        const productImageInput = document.getElementById("newProductImage");
+        const productPreviewImage = document.getElementById("productPreviewImage");
+
+        function setMessage(text, type = "success") {
+            message.className = type;
+            message.textContent = text;
+        }
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return "";
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function getTokenPayload(token) {
+            try {
+                const base64Payload = token.split('.')[1];
+                const jsonPayload = atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/'));
+                return JSON.parse(jsonPayload);
+            } catch {
+                return {};
+            }
+        }
+
+        function checkAdmin() {
+            if (!accessToken) {
+                setMessage("Bạn chưa đăng nhập.", "danger");
+                return false;
+            }
+
+            const payload = getTokenPayload(accessToken);
+            const groups = payload["cognito:groups"] || [];
+
+            if (!groups.includes("Admin")) {
+                setMessage("Bạn không có quyền Admin.", "danger");
+                return false;
+            }
+
+            return true;
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                    ...(options.headers || {})
+                }
+            });
+        }
+
+        productImageInput.addEventListener("change", () => {
+            const file = productImageInput.files[0];
+
+            if (!file) {
+                productPreviewImage.style.display = "none";
+                productPreviewImage.src = "";
+                return;
+            }
+
+            productPreviewImage.src = URL.createObjectURL(file);
+            productPreviewImage.style.display = "block";
+        });
+
+        async function loadProducts() {
+            if (!checkAdmin()) return;
+
+            try {
+                const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setMessage(data.error || "Không thể tải danh sách sản phẩm.", "danger");
+                    return;
+                }
+
+                const tbody = document.getElementById("productTableBody");
+                const products = data.products || [];
+
+                if (products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7">Chưa có sản phẩm nào.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = products.map(product => `
+                    <tr>
+                        <td>${escapeHtml(product.product_id)}</td>
+                        <td>
+                            ${
+                                product.imageUrl
+                                    ? `<img class="product-img" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.product_name)}">`
+                                    : "Không có ảnh"
+                            }
+                        </td>
+                        <td>${escapeHtml(product.product_name)}</td>
+                        <td>${escapeHtml(product.category_name || "Chưa phân loại")}</td>
+                        <td>${formatPrice(product.price)}</td>
+                        <td>${escapeHtml(product.stock_quantity)}</td>
+                        <td class="small-text">${escapeHtml(product.image_key || "")}</td>
+                    </tr>
+                `).join("");
+
+            } catch (error) {
+                console.error("Lỗi load products:", error);
+                setMessage("Không thể kết nối Product Service.", "danger");
+            }
+        }
+
+        async function createProduct() {
+            if (!checkAdmin()) return;
+
+            const productName = document.getElementById("newProductName").value.trim();
+            const categoryIdRaw = document.getElementById("newCategoryId").value.trim();
+            const priceRaw = document.getElementById("newPrice").value.trim();
+            const stockRaw = document.getElementById("newStockQuantity").value.trim();
+            const file = document.getElementById("newProductImage").files[0];
+
+            if (!productName || !priceRaw || stockRaw === "") {
+                setMessage("Vui lòng nhập tên sản phẩm, giá và số lượng kho.", "danger");
+                return;
+            }
+
+            if (Number(priceRaw) <= 0) {
+                setMessage("Giá sản phẩm phải lớn hơn 0.", "danger");
+                return;
+            }
+
+            if (Number(stockRaw) < 0) {
+                setMessage("Số lượng kho không được nhỏ hơn 0.", "danger");
+                return;
+            }
+
+            try {
+                setMessage("Đang tạo sản phẩm...", "success");
+
+                let imageKey = null;
+
+                if (file) {
+                    imageKey = await uploadProductImage(file);
+                }
+
+                const body = {
+                    productName,
+                    categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
+                    price: Number(priceRaw),
+                    stockQuantity: Number(stockRaw),
+                    imageKey
+                };
+
+                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products`, {
+                    method: "POST",
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setMessage(data.error || "Tạo sản phẩm thất bại.", "danger");
+                    return;
+                }
+
+                setMessage(data.message || "Tạo sản phẩm thành công.", "success");
+                clearProductForm();
+                await loadProducts();
+
+            } catch (error) {
+                console.error("Lỗi tạo sản phẩm:", error);
+                setMessage(error.message || "Không thể tạo sản phẩm.", "danger");
+            }
+        }
+
+        async function uploadProductImage(file) {
+            const uploadUrlResponse = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/upload-url`, {
+                method: "POST",
+                body: JSON.stringify({
+                    fileName: file.name,
+                    contentType: file.type
+                })
+            });
+
+            const uploadUrlData = await uploadUrlResponse.json();
+
+            if (!uploadUrlResponse.ok) {
+                throw new Error(uploadUrlData.error || "Không thể lấy upload URL.");
+            }
+
+            const { uploadUrl, imageKey } = uploadUrlData;
+
+            const s3Response = await fetch(uploadUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": file.type
+                },
+                body: file
+            });
+
+            if (!s3Response.ok) {
+                throw new Error("Upload ảnh lên S3 thất bại.");
+            }
+
+            return imageKey;
+        }
+
+        function clearProductForm() {
+            document.getElementById("newProductName").value = "";
+            document.getElementById("newCategoryId").value = "";
+            document.getElementById("newPrice").value = "";
+            document.getElementById("newStockQuantity").value = "";
+            document.getElementById("newProductImage").value = "";
+
+            productPreviewImage.style.display = "none";
+            productPreviewImage.src = "";
+        }
+
+        function formatPrice(value) {
+            const number = Number(value);
+
+            if (Number.isNaN(number)) {
+                return "Liên hệ";
+            }
+
+            return number.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND"
+            });
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>

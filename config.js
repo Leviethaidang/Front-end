@@ -1,5 +1,6 @@
 window.APP_CONFIG = {
-    USER_SERVICE_URL: ""
+    USER_SERVICE_URL: "",
+    PRODUCT_SERVICE_URL: ""
 };
 //tuong lai
 /*window.APP_CONFIG = {
