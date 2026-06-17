@@ -92,7 +92,7 @@
             }
 
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile`, {
+                const response = await fetch(`${USER_SERVICE_URL}/api/users/me`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${accessToken}`
@@ -163,7 +163,7 @@
             }
 
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile`, {
+                const response = await fetch(`${USER_SERVICE_URL}/api/users/me`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -215,7 +215,7 @@
             }
 
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/user/profile/verify-email`, {
+                const response = await fetch(`${USER_SERVICE_URL}/api/users/me/verify-email`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

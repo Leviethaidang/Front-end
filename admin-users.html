@@ -124,7 +124,7 @@
             if (!checkAdmin()) return;
 
             try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/admin/users`);
+                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users`)
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -170,7 +170,7 @@
             };
 
             try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/admin/users`, {
+                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users`, {
                     method: "POST",
                     body: JSON.stringify(body)
                 });
@@ -200,7 +200,7 @@
             };
 
             try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/admin/users/${userId}`, {
+                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users/${userId}`, {
                     method: "PUT",
                     body: JSON.stringify(body)
                 });
@@ -224,7 +224,7 @@
             if (!confirm("Bạn có chắc muốn xóa user này không?")) return;
 
             try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/admin/users/${userId}`, {
+                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users/${userId}`, {
                     method: "DELETE"
                 });
 

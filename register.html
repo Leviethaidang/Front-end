@@ -155,7 +155,7 @@
             }
 
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/auth/register`, {
+                const response = await fetch(`${USER_SERVICE_URL}/api/users/auth/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -200,7 +200,7 @@
             }
 
             try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/auth/confirm-register`, {
+                const response = await fetch(`${USER_SERVICE_URL}/api/users/auth/confirm-register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
