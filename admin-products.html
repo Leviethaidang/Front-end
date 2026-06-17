@@ -47,7 +47,8 @@
     <h2>Admin - Quản lý sản phẩm</h2>
     <p>
         <a href="index.html">← Trang chủ</a> |
-        <a href="admin-users.html">Quản lý users</a>
+        <a href="admin-users.html">Quản lý users</a> |
+        <a href="admin-categories.html">Quản lý danh mục</a>
     </p>
 
     <p id="message"></p>
@@ -55,7 +56,9 @@
     <div class="box">
         <h3>Thêm sản phẩm mới</h3>
         <input id="newProductName" placeholder="Tên sản phẩm">
-        <input id="newCategoryId" type="number" placeholder="Category ID, có thể để trống">
+        <select id="newCategoryId">
+            <option value="">Chưa phân loại</option>
+        </select>
         <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
         <input id="newStockQuantity" type="number" placeholder="Số lượng kho, ví dụ 10">
         <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
@@ -86,10 +89,10 @@
 
     <script src="config.js"></script>
     <script>
-        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL || "";
         const PRODUCT_SERVICE_URL = window.APP_CONFIG.PRODUCT_SERVICE_URL || "";
         const accessToken = localStorage.getItem("accessToken");
         const message = document.getElementById("message");
+        let categories = [];
 
         const productImageInput = document.getElementById("newProductImage");
         const productPreviewImage = document.getElementById("productPreviewImage");
@@ -197,8 +200,7 @@
                         </td>
 
                         <td>
-                            <input id="product-category-${product.product_id}" type="number" value="${product.category_id || ""}" placeholder="Có thể trống">
-                            <div class="small-text">${escapeHtml(product.category_name || "Chưa phân loại")}</div>
+                            ${renderCategoryDropdownForProduct(product)}
                         </td>
 
                         <td>
@@ -418,6 +420,52 @@
             return imageKey;
         }
 
+        async function loadCategoriesForProductForm() {
+            try {
+                const response = await fetch(`${PRODUCT_SERVICE_URL}/api/categories`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setMessage(data.error || "Không thể tải danh mục.", "danger");
+                    return;
+                }
+
+                categories = data.categories || [];
+
+                renderCreateCategoryDropdown();
+
+            } catch (error) {
+                console.error("Lỗi load categories:", error);
+                setMessage("Không thể kết nối Product Service để tải danh mục.", "danger");
+            }
+        }
+
+        function renderCreateCategoryDropdown() {
+            const select = document.getElementById("newCategoryId");
+
+            select.innerHTML = `
+                <option value="">Chưa phân loại</option>
+                ${categories.map(category => `
+                    <option value="${category.category_id}">
+                        ${escapeHtml(category.category_name)}
+                    </option>
+                `).join("")}
+            `;
+        }
+
+        function renderCategoryDropdownForProduct(product) {
+            return `
+                <select id="product-category-${product.product_id}">
+                    <option value="">Chưa phân loại</option>
+                    ${categories.map(category => `
+                        <option value="${category.category_id}" ${Number(product.category_id) === Number(category.category_id) ? "selected" : ""}>
+                            ${escapeHtml(category.category_name)}
+                        </option>
+                    `).join("")}
+                </select>
+            `;
+        }
+
         function clearProductForm() {
             document.getElementById("newProductName").value = "";
             document.getElementById("newCategoryId").value = "";
@@ -442,7 +490,14 @@
             });
         }
 
-        loadProducts();
+        async function initPage() {
+            if (!checkAdmin()) return;
+
+            await loadCategoriesForProductForm();
+            await loadProducts();
+        }
+
+        initPage();
     </script>
 </body>
 </html>
