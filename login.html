@@ -164,7 +164,7 @@
                 const idPayload = parseJwt(data.tokens.IdToken);
                 localStorage.setItem("fullName", idPayload.name || "Thành viên");
 
-                window.location.href = "/profile";
+                window.location.href = "/";
 
             } catch (error) {
                 console.error(error);
