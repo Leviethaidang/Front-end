@@ -55,10 +55,10 @@
         Đang tải dữ liệu...
     </div>
 
-    <a href="profile.html" class="btn">Quay lại hồ sơ</a>
-    <a href="index.html" class="btn">Trang chủ</a>
+    <a href="/profile" class="btn">Quay lại hồ sơ</a>
+    <a href="/" class="btn">Trang chủ</a>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
         const accessToken = localStorage.getItem("accessToken");
@@ -86,7 +86,7 @@
             if (!accessToken) {
                 editContent.innerHTML = `
                     <p class="danger">Bạn chưa đăng nhập.</p>
-                    <a href="login.html" class="btn btn-blue">Đăng nhập</a>
+                    <a href="/login" class="btn btn-blue">Đăng nhập</a>
                 `;
                 return;
             }
@@ -197,7 +197,7 @@
                 setMessage(data.message || "Cập nhật profile thành công.", "success");
 
                 setTimeout(() => {
-                    window.location.href = "profile.html";
+                    window.location.href = "/profile";
                 }, 1200);
 
             } catch (error) {
@@ -234,7 +234,7 @@
                 setMessage(data.message || "Xác minh email mới thành công.", "success");
 
                 setTimeout(() => {
-                    window.location.href = "profile.html";
+                    window.location.href = "/profile";
                 }, 1200);
 
             } catch (error) {

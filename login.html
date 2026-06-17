@@ -95,13 +95,13 @@
 
         <div class="small-text">
             Chưa có tài khoản?
-            <a href="register.html">Nhấn vào đây để đăng ký</a>
+            <a href="/register">Nhấn vào đây để đăng ký</a>
         </div>
 
-        <a class="home-link" href="index.html">← Quay về trang chủ</a>
+        <a class="home-link" href="/">← Quay về trang chủ</a>
     </div>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
 
@@ -164,7 +164,7 @@
                 const idPayload = parseJwt(data.tokens.IdToken);
                 localStorage.setItem("fullName", idPayload.name || "Thành viên");
 
-                window.location.href = "profile.html";
+                window.location.href = "/profile";
 
             } catch (error) {
                 console.error(error);

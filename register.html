@@ -126,13 +126,13 @@
 
         <div class="small-text">
             Đã có tài khoản?
-            <a href="login.html">Đăng nhập</a>
+            <a href="/login">Đăng nhập</a>
         </div>
 
-        <a class="home-link" href="index.html">← Quay về trang chủ</a>
+        <a class="home-link" href="/">← Quay về trang chủ</a>
     </div>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
 
@@ -220,7 +220,7 @@
                 message.textContent = "Xác nhận thành công! Đang chuyển sang trang đăng nhập...";
 
                 setTimeout(() => {
-                    window.location.href = "login.html";
+                    window.location.href = "/login";
                 }, 1500);
 
             } catch (error) {

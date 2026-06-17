@@ -157,7 +157,7 @@
     <div class="navbar">
         <div><strong>HaShop</strong></div>
         <div id="auth-section">
-            <a href="login.html">Đăng nhập</a>
+            <a href="/login">Đăng nhập</a>
         </div>
     </div>
 
@@ -185,10 +185,10 @@
                 <div class="dropdown" onclick="toggleDropdown(event)">
                     <span>Xin chào, ${escapeHtml(fullName)} ▼</span>
                     <div id="dropdown-menu" class="dropdown-content">
-                        <a href="profile.html">Profile</a>
-                        ${isAdmin ? '<a href="admin-users.html">Quản lý users</a>' : ''}
-                        ${isAdmin ? '<a href="admin-products.html">Quản lý sản phẩm</a>' : ''}
-                        ${isAdmin ? '<a href="admin-categories.html">Quản lý danh mục</a>' : ''}
+                        <a href="/profile">Profile</a>
+                        ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
+                        ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
+                        ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
                         <a href="#" onclick="logout(event)">Đăng xuất</a>
                     </div>
                 </div>
@@ -294,7 +294,7 @@
         function logout(event) {
             event.preventDefault();
             localStorage.clear();
-            window.location.href = "index.html";
+            window.location.href = "/";
         }
 
         function escapeHtml(value) {

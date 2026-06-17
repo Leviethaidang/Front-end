@@ -22,9 +22,9 @@
 <body>
     <h2>Admin - Quản lý người dùng</h2>
     <p>
-        <a href="index.html">← Trang chủ</a> |
-        <a href="admin-products.html">Quản lý sản phẩm</a> |
-        <a href="admin-categories.html">Quản lý danh mục</a>
+        <a href="/">← Trang chủ</a> |
+        <a href="/admin/products">Quản lý sản phẩm</a> |
+        <a href="/admin/categories">Quản lý danh mục</a>
     </p>
 
     <p id="message"></p>
@@ -61,7 +61,7 @@
         </tbody>
     </table>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
         const accessToken = localStorage.getItem("accessToken");

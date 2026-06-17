@@ -21,9 +21,9 @@
 <body>
     <h2>Admin - Quản lý danh mục</h2>
     <p>
-        <a href="index.html">← Trang chủ</a> |
-        <a href="admin-users.html">Quản lý users</a> |
-        <a href="admin-products.html">Quản lý sản phẩm</a>
+        <a href="/">← Trang chủ</a> |
+        <a href="/admin/users">Quản lý users</a> |
+        <a href="/admin/products">Quản lý sản phẩm</a>
     </p>
 
     <p id="message"></p>
@@ -50,7 +50,7 @@
         </tbody>
     </table>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const PRODUCT_SERVICE_URL = window.APP_CONFIG.PRODUCT_SERVICE_URL || "";
         const accessToken = localStorage.getItem("accessToken");

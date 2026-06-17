@@ -36,10 +36,10 @@
         Đang tải dữ liệu...
     </div>
 
-    <a href="index.html" class="btn">Trang chủ</a>
-    <a href="edit-profile.html" class="btn btn-blue" id="edit-button" style="display:none;">Chỉnh sửa thông tin</a>
+    <a href="/" class="btn">Trang chủ</a>
+    <a href="/profile/edit" class="btn btn-blue" id="edit-button" style="display:none;">Chỉnh sửa thông tin</a>
 
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
     <script>
         const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
         const accessToken = localStorage.getItem("accessToken");
@@ -60,7 +60,7 @@
             if (!accessToken) {
                 profileContent.innerHTML = `
                     <p class="danger">Bạn chưa đăng nhập.</p>
-                    <a href="login.html" class="btn btn-blue">Đăng nhập</a>
+                    <a href="/login" class="btn btn-blue">Đăng nhập</a>
                 `;
                 return;
             }
