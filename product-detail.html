@@ -105,6 +105,62 @@
             color: #c0392b;
         }
 
+        .action-area {
+            margin-top: 28px;
+        }
+
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quantity-row label {
+            font-weight: bold;
+        }
+
+        .quantity-input {
+            width: 80px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .add-to-cart-btn {
+            background: #d70018;
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #b80014;
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .cart-message {
+            margin-top: 14px;
+            font-weight: bold;
+        }
+
+        .cart-message.success {
+            color: #188038;
+        }
+
+        .cart-message.error {
+            color: #c0392b;
+        }
+
         @media (max-width: 768px) {
             .detail-card {
                 grid-template-columns: 1fr;
@@ -163,6 +219,81 @@
             });
         }
 
+        function getAccessToken() {
+            return localStorage.getItem("accessToken");
+        }
+
+        function redirectToLogin() {
+            window.location.href = "/login";
+        }
+
+        function showCartMessage(message, type = "success") {
+            const messageElement = document.getElementById("cart-message");
+
+            if (!messageElement) return;
+
+            messageElement.className = `cart-message ${type}`;
+            messageElement.textContent = message;
+        }
+
+        async function addToCart(productId) {
+            const accessToken = getAccessToken();
+
+            if (!accessToken) {
+                redirectToLogin();
+                return;
+            }
+
+            const quantityInput = document.getElementById("cart-quantity");
+            const addButton = document.getElementById("add-to-cart-btn");
+
+            const quantity = Number(quantityInput.value);
+
+            if (!Number.isInteger(quantity) || quantity <= 0) {
+                showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
+                return;
+            }
+
+            try {
+                addButton.disabled = true;
+                addButton.textContent = "Đang thêm...";
+
+                const response = await fetch("/api/cart/items", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        productId: Number(productId),
+                        quantity
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem("accessToken");
+                    redirectToLogin();
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Không thể thêm sản phẩm vào giỏ hàng.");
+                }
+
+                showCartMessage("Đã thêm sản phẩm vào giỏ hàng!", "success");
+
+            } catch (error) {
+                console.error("Lỗi thêm vào giỏ hàng:", error);
+                showCartMessage(error.message || "Không thể thêm sản phẩm vào giỏ hàng.", "error");
+
+            } finally {
+                addButton.disabled = false;
+                addButton.textContent = "Thêm vào giỏ hàng";
+            }
+        }
+
         async function loadProductDetail() {
             const productId = getProductIdFromUrl();
 
@@ -186,6 +317,9 @@
                     : `<span class="no-image">Không có ảnh</span>`;
 
                 detailContainer.className = "detail-card";
+                const stockQuantity = Number(product.stock_quantity || 0);
+                const isOutOfStock = stockQuantity <= 0;
+
                 detailContainer.innerHTML = `
                     <div class="product-image-wrap">
                         ${imageHtml}
@@ -198,8 +332,41 @@
                         <div class="product-price">${formatPrice(product.price)}</div>
                         <div class="product-meta"><strong>Đã bán:</strong> ${escapeHtml(product.sold_quantity ?? 0)}</div>
                         <div class="product-meta"><strong>Còn lại:</strong> ${escapeHtml(product.stock_quantity ?? 0)}</div>
+
+                        <div class="action-area">
+                            <div class="quantity-row">
+                                <label for="cart-quantity">Số lượng:</label>
+                                <input
+                                    id="cart-quantity"
+                                    class="quantity-input"
+                                    type="number"
+                                    min="1"
+                                    max="${escapeAttribute(stockQuantity)}"
+                                    value="1"
+                                    ${isOutOfStock ? "disabled" : ""}
+                                >
+                            </div>
+
+                            <button
+                                id="add-to-cart-btn"
+                                class="add-to-cart-btn"
+                                ${isOutOfStock ? "disabled" : ""}
+                            >
+                                ${isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
+                            </button>
+
+                            <div id="cart-message" class="cart-message"></div>
+                        </div>
                     </div>
                 `;
+
+                const addToCartButton = document.getElementById("add-to-cart-btn");
+
+                if (addToCartButton && !isOutOfStock) {
+                    addToCartButton.addEventListener("click", () => {
+                        addToCart(product.product_id);
+                    });
+                }
 
             } catch (error) {
                 console.error("Lỗi tải chi tiết sản phẩm:", error);
