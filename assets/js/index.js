@@ -1,3 +1,4 @@
+const PRODUCT_SERVICE_URL = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
 const productsContainer = document.getElementById("products-container");
 
 loadProducts();
@@ -10,7 +11,7 @@ async function loadProducts() {
     `;
 
     try {
-        const response = await fetch("/api/products");
+        const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -101,11 +102,3 @@ function escapeHtml(value) {
 function escapeAttribute(value) {
     return escapeHtml(value);
 }
-
-window.onclick = () => {
-    const menu = document.getElementById("dropdown-menu");
-
-    if (menu) {
-        menu.classList.remove("show");
-    }
-};

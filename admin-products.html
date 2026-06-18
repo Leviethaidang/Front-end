@@ -3,520 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Admin Products</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 40px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; vertical-align: top; }
-        th { background: #f2f2f2; }
-        input, textarea, select { width: 100%; box-sizing: border-box; padding: 8px; margin: 6px 0; }
-        textarea { min-height: 60px; }
-        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 24px; max-width: 700px; }
-        .btn { padding: 8px 12px; border: none; cursor: pointer; color: white; border-radius: 4px; margin: 2px; }
-        .btn-blue { background: #007bff; }
-        .btn-green { background: #28a745; }
-        .btn-red { background: #dc3545; }
-        .danger { color: red; }
-        .success { color: green; }
 
-        .product-img {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        .preview-img {
-            width: 160px;
-            height: 160px;
-            object-fit: cover;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            display: none;
-            margin-top: 10px;
-        }
-
-        .small-text {
-            font-size: 12px;
-            color: #666;
-            word-break: break-all;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/admin-products.css">
 </head>
 <body>
-    <h2>Admin - Quản lý sản phẩm</h2>
-    <p>
-        <a href="/">← Trang chủ</a> |
-        <a href="/admin/users">Quản lý users</a> |
-        <a href="/admin/categories">Quản lý danh mục</a>
-    </p>
+    <div id="navbar-placeholder"></div>
 
-    <p id="message"></p>
+    <div class="container">
+        <div class="page-header">
+            <h2>Admin - Quản lý sản phẩm</h2>
+            <p>Thêm, sửa, xóa sản phẩm và quản lý ảnh sản phẩm.</p>
+        </div>
 
-    <div class="box">
-        <h3>Thêm sản phẩm mới</h3>
-        <input id="newProductName" placeholder="Tên sản phẩm">
-        <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
-        <select id="newCategoryId">
-            <option value="">Chưa phân loại</option>
-        </select>
-        <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
-        <input id="newStockQuantity" type="number" placeholder="Số lượng kho, ví dụ 10">
-        <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-        <img id="productPreviewImage" class="preview-img" alt="Preview">
-        <button class="btn btn-green" onclick="createProduct()">Tạo sản phẩm</button>
+        <p id="message" class="message"></p>
+
+        <div class="box">
+            <h3>Thêm sản phẩm mới</h3>
+
+            <input id="newProductName" placeholder="Tên sản phẩm">
+
+            <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
+
+            <select id="newCategoryId">
+                <option value="">Chưa phân loại</option>
+            </select>
+
+            <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
+
+            <input id="newStockQuantity" type="number" placeholder="Số lượng kho, ví dụ 10">
+
+            <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+
+            <img id="productPreviewImage" class="preview-img" alt="Preview">
+
+            <button id="createProductBtn" class="btn btn-green">
+                Tạo sản phẩm
+            </button>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách sản phẩm</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Category</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Đã bán</th>
+                        <th>Mô tả</th>
+                        <th>Đổi ảnh</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="productTableBody">
+                    <tr>
+                        <td colspan="10">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <h3>Danh sách sản phẩm</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ảnh</th>
-                <th>Tên sản phẩm</th>
-                <th>Category</th>
-                <th>Giá</th>
-                <th>Tồn kho</th>
-                <th>Đã bán</th> 
-                <th>Mô tả</th>
-                <th>Đổi ảnh</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody id="productTableBody">
-            <tr><td colspan="10">Đang tải...</td></tr>
-        </tbody>
-    </table>
-
-    <script src="/config.js"></script>
-    <script>
-        const PRODUCT_SERVICE_URL = window.APP_CONFIG.PRODUCT_SERVICE_URL || "";
-        const accessToken = localStorage.getItem("accessToken");
-        const message = document.getElementById("message");
-        let categories = [];
-
-        const productImageInput = document.getElementById("newProductImage");
-        const productPreviewImage = document.getElementById("productPreviewImage");
-
-        function setMessage(text, type = "success") {
-            message.className = type;
-            message.textContent = text;
-        }
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) return "";
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        function getTokenPayload(token) {
-            try {
-                const base64Payload = token.split('.')[1];
-                const jsonPayload = atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/'));
-                return JSON.parse(jsonPayload);
-            } catch {
-                return {};
-            }
-        }
-
-        function checkAdmin() {
-            if (!accessToken) {
-                setMessage("Bạn chưa đăng nhập.", "danger");
-                return false;
-            }
-
-            const payload = getTokenPayload(accessToken);
-            const groups = payload["cognito:groups"] || [];
-
-            if (!groups.includes("Admin")) {
-                setMessage("Bạn không có quyền Admin.", "danger");
-                return false;
-            }
-
-            return true;
-        }
-
-        async function fetchWithAuth(url, options = {}) {
-            return fetch(url, {
-                ...options,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                    ...(options.headers || {})
-                }
-            });
-        }
-
-        productImageInput.addEventListener("change", () => {
-            const file = productImageInput.files[0];
-
-            if (!file) {
-                productPreviewImage.style.display = "none";
-                productPreviewImage.src = "";
-                return;
-            }
-
-            productPreviewImage.src = URL.createObjectURL(file);
-            productPreviewImage.style.display = "block";
-        });
-
-        async function loadProducts() {
-            if (!checkAdmin()) return;
-
-            try {
-                const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products`);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Không thể tải danh sách sản phẩm.", "danger");
-                    return;
-                }
-
-                const tbody = document.getElementById("productTableBody");
-                const products = data.products || [];
-
-                if (products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="10">Chưa có sản phẩm nào.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = products.map(product => `
-                    <tr>
-                        <td>${escapeHtml(product.product_id)}</td>
-
-                        <td>
-                            ${
-                                product.imageUrl
-                                    ? `<img class="product-img" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.product_name)}">`
-                                    : "Không có ảnh"
-                            }
-                        </td>
-
-                        <td>
-                            <input id="product-name-${product.product_id}" value="${escapeHtml(product.product_name)}">
-                        </td>
-
-                        <td>
-                            ${renderCategoryDropdownForProduct(product)}
-                        </td>
-
-                        <td>
-                            <input id="product-price-${product.product_id}" type="number" value="${escapeHtml(product.price)}">
-                        </td>
-
-                        <td>
-                            <input id="product-stock-${product.product_id}" type="number" value="${escapeHtml(product.stock_quantity)}">
-                        </td>
-
-                        <td>
-                            <input id="product-sold-${product.product_id}" type="number" min="0" step="1" value="${escapeHtml(product.sold_quantity || 0)}">
-                        </td>
-
-                        <td>
-                            <textarea id="product-description-${product.product_id}">${escapeHtml(product.description || "")}</textarea>
-                        </td>
-
-                        <td>
-                            <input id="product-image-key-${product.product_id}" type="hidden" value="${escapeHtml(product.image_key || "")}">
-                            <input id="product-image-file-${product.product_id}" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-                        </td>
-
-                        <td>
-                            <button class="btn btn-blue" onclick="updateProduct('${product.product_id}')">Lưu</button>
-                            <button class="btn btn-red" onclick="deleteProduct('${product.product_id}')">Xóa</button>
-                        </td>
-                    </tr>
-                `).join("");
-
-            } catch (error) {
-                console.error("Lỗi load products:", error);
-                setMessage("Không thể kết nối Product Service.", "danger");
-            }
-        }
-
-        async function createProduct() {
-            if (!checkAdmin()) return;
-
-            const productName = document.getElementById("newProductName").value.trim();
-            const description = document.getElementById("newProductDescription").value.trim();
-            const categoryIdRaw = document.getElementById("newCategoryId").value.trim();
-            const priceRaw = document.getElementById("newPrice").value.trim();
-            const stockRaw = document.getElementById("newStockQuantity").value.trim();
-            const file = document.getElementById("newProductImage").files[0];
-
-            if (!productName || !priceRaw || stockRaw === "") {
-                setMessage("Vui lòng nhập tên sản phẩm, giá và số lượng kho.", "danger");
-                return;
-            }
-
-            if (Number(priceRaw) <= 0) {
-                setMessage("Giá sản phẩm phải lớn hơn 0.", "danger");
-                return;
-            }
-
-            if (Number(stockRaw) < 0) {
-                setMessage("Số lượng kho không được nhỏ hơn 0.", "danger");
-                return;
-            }
-
-            try {
-                setMessage("Đang tạo sản phẩm...", "success");
-
-                let imageKey = null;
-
-                if (file) {
-                    imageKey = await uploadProductImage(file);
-                }
-
-                const body = {
-                    productName,
-                    description,
-                    categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
-                    price: Number(priceRaw),
-                    stockQuantity: Number(stockRaw),
-                    imageKey
-                };
-
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products`, {
-                    method: "POST",
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Tạo sản phẩm thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Tạo sản phẩm thành công.", "success");
-                clearProductForm();
-                await loadProducts();
-
-            } catch (error) {
-                console.error("Lỗi tạo sản phẩm:", error);
-                setMessage(error.message || "Không thể tạo sản phẩm.", "danger");
-            }
-        }
-
-        async function updateProduct(productId) {
-            if (!checkAdmin()) return;
-
-            const productName = document.getElementById(`product-name-${productId}`).value.trim();
-            const description = document.getElementById(`product-description-${productId}`).value.trim();
-            const categoryIdRaw = document.getElementById(`product-category-${productId}`).value.trim();
-            const priceRaw = document.getElementById(`product-price-${productId}`).value.trim();
-            const stockRaw = document.getElementById(`product-stock-${productId}`).value.trim();
-            const soldRaw = document.getElementById(`product-sold-${productId}`).value.trim();
-            const currentImageKey = document.getElementById(`product-image-key-${productId}`).value.trim();
-            const fileInput = document.getElementById(`product-image-file-${productId}`);
-            const file = fileInput.files[0];
-
-            if (!productName || !priceRaw || stockRaw === "" || soldRaw === "") {
-                setMessage("Vui lòng nhập tên sản phẩm, giá, số lượng kho và số lượng đã bán.", "danger");
-                return;
-            }
-
-            if (Number(priceRaw) <= 0) {
-                setMessage("Giá sản phẩm phải lớn hơn 0.", "danger");
-                return;
-            }
-
-            if (Number(stockRaw) < 0) {
-                setMessage("Số lượng tồn kho không được nhỏ hơn 0.", "danger");
-                return;
-            }
-
-            if (Number(soldRaw) < 0) {
-                setMessage("Số lượng đã bán không được nhỏ hơn 0.", "danger");
-                return;
-            }
-
-            try {
-                setMessage("Đang cập nhật sản phẩm...", "success");
-
-                let imageKey = currentImageKey || null;
-
-                // Nếu admin chọn ảnh mới thì upload ảnh mới trước
-                if (file) {
-                    imageKey = await uploadProductImage(file);
-                }
-
-                const body = {
-                    productName,
-                    description,
-                    categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
-                    price: Number(priceRaw),
-                    stockQuantity: Number(stockRaw),
-                    soldQuantity: Number(soldRaw),
-                    imageKey
-                };
-
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/${productId}`, {
-                    method: "PUT",
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Cập nhật sản phẩm thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Cập nhật sản phẩm thành công.", "success");
-                await loadProducts();
-
-            } catch (error) {
-                console.error("Lỗi cập nhật sản phẩm:", error);
-                setMessage(error.message || "Không thể cập nhật sản phẩm.", "danger");
-            }
-        }
-
-        async function deleteProduct(productId) {
-            if (!checkAdmin()) return;
-
-            if (!confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
-                return;
-            }
-
-            try {
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/${productId}`, {
-                    method: "DELETE"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Xóa sản phẩm thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Xóa sản phẩm thành công.", "success");
-                await loadProducts();
-
-            } catch (error) {
-                console.error("Lỗi xóa sản phẩm:", error);
-                setMessage(error.message || "Không thể xóa sản phẩm.", "danger");
-            }
-        }
-
-        async function uploadProductImage(file) {
-            const uploadUrlResponse = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/upload-url`, {
-                method: "POST",
-                body: JSON.stringify({
-                    fileName: file.name,
-                    contentType: file.type
-                })
-            });
-
-            const uploadUrlData = await uploadUrlResponse.json();
-
-            if (!uploadUrlResponse.ok) {
-                throw new Error(uploadUrlData.error || "Không thể lấy upload URL.");
-            }
-
-            const { uploadUrl, imageKey } = uploadUrlData;
-
-            const s3Response = await fetch(uploadUrl, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": file.type
-                },
-                body: file
-            });
-
-            if (!s3Response.ok) {
-                throw new Error("Upload ảnh lên S3 thất bại.");
-            }
-
-            return imageKey;
-        }
-
-        async function loadCategoriesForProductForm() {
-            try {
-                const response = await fetch(`${PRODUCT_SERVICE_URL}/api/categories`);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Không thể tải danh mục.", "danger");
-                    return;
-                }
-
-                categories = data.categories || [];
-
-                renderCreateCategoryDropdown();
-
-            } catch (error) {
-                console.error("Lỗi load categories:", error);
-                setMessage("Không thể kết nối Product Service để tải danh mục.", "danger");
-            }
-        }
-
-        function renderCreateCategoryDropdown() {
-            const select = document.getElementById("newCategoryId");
-
-            select.innerHTML = `
-                <option value="">Chưa phân loại</option>
-                ${categories.map(category => `
-                    <option value="${category.category_id}">
-                        ${escapeHtml(category.category_name)}
-                    </option>
-                `).join("")}
-            `;
-        }
-
-        function renderCategoryDropdownForProduct(product) {
-            return `
-                <select id="product-category-${product.product_id}">
-                    <option value="">Chưa phân loại</option>
-                    ${categories.map(category => `
-                        <option value="${category.category_id}" ${Number(product.category_id) === Number(category.category_id) ? "selected" : ""}>
-                            ${escapeHtml(category.category_name)}
-                        </option>
-                    `).join("")}
-                </select>
-            `;
-        }
-
-        function clearProductForm() {
-            document.getElementById("newProductName").value = "";
-            document.getElementById("newProductDescription").value = "";
-            document.getElementById("newCategoryId").value = "";
-            document.getElementById("newPrice").value = "";
-            document.getElementById("newStockQuantity").value = "";
-            document.getElementById("newProductImage").value = "";
-
-            productPreviewImage.style.display = "none";
-            productPreviewImage.src = "";
-        }
-
-        function formatPrice(value) {
-            const number = Number(value);
-
-            if (Number.isNaN(number)) {
-                return "Liên hệ";
-            }
-
-            return number.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND"
-            });
-        }
-
-        async function initPage() {
-            if (!checkAdmin()) return;
-
-            await loadCategoriesForProductForm();
-            await loadProducts();
-        }
-
-        initPage();
-    </script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/admin-products.js"></script>
 </body>
 </html>

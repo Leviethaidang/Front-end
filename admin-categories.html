@@ -3,246 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Admin Categories</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 40px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #f2f2f2; }
-        input { width: 100%; box-sizing: border-box; padding: 8px; margin: 6px 0; }
-        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 24px; max-width: 700px; }
-        .btn { padding: 8px 12px; border: none; cursor: pointer; color: white; border-radius: 4px; margin: 2px; }
-        .btn-blue { background: #007bff; }
-        .btn-green { background: #28a745; }
-        .btn-red { background: #dc3545; }
-        .danger { color: red; }
-        .success { color: green; }
-    </style>
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/admin-categories.css">
 </head>
 <body>
-    <h2>Admin - Quản lý danh mục</h2>
-    <p>
-        <a href="/">← Trang chủ</a> |
-        <a href="/admin/users">Quản lý users</a> |
-        <a href="/admin/products">Quản lý sản phẩm</a>
-    </p>
+    <div id="navbar-placeholder"></div>
 
-    <p id="message"></p>
+    <div class="container">
+        <div class="page-header">
+            <h2>Admin - Quản lý danh mục</h2>
+            <p>Thêm, sửa, xóa danh mục sản phẩm.</p>
+        </div>
 
-    <div class="box">
-        <h3>Thêm danh mục mới</h3>
-        <input id="newCategoryName" placeholder="Tên danh mục, ví dụ: Quần jean">
-        <button class="btn btn-green" onclick="createCategory()">Tạo danh mục</button>
+        <p id="message" class="message"></p>
+
+        <div class="box">
+            <h3>Thêm danh mục mới</h3>
+
+            <div class="form-row">
+                <input
+                    id="newCategoryName"
+                    placeholder="Tên danh mục, ví dụ: Quần jean"
+                >
+
+                <button id="createCategoryBtn" class="btn btn-green">
+                    Tạo danh mục
+                </button>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách danh mục</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="categoryTableBody">
+                    <tr>
+                        <td colspan="4">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <h3>Danh sách danh mục</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Category ID</th>
-                <th>Tên danh mục</th>
-                <th>Ngày tạo</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody id="categoryTableBody">
-            <tr><td colspan="4">Đang tải...</td></tr>
-        </tbody>
-    </table>
-
-    <script src="/config.js"></script>
-    <script>
-        const PRODUCT_SERVICE_URL = window.APP_CONFIG.PRODUCT_SERVICE_URL || "";
-        const accessToken = localStorage.getItem("accessToken");
-        const message = document.getElementById("message");
-
-        function setMessage(text, type = "success") {
-            message.className = type;
-            message.textContent = text;
-        }
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) return "";
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        function getTokenPayload(token) {
-            try {
-                const base64Payload = token.split('.')[1];
-                const jsonPayload = atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/'));
-                return JSON.parse(jsonPayload);
-            } catch {
-                return {};
-            }
-        }
-
-        function checkAdmin() {
-            if (!accessToken) {
-                setMessage("Bạn chưa đăng nhập.", "danger");
-                return false;
-            }
-
-            const payload = getTokenPayload(accessToken);
-            const groups = payload["cognito:groups"] || [];
-
-            if (!groups.includes("Admin")) {
-                setMessage("Bạn không có quyền Admin.", "danger");
-                return false;
-            }
-
-            return true;
-        }
-
-        async function fetchWithAuth(url, options = {}) {
-            return fetch(url, {
-                ...options,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                    ...(options.headers || {})
-                }
-            });
-        }
-
-        async function loadCategories() {
-            if (!checkAdmin()) return;
-
-            try {
-                const response = await fetch(`${PRODUCT_SERVICE_URL}/api/categories`);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Không thể tải danh sách danh mục.", "danger");
-                    return;
-                }
-
-                const tbody = document.getElementById("categoryTableBody");
-                const categories = data.categories || [];
-
-                if (categories.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4">Chưa có danh mục nào.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = categories.map(category => `
-                    <tr>
-                        <td>${escapeHtml(category.category_id)}</td>
-                        <td>
-                            <input id="category-name-${category.category_id}" value="${escapeHtml(category.category_name)}">
-                        </td>
-                        <td>${escapeHtml(category.created_at)}</td>
-                        <td>
-                            <button class="btn btn-blue" onclick="updateCategory('${category.category_id}')">Lưu</button>
-                            <button class="btn btn-red" onclick="deleteCategory('${category.category_id}')">Xóa</button>
-                        </td>
-                    </tr>
-                `).join("");
-
-            } catch (error) {
-                console.error("Lỗi load categories:", error);
-                setMessage("Không thể kết nối Product Service.", "danger");
-            }
-        }
-
-        async function createCategory() {
-            if (!checkAdmin()) return;
-
-            const categoryName = document.getElementById("newCategoryName").value.trim();
-
-            if (!categoryName) {
-                setMessage("Tên danh mục không được để trống.", "danger");
-                return;
-            }
-
-            try {
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/categories`, {
-                    method: "POST",
-                    body: JSON.stringify({ categoryName })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Tạo danh mục thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Tạo danh mục thành công.", "success");
-                document.getElementById("newCategoryName").value = "";
-                await loadCategories();
-
-            } catch (error) {
-                console.error("Lỗi tạo category:", error);
-                setMessage("Không thể tạo danh mục.", "danger");
-            }
-        }
-
-        async function updateCategory(categoryId) {
-            if (!checkAdmin()) return;
-
-            const categoryName = document.getElementById(`category-name-${categoryId}`).value.trim();
-
-            if (!categoryName) {
-                setMessage("Tên danh mục không được để trống.", "danger");
-                return;
-            }
-
-            try {
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/categories/${categoryId}`, {
-                    method: "PUT",
-                    body: JSON.stringify({ categoryName })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Cập nhật danh mục thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Cập nhật danh mục thành công.", "success");
-                await loadCategories();
-
-            } catch (error) {
-                console.error("Lỗi update category:", error);
-                setMessage("Không thể cập nhật danh mục.", "danger");
-            }
-        }
-
-        async function deleteCategory(categoryId) {
-            if (!checkAdmin()) return;
-
-            if (!confirm("Bạn có chắc muốn xóa danh mục này không? Các sản phẩm thuộc danh mục này sẽ chuyển về Chưa phân loại.")) {
-                return;
-            }
-
-            try {
-                const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/categories/${categoryId}`, {
-                    method: "DELETE"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Xóa danh mục thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Xóa danh mục thành công.", "success");
-                await loadCategories();
-
-            } catch (error) {
-                console.error("Lỗi delete category:", error);
-                setMessage("Không thể xóa danh mục.", "danger");
-            }
-        }
-
-        loadCategories();
-    </script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/admin-categories.js"></script>
 </body>
 </html>
