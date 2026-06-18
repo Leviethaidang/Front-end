@@ -3,104 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Profile</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 40px; }
-        .profile-card {
-            border: 1px solid #ccc;
-            padding: 24px;
-            max-width: 560px;
-            border-radius: 8px;
-            background: #fafafa;
-        }
-        .profile-card p { margin: 14px 0; }
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            background: #333;
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 5px;
-            margin-top: 16px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        .btn-blue { background: #007bff; }
-        .danger { color: red; }
-    </style>
+
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
 <body>
-    <h2>Hồ sơ cá nhân</h2>
+    <div id="navbar-placeholder"></div>
 
-    <div id="profile-content" class="profile-card">
-        Đang tải dữ liệu...
+    <div class="container">
+        <div class="page-header">
+            <h2>Hồ sơ cá nhân</h2>
+            <p>Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
+        </div>
+
+        <div id="profile-content" class="profile-card">
+            Đang tải dữ liệu...
+        </div>
+
+        <div class="actions">
+            <a href="/profile/edit" class="btn btn-blue" id="edit-button">
+                Chỉnh sửa thông tin
+            </a>
+        </div>
     </div>
 
-    <a href="/" class="btn">Trang chủ</a>
-    <a href="/profile/edit" class="btn btn-blue" id="edit-button" style="display:none;">Chỉnh sửa thông tin</a>
-
-    <script src="/config.js"></script>
-    <script>
-        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
-        const accessToken = localStorage.getItem("accessToken");
-        const profileContent = document.getElementById("profile-content");
-        const editButton = document.getElementById("edit-button");
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) return "";
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        async function loadProfile() {
-            if (!accessToken) {
-                profileContent.innerHTML = `
-                    <p class="danger">Bạn chưa đăng nhập.</p>
-                    <a href="/login" class="btn btn-blue">Đăng nhập</a>
-                `;
-                return;
-            }
-
-            try {
-                const response = await fetch(`${USER_SERVICE_URL}/api/users/me`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    profileContent.innerHTML = `<p class="danger">${escapeHtml(data.error)}</p>`;
-                    return;
-                }
-
-                const profile = data.profile;
-
-                localStorage.setItem("fullName", profile.full_name || "");
-
-                profileContent.innerHTML = `
-                    <p><strong>User ID:</strong> ${escapeHtml(profile.user_id)}</p>
-                    <p><strong>Họ và tên:</strong> ${escapeHtml(profile.full_name)}</p>
-                    <p><strong>Email:</strong> ${escapeHtml(profile.email)}</p>
-                    <p><strong>Số điện thoại:</strong> ${escapeHtml(profile.phone_number || "Chưa cập nhật")}</p>
-                    <p><strong>Địa chỉ giao hàng:</strong> ${escapeHtml(profile.default_shipping_address || "Chưa cập nhật")}</p>
-                `;
-
-                editButton.style.display = "inline-block";
-
-            } catch (error) {
-                console.error(error);
-                profileContent.innerHTML = `<p class="danger">Không thể kết nối User Service.</p>`;
-            }
-        }
-
-        loadProfile();
-    </script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/profile.js"></script>
 </body>
 </html>
