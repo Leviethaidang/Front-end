@@ -138,6 +138,12 @@
             margin-top: 8px;
         }
 
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .loading,
         .empty,
         .error {
@@ -249,17 +255,19 @@
                 : `<span class="no-image">Không có ảnh</span>`;
 
             return `
-                <div class="product-card">
-                    <div class="product-image-wrap">
-                        ${imageHtml}
+                <a class="product-link" href="/products/${escapeAttribute(product.product_id)}">
+                    <div class="product-card">
+                        <div class="product-image-wrap">
+                            ${imageHtml}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${escapeHtml(productName)}</div>
+                            <div class="product-category">${escapeHtml(categoryName)}</div>
+                            <div class="product-price">${price}</div>
+                            <div class="product-stock">Đã bán: ${soldQuantity}</div>
+                        </div>
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">${escapeHtml(productName)}</div>
-                        <div class="product-category">${escapeHtml(categoryName)}</div>
-                        <div class="product-price">${price}</div>
-                        <div class="product-sold">Đã bán: ${soldQuantity}</div>
-                    </div>
-                </div>
+                </a>
             `;
         }
 
