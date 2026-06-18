@@ -3,247 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Admin Users</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 40px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #f2f2f2; }
-        input, textarea, select { width: 100%; box-sizing: border-box; padding: 8px; margin: 6px 0; }
-        textarea { min-height: 60px; }
-        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 24px; max-width: 700px; }
-        .btn { padding: 8px 12px; border: none; cursor: pointer; color: white; border-radius: 4px; margin: 2px; }
-        .btn-blue { background: #007bff; }
-        .btn-green { background: #28a745; }
-        .btn-red { background: #dc3545; }
-        .danger { color: red; }
-        .success { color: green; }
-    </style>
+
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/admin-users.css">
 </head>
 <body>
-    <h2>Admin - Quản lý người dùng</h2>
-    <p>
-        <a href="/">← Trang chủ</a> |
-        <a href="/admin/products">Quản lý sản phẩm</a> |
-        <a href="/admin/categories">Quản lý danh mục</a>
-    </p>
+    <div id="navbar-placeholder"></div>
 
-    <p id="message"></p>
+    <div class="container">
+        <div class="page-header">
+            <h2>Admin - Quản lý người dùng</h2>
+            <p>Tạo, cập nhật, vô hiệu hóa hoặc xóa tài khoản người dùng.</p>
+        </div>
 
-    <div class="box">
-        <h3>Thêm user mới</h3>
-        <input id="newFullName" placeholder="Họ và tên">
-        <input id="newEmail" type="email" placeholder="Email">
-        <input id="newPhone" placeholder="Số điện thoại, ví dụ +84901234567">
-        <input id="newPassword" type="password" placeholder="Mật khẩu">
-        <textarea id="newAddress" placeholder="Địa chỉ giao hàng"></textarea>
-        <select id="newGroup">
-            <option value="Customer">Customer</option>
-            <option value="Admin">Admin</option>
-        </select>
-        <button class="btn btn-green" onclick="createUser()">Tạo user</button>
+        <p id="message" class="message"></p>
+
+        <div class="box">
+            <h3>Thêm user mới</h3>
+
+            <input id="newFullName" placeholder="Họ và tên">
+
+            <input id="newEmail" type="email" placeholder="Email">
+
+            <input id="newPhone" placeholder="Số điện thoại, ví dụ +84901234567">
+
+            <input id="newPassword" type="password" placeholder="Mật khẩu">
+
+            <textarea id="newAddress" placeholder="Địa chỉ giao hàng"></textarea>
+
+            <select id="newGroup">
+                <option value="Customer">Customer</option>
+                <option value="Admin">Admin</option>
+            </select>
+
+            <button id="createUserBtn" class="btn btn-green">
+                Tạo user
+            </button>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách users</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Địa chỉ</th>
+                        <th>Status</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="userTableBody">
+                    <tr>
+                        <td colspan="7">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <h3>Danh sách users</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Địa chỉ</th>
-                <th>Status</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody id="userTableBody">
-            <tr><td colspan="7">Đang tải...</td></tr>
-        </tbody>
-    </table>
-
-    <script src="/config.js"></script>
-    <script>
-        const USER_SERVICE_URL = window.APP_CONFIG.USER_SERVICE_URL;
-        const accessToken = localStorage.getItem("accessToken");
-        const message = document.getElementById("message");
-
-        function setMessage(text, type = "success") {
-            message.className = type;
-            message.textContent = text;
-        }
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) return "";
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        function getTokenPayload(token) {
-            try {
-                const base64Payload = token.split('.')[1];
-                const jsonPayload = atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/'));
-                return JSON.parse(jsonPayload);
-            } catch {
-                return {};
-            }
-        }
-
-        function checkAdmin() {
-            if (!accessToken) {
-                setMessage("Bạn chưa đăng nhập.", "danger");
-                return false;
-            }
-
-            const payload = getTokenPayload(accessToken);
-            const groups = payload["cognito:groups"] || [];
-
-            if (!groups.includes("Admin")) {
-                setMessage("Bạn không có quyền Admin.", "danger");
-                return false;
-            }
-
-            return true;
-        }
-
-        async function fetchWithAuth(url, options = {}) {
-            return fetch(url, {
-                ...options,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                    ...(options.headers || {})
-                }
-            });
-        }
-
-        async function loadUsers() {
-            if (!checkAdmin()) return;
-
-            try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users`)
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Không thể tải danh sách users.", "danger");
-                    return;
-                }
-
-                const tbody = document.getElementById("userTableBody");
-
-                tbody.innerHTML = data.users.map(user => `
-                    <tr>
-                        <td>${escapeHtml(user.user_id)}</td>
-                        <td><input id="name-${user.user_id}" value="${escapeHtml(user.full_name)}"></td>
-                        <td><input id="email-${user.user_id}" value="${escapeHtml(user.email)}"></td>
-                        <td><input id="phone-${user.user_id}" value="${escapeHtml(user.phone_number)}"></td>
-                        <td><textarea id="address-${user.user_id}">${escapeHtml(user.default_shipping_address || "")}</textarea></td>
-                        <td>
-                            <select id="status-${user.user_id}">
-                                <option value="ACTIVE" ${user.status === "ACTIVE" ? "selected" : ""}>ACTIVE</option>
-                                <option value="DISABLED" ${user.status === "DISABLED" ? "selected" : ""}>DISABLED</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn btn-blue" onclick="updateUser('${user.user_id}')">Lưu</button>
-                            <button class="btn btn-red" onclick="deleteUser('${user.user_id}')">Xóa</button>
-                        </td>
-                    </tr>
-                `).join("");
-
-            } catch {
-                setMessage("Không thể kết nối User Service.", "danger");
-            }
-        }
-
-        async function createUser() {
-            const body = {
-                fullName: document.getElementById("newFullName").value.trim(),
-                email: document.getElementById("newEmail").value.trim(),
-                phoneNumber: document.getElementById("newPhone").value.trim(),
-                password: document.getElementById("newPassword").value,
-                defaultShippingAddress: document.getElementById("newAddress").value.trim(),
-                groupName: document.getElementById("newGroup").value
-            };
-
-            try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users`, {
-                    method: "POST",
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Tạo user thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Tạo user thành công.", "success");
-                await loadUsers();
-
-            } catch {
-                setMessage("Không thể tạo user.", "danger");
-            }
-        }
-
-        async function updateUser(userId) {
-            const body = {
-                fullName: document.getElementById(`name-${userId}`).value.trim(),
-                email: document.getElementById(`email-${userId}`).value.trim(),
-                phoneNumber: document.getElementById(`phone-${userId}`).value.trim(),
-                defaultShippingAddress: document.getElementById(`address-${userId}`).value.trim(),
-                status: document.getElementById(`status-${userId}`).value
-            };
-
-            try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users/${userId}`, {
-                    method: "PUT",
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Cập nhật user thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Cập nhật user thành công.", "success");
-                await loadUsers();
-
-            } catch {
-                setMessage("Không thể cập nhật user.", "danger");
-            }
-        }
-
-        async function deleteUser(userId) {
-            if (!confirm("Bạn có chắc muốn xóa user này không?")) return;
-
-            try {
-                const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users/${userId}`, {
-                    method: "DELETE"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    setMessage(data.error || "Xóa user thất bại.", "danger");
-                    return;
-                }
-
-                setMessage(data.message || "Xóa user thành công.", "success");
-                await loadUsers();
-
-            } catch {
-                setMessage("Không thể xóa user.", "danger");
-            }
-        }
-
-        loadUsers();
-    </script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/admin-users.js"></script>
 </body>
 </html>
