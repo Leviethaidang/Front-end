@@ -153,6 +153,28 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
+        
+        #auth-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #auth-section a {
+            margin-left: 0;
+        }
+
+        .cart-link {
+            background: #d70018;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .cart-link:hover {
+            background: #b80014;
+        }
 
         .error {
             color: #c0392b;
@@ -163,6 +185,7 @@
     <div class="navbar">
         <div><strong>HaShop</strong></div>
         <div id="auth-section">
+            <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
             <a href="/login">Đăng nhập</a>
         </div>
     </div>
@@ -188,6 +211,7 @@
             const isAdmin = groups.includes("Admin");
 
             authSection.innerHTML = `
+                <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
                 <div class="dropdown" onclick="toggleDropdown(event)">
                     <span>Xin chào, ${escapeHtml(fullName)} ▼</span>
                     <div id="dropdown-menu" class="dropdown-content">
