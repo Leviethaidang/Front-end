@@ -56,6 +56,7 @@
     <div class="box">
         <h3>Thêm sản phẩm mới</h3>
         <input id="newProductName" placeholder="Tên sản phẩm">
+        <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
         <select id="newCategoryId">
             <option value="">Chưa phân loại</option>
         </select>
@@ -77,13 +78,13 @@
                 <th>Category</th>
                 <th>Giá</th>
                 <th>Tồn kho</th>
-                <th>Image Key</th>
+                <th>Mô tả</th>
                 <th>Đổi ảnh</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
         <tbody id="productTableBody">
-            <tr><td colspan="9">Đang tải...</td></tr>
+            <tr><td colspan="10">Đang tải...</td></tr>
         </tbody>
     </table>
 
@@ -179,7 +180,7 @@
                 const products = data.products || [];
 
                 if (products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="9">Chưa có sản phẩm nào.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10">Chưa có sản phẩm nào.</td></tr>`;
                     return;
                 }
 
@@ -211,11 +212,16 @@
                             <input id="product-stock-${product.product_id}" type="number" value="${escapeHtml(product.stock_quantity)}">
                         </td>
 
-                        <td class="small-text">
-                            <span id="product-image-key-${product.product_id}">${escapeHtml(product.image_key || "")}</span>
+                        <td>
+                            <input id="product-sold-${product.product_id}" type="number" min="0" step="1" value="${escapeHtml(product.sold_quantity || 0)}">
                         </td>
 
                         <td>
+                            <textarea id="product-description-${product.product_id}">${escapeHtml(product.description || "")}</textarea>
+                        </td>
+
+                        <td>
+                            <input id="product-image-key-${product.product_id}" type="hidden" value="${escapeHtml(product.image_key || "")}">
                             <input id="product-image-file-${product.product_id}" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
                         </td>
 
@@ -236,6 +242,7 @@
             if (!checkAdmin()) return;
 
             const productName = document.getElementById("newProductName").value.trim();
+            const description = document.getElementById("newProductDescription").value.trim();
             const categoryIdRaw = document.getElementById("newCategoryId").value.trim();
             const priceRaw = document.getElementById("newPrice").value.trim();
             const stockRaw = document.getElementById("newStockQuantity").value.trim();
@@ -267,6 +274,7 @@
 
                 const body = {
                     productName,
+                    description,
                     categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
                     price: Number(priceRaw),
                     stockQuantity: Number(stockRaw),
@@ -299,15 +307,17 @@
             if (!checkAdmin()) return;
 
             const productName = document.getElementById(`product-name-${productId}`).value.trim();
+            const description = document.getElementById(`product-description-${productId}`).value.trim();
             const categoryIdRaw = document.getElementById(`product-category-${productId}`).value.trim();
             const priceRaw = document.getElementById(`product-price-${productId}`).value.trim();
             const stockRaw = document.getElementById(`product-stock-${productId}`).value.trim();
-            const currentImageKey = document.getElementById(`product-image-key-${productId}`).textContent.trim();
+            const soldRaw = document.getElementById(`product-sold-${productId}`).value.trim();
+            const currentImageKey = document.getElementById(`product-image-key-${productId}`).value.trim();
             const fileInput = document.getElementById(`product-image-file-${productId}`);
             const file = fileInput.files[0];
 
-            if (!productName || !priceRaw || stockRaw === "") {
-                setMessage("Vui lòng nhập tên sản phẩm, giá và số lượng kho.", "danger");
+            if (!productName || !priceRaw || stockRaw === "" || soldRaw === "") {
+                setMessage("Vui lòng nhập tên sản phẩm, giá, số lượng kho và số lượng đã bán.", "danger");
                 return;
             }
 
@@ -317,7 +327,12 @@
             }
 
             if (Number(stockRaw) < 0) {
-                setMessage("Số lượng kho không được nhỏ hơn 0.", "danger");
+                setMessage("Số lượng tồn kho không được nhỏ hơn 0.", "danger");
+                return;
+            }
+
+            if (Number(soldRaw) < 0) {
+                setMessage("Số lượng đã bán không được nhỏ hơn 0.", "danger");
                 return;
             }
 
@@ -333,9 +348,11 @@
 
                 const body = {
                     productName,
+                    description,
                     categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
                     price: Number(priceRaw),
                     stockQuantity: Number(stockRaw),
+                    soldQuantity: Number(soldRaw),
                     imageKey
                 };
 
@@ -468,6 +485,7 @@
 
         function clearProductForm() {
             document.getElementById("newProductName").value = "";
+            document.getElementById("newProductDescription").value = "";
             document.getElementById("newCategoryId").value = "";
             document.getElementById("newPrice").value = "";
             document.getElementById("newStockQuantity").value = "";

@@ -132,7 +132,7 @@
             font-weight: bold;
         }
 
-        .product-stock {
+        .product-sold {
             color: #555;
             font-size: 14px;
             margin-top: 8px;
@@ -241,7 +241,7 @@
             const productName = product.product_name || "Không có tên";
             const categoryName = product.category_name || "Chưa phân loại";
             const price = formatPrice(product.price);
-            const stockQuantity = product.stock_quantity ?? 0;
+            const soldQuantity = product.sold_quantity ?? 0;
             const imageUrl = product.imageUrl;
 
             const imageHtml = imageUrl
@@ -257,7 +257,7 @@
                         <div class="product-name">${escapeHtml(productName)}</div>
                         <div class="product-category">${escapeHtml(categoryName)}</div>
                         <div class="product-price">${price}</div>
-                        <div class="product-stock">Còn lại: ${stockQuantity}</div>
+                        <div class="product-sold">Đã bán: ${soldQuantity}</div>
                     </div>
                 </div>
             `;
