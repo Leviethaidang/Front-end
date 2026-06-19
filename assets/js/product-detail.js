@@ -249,45 +249,45 @@ async function addToCart(productId) {
         addButton.disabled = false;
         addButton.textContent = "Thêm vào giỏ hàng";
     }
+}
 
-    function getValidSelectedQuantity() {
-        const quantityInput = document.getElementById("cart-quantity");
+function getValidSelectedQuantity() {
+    const quantityInput = document.getElementById("cart-quantity");
 
-        if (!quantityInput) {
-            return null;
-        }
-
-        const quantity = Number(quantityInput.value);
-        const maxQuantity = Number(quantityInput.max);
-
-        if (!Number.isInteger(quantity) || quantity <= 0) {
-            showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
-            return null;
-        }
-
-        if (quantity > maxQuantity) {
-            showCartMessage("Số lượng không được vượt quá tồn kho.", "error");
-            return null;
-        }
-
-        return quantity;
+    if (!quantityInput) {
+        return null;
     }
 
-    function buyNow(productId) {
-        const accessToken = getAccessToken();
+    const quantity = Number(quantityInput.value);
+    const maxQuantity = Number(quantityInput.max);
 
-        if (!accessToken) {
-            redirectToLogin();
-            return;
-        }
-
-        const quantity = getValidSelectedQuantity();
-
-        if (!quantity) {
-            return;
-        }
-
-        window.location.href = `/confirm-order/buy-now?productId=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}`;
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
+        return null;
     }
 
+    if (quantity > maxQuantity) {
+        showCartMessage("Số lượng không được vượt quá tồn kho.", "error");
+        return null;
+    }
+
+    return quantity;
+}
+
+function buyNow(productId) {
+    const accessToken = getAccessToken();
+
+    if (!accessToken) {
+        redirectToLogin();
+        return;
+    }
+
+    const quantity = getValidSelectedQuantity();
+
+    if (!quantity) {
+        return;
+    }
+
+    window.location.href =
+        `/confirm-order/buy-now?productId=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}`;
 }
