@@ -2,6 +2,7 @@ window.APP_CONFIG = {
     USER_SERVICE_URL: "",
     PRODUCT_SERVICE_URL: "",
     CART_SERVICE_URL: "",
+    ORDER_SERVICE_URL: "",
     PAYMENT_SERVICE_URL: ""
 };
 // Tương lai nếu toàn bộ API đi qua cùng một domain như api.hashop.com

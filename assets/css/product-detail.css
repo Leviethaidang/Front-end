@@ -172,3 +172,29 @@ body {
         font-size: 24px;
     }
 }
+
+.product-action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.buy-now-btn {
+    background: #ff8a00;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.buy-now-btn:hover {
+    background: #e67800;
+}
+
+.buy-now-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}

@@ -136,7 +136,7 @@ function renderCart(cart) {
                 <span>${formatPrice(cart.totalAmount || 0)}</span>
             </div>
 
-            <button class="checkout-btn" disabled>
+            <button class="checkout-btn" id="go-checkout-btn">
                 Thanh toán
             </button>
 
@@ -147,6 +147,7 @@ function renderCart(cart) {
     `;
 
     bindCartActionButtons();
+    bindCheckoutButton(items);
 }
 
 function renderCartItem(item) {
@@ -351,4 +352,23 @@ async function removeItem(productId) {
         console.error("Lỗi xóa sản phẩm:", error);
         showMessage(error.message || "Không thể xóa sản phẩm.", "error");
     }
+
+    function bindCheckoutButton(items) {
+        const checkoutButton = document.getElementById("go-checkout-btn");
+
+        if (!checkoutButton) return;
+
+        const hasInvalidItem = items.some(item => item.productDeleted || !item.product);
+
+        if (hasInvalidItem) {
+            checkoutButton.disabled = true;
+            checkoutButton.textContent = "Vui lòng xóa sản phẩm lỗi trước";
+            return;
+        }
+
+        checkoutButton.addEventListener("click", () => {
+            window.location.href = "/confirm-order/cart";
+        });
+    }
+    
 }

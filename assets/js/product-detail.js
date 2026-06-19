@@ -152,13 +152,23 @@ function renderProductDetail(product) {
                     >
                 </div>
 
-                <button
-                    id="add-to-cart-btn"
-                    class="add-to-cart-btn"
-                    ${isOutOfStock ? "disabled" : ""}
-                >
-                    ${isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
-                </button>
+                <div class="product-action-buttons">
+                    <button
+                        id="add-to-cart-btn"
+                        class="add-to-cart-btn"
+                        ${isOutOfStock ? "disabled" : ""}
+                    >
+                        ${isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
+                    </button>
+
+                    <button
+                        id="buy-now-btn"
+                        class="buy-now-btn"
+                        ${isOutOfStock ? "disabled" : ""}
+                    >
+                        Mua ngay
+                    </button>
+                </div>
 
                 <div id="cart-message" class="cart-message"></div>
             </div>
@@ -166,12 +176,20 @@ function renderProductDetail(product) {
     `;
 
     const addToCartButton = document.getElementById("add-to-cart-btn");
+    const buyNowButton = document.getElementById("buy-now-btn");
 
     if (addToCartButton && !isOutOfStock) {
         addToCartButton.addEventListener("click", () => {
             addToCart(product.product_id);
         });
     }
+
+        if (buyNowButton && !isOutOfStock) {
+        buyNowButton.addEventListener("click", () => {
+            buyNow(product.product_id);
+        });
+    }
+
 }
 
 async function addToCart(productId) {
@@ -182,19 +200,10 @@ async function addToCart(productId) {
         return;
     }
 
-    const quantityInput = document.getElementById("cart-quantity");
     const addButton = document.getElementById("add-to-cart-btn");
+    const quantity = getValidSelectedQuantity();
 
-    const quantity = Number(quantityInput.value);
-    const maxQuantity = Number(quantityInput.max);
-
-    if (!Number.isInteger(quantity) || quantity <= 0) {
-        showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
-        return;
-    }
-
-    if (quantity > maxQuantity) {
-        showCartMessage("Số lượng không được vượt quá tồn kho.", "error");
+    if (!quantity) {
         return;
     }
 
@@ -240,4 +249,45 @@ async function addToCart(productId) {
         addButton.disabled = false;
         addButton.textContent = "Thêm vào giỏ hàng";
     }
+
+    function getValidSelectedQuantity() {
+        const quantityInput = document.getElementById("cart-quantity");
+
+        if (!quantityInput) {
+            return null;
+        }
+
+        const quantity = Number(quantityInput.value);
+        const maxQuantity = Number(quantityInput.max);
+
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+            showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
+            return null;
+        }
+
+        if (quantity > maxQuantity) {
+            showCartMessage("Số lượng không được vượt quá tồn kho.", "error");
+            return null;
+        }
+
+        return quantity;
+    }
+
+    function buyNow(productId) {
+        const accessToken = getAccessToken();
+
+        if (!accessToken) {
+            redirectToLogin();
+            return;
+        }
+
+        const quantity = getValidSelectedQuantity();
+
+        if (!quantity) {
+            return;
+        }
+
+        window.location.href = `/confirm-order/buy-now?productId=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}`;
+    }
+
 }
