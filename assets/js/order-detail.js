@@ -7,7 +7,13 @@ let paymentPollingTimer = null;
 let paymentPollingCount = 0;
 const MAX_PAYMENT_POLLING_COUNT = 30;
 
+let currentOrderId = null;
+let currentOrderIsPaymentFailed = false;
+let cleanupStarted = false;
+
 loadOrderDetail();
+setupLeavePageCleanup();
+setupUnloadCleanup();
 
 function getAccessToken() {
     return localStorage.getItem("accessToken");
@@ -224,6 +230,10 @@ function renderOrderDetail(order) {
     const paymentStatus = order.paymentStatus || order.payment_status;
     const items = order.items || [];
 
+    currentOrderId = orderId;
+    currentOrderIsPaymentFailed =
+        orderStatus === "PAYMENT_FAILED" || paymentStatus === "FAILED";
+
     const itemsHtml = items
         .map(item => renderOrderItem(item))
         .join("");
@@ -375,7 +385,13 @@ function renderOrderItem(item) {
 function renderActionButtons(order) {
     const orderStatus = order.orderStatus || order.order_status;
 
-    const canCancel = !["SHIPPING", "COMPLETED", "CANCELLED"].includes(orderStatus);
+    const canCancel = ![
+        "SHIPPING",
+        "COMPLETED",
+        "CANCELLED",
+        "PAYMENT_FAILED"
+    ].includes(orderStatus);
+
     const canConfirmReceived = orderStatus === "SHIPPING";
 
     let html = "";
@@ -499,4 +515,82 @@ function setupPaymentStatusPolling(order) {
     paymentPollingTimer = setTimeout(() => {
         loadOrderDetail();
     }, 2000);
+}
+async function cleanupFailedOrderBeforeLeave() {
+    if (!currentOrderId || !currentOrderIsPaymentFailed || cleanupStarted) {
+        return;
+    }
+
+    cleanupStarted = true;
+
+    try {
+        const response = await fetchWithAuth(`${ORDER_SERVICE_URL}/api/orders/me/${currentOrderId}/failed-cleanup`, {
+            method: "DELETE"
+        });
+
+        if (!response) return;
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            console.error("Cleanup failed order error:", data.error || response.status);
+        }
+
+    } catch (error) {
+        console.error("Lỗi cleanup failed order trước khi rời trang:", error);
+    }
+}
+
+function setupLeavePageCleanup() {
+    document.addEventListener("click", async (event) => {
+        const link = event.target.closest("a");
+
+        if (!link) return;
+
+        const href = link.getAttribute("href");
+
+        if (!href || href.startsWith("#")) {
+            return;
+        }
+
+        const isInternalLink =
+            href.startsWith("/") || href.startsWith(window.location.origin);
+
+        if (!isInternalLink) {
+            return;
+        }
+
+        if (!currentOrderIsPaymentFailed || !currentOrderId) {
+            return;
+        }
+
+        event.preventDefault();
+
+        await cleanupFailedOrderBeforeLeave();
+
+        window.location.href = href;
+    });
+}
+
+function setupUnloadCleanup() {
+    window.addEventListener("pagehide", () => {
+        if (!currentOrderId || !currentOrderIsPaymentFailed || cleanupStarted) {
+            return;
+        }
+
+        cleanupStarted = true;
+
+        const accessToken = getAccessToken();
+
+        if (!accessToken) {
+            return;
+        }
+
+        fetch(`${ORDER_SERVICE_URL}/api/orders/me/${currentOrderId}/failed-cleanup`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`
+            },
+            keepalive: true
+        }).catch(() => {});
+    });
 }
