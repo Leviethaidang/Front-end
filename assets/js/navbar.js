@@ -57,6 +57,7 @@ function renderNavbarAuthSection() {
                 ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
                 ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
                 ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
+                ${isAdmin ? '<a href="/admin/orders">Quản lý đơn hàng</a>' : ''}
                 <a href="#" onclick="logout(event)">Đăng xuất</a>
             </div>
         </div>

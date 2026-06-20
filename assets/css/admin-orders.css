@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f5f5f5;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.page-title {
+    font-size: 32px;
+    margin-bottom: 24px;
+}
+
+.loading,
+.error,
+.empty-orders,
+.table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.loading,
+.error,
+.empty-orders {
+    padding: 28px;
+    text-align: center;
+}
+
+.error {
+    color: #c0392b;
+}
+
+.table-card {
+    padding: 18px;
+    overflow-x: auto;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    vertical-align: top;
+}
+
+.orders-table th {
+    background: #fafafa;
+    font-weight: bold;
+    color: #222;
+}
+
+.order-id {
+    font-weight: bold;
+    color: #d70018;
+}
+
+.small-text {
+    color: #666;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.money {
+    color: #d70018;
+    font-weight: bold;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #e8f5e9;
+    color: #188038;
+}
+
+.status-shipping {
+    background: #e3f2fd;
+    color: #0b57d0;
+}
+
+.status-completed {
+    background: #e8f5e9;
+    color: #137333;
+}
+
+.status-cancelled,
+.status-failed {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+.status-default {
+    background: #eee;
+    color: #555;
+}
+
+.status-select {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.save-btn {
+    margin-top: 8px;
+    background: #d70018;
+    color: white;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #b80014;
+}
+
+.save-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.message {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    display: none;
+    font-weight: bold;
+}
+
+.message.success {
+    display: block;
+    background: #e8f5e9;
+    color: #188038;
+}
+
+.message.error {
+    display: block;
+    background: #fdecea;
+    color: #c0392b;
+}
