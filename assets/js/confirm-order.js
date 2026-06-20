@@ -534,6 +534,14 @@ async function submitOrder() {
         button.textContent = "Đã đặt hàng";
         button.disabled = true;
 
+        setTimeout(() => {
+            if (orderId) {
+                window.location.href = `/orders/${encodeURIComponent(orderId)}`;
+            } else {
+                window.location.href = "/orders";
+            }
+        }, 1000);
+        
     } catch (error) {
         console.error("Lỗi đặt hàng:", error);
 

@@ -53,6 +53,7 @@ function renderNavbarAuthSection() {
 
             <div id="navbar-dropdown-menu" class="dropdown-content">
                 <a href="/profile">Profile</a>
+                <a href="/orders">Đơn của tôi</a>
                 ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
                 ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
                 ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
