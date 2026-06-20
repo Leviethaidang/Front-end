@@ -270,7 +270,7 @@ async function loadBuyNowCheckoutItems() {
 function getSupportedPaymentMethods() {
     return state.paymentMethods.filter(method => {
         const methodType = normalizeMethodType(method.method_type);
-        return methodType === "MOMO" || methodType === "BANK";
+        return methodType === "MOMO" || methodType === "BANK" || methodType === "COD";
     });
 }
 
@@ -299,7 +299,7 @@ function renderConfirmOrderPage() {
             .join("")
         : `
             <div class="no-payment-method">
-                Hiện checkout chỉ hỗ trợ MoMo hoặc Bank. 
+                Hiện checkout hỗ trợ COD, MoMo hoặc Bank.
                 Bạn chưa có phương thức MoMo/Bank nào, vui lòng thêm phương thức thanh toán trước.
             </div>
         `;
@@ -471,6 +471,12 @@ async function submitOrder() {
     const receiverPhone = document.getElementById("receiver-phone").value.trim();
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
+    const orderId = data.order?.orderId || data.order?.order_id || "";
+    const paymentMethodType = normalizeMethodType(
+        data.order?.paymentMethodType || data.order?.payment_method_type
+    );
+
+    const isCOD = paymentMethodType === "COD";
 
     if (!receiverName) {
         showMessage("Vui lòng nhập họ tên người nhận.", "error");
@@ -526,8 +532,12 @@ async function submitOrder() {
 
         showMessage(
             orderId
-                ? `Đặt hàng thành công! Mã đơn hàng: ${orderId}. Đơn hàng đang chờ thanh toán.`
-                : "Đặt hàng thành công! Đơn hàng đang chờ thanh toán.",
+                ? isCOD
+                    ? `Đặt hàng COD thành công! Mã đơn hàng: ${orderId}. Đơn hàng đã được xác nhận.`
+                    : `Đặt hàng thành công! Mã đơn hàng: ${orderId}. Đơn hàng đang chờ thanh toán.`
+                : isCOD
+                    ? "Đặt hàng COD thành công! Đơn hàng đã được xác nhận."
+                    : "Đặt hàng thành công! Đơn hàng đang chờ thanh toán.",
             "success"
         );
 
@@ -536,13 +546,15 @@ async function submitOrder() {
 
         setTimeout(() => {
             if (orderId) {
-                sessionStorage.setItem(
-                    `pendingPaymentOrder:${orderId}`,
-                    JSON.stringify({
-                        orderId,
-                        createdAt: Date.now()
-                    })
-                );
+                if (!isCOD) {
+                    sessionStorage.setItem(
+                        `pendingPaymentOrder:${orderId}`,
+                        JSON.stringify({
+                            orderId,
+                            createdAt: Date.now()
+                        })
+                    );
+                }
 
                 window.location.href = `/orders/${encodeURIComponent(orderId)}`;
             } else {
