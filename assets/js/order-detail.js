@@ -74,9 +74,6 @@ function getPendingPaymentKey(orderId) {
     return `pendingPaymentOrder:${orderId}`;
 }
 
-function hasPendingPaymentFlag(orderId) {
-    return Boolean(sessionStorage.getItem(getPendingPaymentKey(orderId)));
-}
 
 function clearPendingPaymentFlag(orderId) {
     sessionStorage.removeItem(getPendingPaymentKey(orderId));
@@ -194,26 +191,8 @@ async function loadOrderDetail() {
 
         renderOrderDetail(data.order);
 
-        } catch (error) {
+    } catch (error) {
         console.error("Lỗi tải chi tiết đơn hàng:", error);
-
-        if (error.statusCode === 404 && hasPendingPaymentFlag(orderId)) {
-            clearPendingPaymentFlag(orderId);
-
-            detailContent.className = "error";
-            detailContent.innerHTML = `
-                <p>Thanh toán thất bại. Đơn hàng đã không được lưu.</p>
-                <p><a class="back-link" href="/orders">← Quay lại danh sách đơn hàng</a></p>
-            `;
-
-            showMessage("Thanh toán thất bại. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.", "error");
-
-            setTimeout(() => {
-                window.location.href = "/orders";
-            }, 2500);
-
-            return;
-        }
 
         detailContent.className = "error";
         detailContent.innerHTML = `
