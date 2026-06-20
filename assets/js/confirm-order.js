@@ -536,6 +536,14 @@ async function submitOrder() {
 
         setTimeout(() => {
             if (orderId) {
+                sessionStorage.setItem(
+                    `pendingPaymentOrder:${orderId}`,
+                    JSON.stringify({
+                        orderId,
+                        createdAt: Date.now()
+                    })
+                );
+
                 window.location.href = `/orders/${encodeURIComponent(orderId)}`;
             } else {
                 window.location.href = "/orders";

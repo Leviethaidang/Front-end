@@ -3,6 +3,10 @@ const ORDER_SERVICE_URL = window.APP_CONFIG?.ORDER_SERVICE_URL || "";
 const detailContent = document.getElementById("order-detail-content");
 const messageBox = document.getElementById("message");
 
+let paymentPollingTimer = null;
+let paymentPollingCount = 0;
+const MAX_PAYMENT_POLLING_COUNT = 30;
+
 loadOrderDetail();
 
 function getAccessToken() {
@@ -58,6 +62,18 @@ function formatDate(value) {
     }
 
     return date.toLocaleString("vi-VN");
+}
+
+function getPendingPaymentKey(orderId) {
+    return `pendingPaymentOrder:${orderId}`;
+}
+
+function hasPendingPaymentFlag(orderId) {
+    return Boolean(sessionStorage.getItem(getPendingPaymentKey(orderId)));
+}
+
+function clearPendingPaymentFlag(orderId) {
+    sessionStorage.removeItem(getPendingPaymentKey(orderId));
 }
 
 function showMessage(message, type = "success") {
@@ -165,13 +181,33 @@ async function loadOrderDetail() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || "Không thể tải chi tiết đơn hàng.");
+            const error = new Error(data.error || "Không thể tải chi tiết đơn hàng.");
+            error.statusCode = response.status;
+            throw error;
         }
 
         renderOrderDetail(data.order);
 
-    } catch (error) {
+        } catch (error) {
         console.error("Lỗi tải chi tiết đơn hàng:", error);
+
+        if (error.statusCode === 404 && hasPendingPaymentFlag(orderId)) {
+            clearPendingPaymentFlag(orderId);
+
+            detailContent.className = "error";
+            detailContent.innerHTML = `
+                <p>Thanh toán thất bại. Đơn hàng đã không được lưu.</p>
+                <p><a class="back-link" href="/orders">← Quay lại danh sách đơn hàng</a></p>
+            `;
+
+            showMessage("Thanh toán thất bại. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.", "error");
+
+            setTimeout(() => {
+                window.location.href = "/orders";
+            }, 2500);
+
+            return;
+        }
 
         detailContent.className = "error";
         detailContent.innerHTML = `
@@ -290,6 +326,7 @@ function renderOrderDetail(order) {
     `;
 
     bindActionButtons(order);
+    setupPaymentStatusPolling(order);
 }
 
 function renderOrderItem(item) {
@@ -433,4 +470,33 @@ async function confirmReceived(orderId) {
         console.error("Lỗi xác nhận đã nhận hàng:", error);
         showMessage(error.message || "Không thể xác nhận đã nhận hàng.", "error");
     }
+}
+
+function setupPaymentStatusPolling(order) {
+    const orderId = order.orderId || order.order_id;
+    const orderStatus = order.orderStatus || order.order_status;
+    const paymentStatus = order.paymentStatus || order.payment_status;
+
+    if (paymentPollingTimer) {
+        clearTimeout(paymentPollingTimer);
+        paymentPollingTimer = null;
+    }
+
+    const isWaitingPayment =
+        orderStatus === "PENDING_PAYMENT" || paymentStatus === "PENDING";
+
+    if (!isWaitingPayment) {
+        clearPendingPaymentFlag(orderId);
+        return;
+    }
+
+    if (paymentPollingCount >= MAX_PAYMENT_POLLING_COUNT) {
+        return;
+    }
+
+    paymentPollingCount += 1;
+
+    paymentPollingTimer = setTimeout(() => {
+        loadOrderDetail();
+    }, 2000);
 }
