@@ -471,12 +471,6 @@ async function submitOrder() {
     const receiverPhone = document.getElementById("receiver-phone").value.trim();
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
-    const orderId = data.order?.orderId || data.order?.order_id || "";
-    const paymentMethodType = normalizeMethodType(
-        data.order?.paymentMethodType || data.order?.payment_method_type
-    );
-
-    const isCOD = paymentMethodType === "COD";
 
     if (!receiverName) {
         showMessage("Vui lòng nhập họ tên người nhận.", "error");
@@ -520,7 +514,11 @@ async function submitOrder() {
             body: JSON.stringify(payload)
         });
 
-        if (!response) return;
+        if (!response) {
+            button.disabled = false;
+            button.textContent = "Đặt hàng / Thanh toán";
+            return;
+        }
 
         const data = await response.json();
 
@@ -529,6 +527,12 @@ async function submitOrder() {
         }
 
         const orderId = data.order?.orderId || data.order?.order_id || "";
+
+        const paymentMethodType = normalizeMethodType(
+            data.order?.paymentMethodType || data.order?.payment_method_type
+        );
+
+        const isCOD = paymentMethodType === "COD";
 
         showMessage(
             orderId
@@ -561,7 +565,7 @@ async function submitOrder() {
                 window.location.href = "/orders";
             }
         }, 1000);
-        
+
     } catch (error) {
         console.error("Lỗi đặt hàng:", error);
 
