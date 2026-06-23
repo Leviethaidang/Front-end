@@ -9,9 +9,37 @@ const createProductBtn = document.getElementById("createProductBtn");
 const productImageInput = document.getElementById("newProductImage");
 const productPreviewImage = document.getElementById("productPreviewImage");
 
+const newProductSubImagesInput = document.getElementById("newProductSubImages");
+const addCreateVariantBtn = document.getElementById("addCreateVariantBtn");
+const createVariantTableBody = document.getElementById("createVariantTableBody");
+
+const editProductModal = document.getElementById("editProductModal");
+const closeEditModalBtn = document.getElementById("closeEditModalBtn");
+const cancelEditProductBtn = document.getElementById("cancelEditProductBtn");
+const saveEditProductBtn = document.getElementById("saveEditProductBtn");
+const addEditVariantBtn = document.getElementById("addEditVariantBtn");
+const editVariantTableBody = document.getElementById("editVariantTableBody");
+
 let categories = [];
+let sizes = [];
+let colors = [];
+
+let editingProduct = null;
+let editingSubImageKeys = [];
 
 createProductBtn.addEventListener("click", createProduct);
+
+addCreateVariantBtn.addEventListener("click", () => {
+    addVariantRow("createVariantTableBody");
+});
+
+addEditVariantBtn.addEventListener("click", () => {
+    addVariantRow("editVariantTableBody");
+});
+
+closeEditModalBtn.addEventListener("click", closeEditModal);
+cancelEditProductBtn.addEventListener("click", closeEditModal);
+saveEditProductBtn.addEventListener("click", saveEditProduct);
 
 productImageInput.addEventListener("change", () => {
     const file = productImageInput.files[0];
@@ -74,7 +102,7 @@ function checkAdmin() {
 
         productTableBody.innerHTML = `
             <tr>
-                <td colspan="10">Vui lòng đăng nhập bằng tài khoản Admin.</td>
+                <td colspan="9">Vui lòng đăng nhập bằng tài khoản Admin.</td>
             </tr>
         `;
 
@@ -89,7 +117,7 @@ function checkAdmin() {
 
         productTableBody.innerHTML = `
             <tr>
-                <td colspan="10">Bạn không có quyền xem nội dung này.</td>
+                <td colspan="9">Bạn không có quyền xem nội dung này.</td>
             </tr>
         `;
 
@@ -125,6 +153,10 @@ async function initPage() {
     if (!checkAdmin()) return;
 
     await loadCategoriesForProductForm();
+    await loadSizesAndColors();
+
+    renderCreateVariantDefaultRows();
+
     await loadProducts();
 }
 
@@ -133,7 +165,7 @@ async function loadProducts() {
 
     productTableBody.innerHTML = `
         <tr>
-            <td colspan="10">Đang tải...</td>
+            <td colspan="9">Đang tải...</td>
         </tr>
     `;
 
@@ -151,7 +183,7 @@ async function loadProducts() {
         if (products.length === 0) {
             productTableBody.innerHTML = `
                 <tr>
-                    <td colspan="10">Chưa có sản phẩm nào.</td>
+                    <td colspan="9">Chưa có sản phẩm nào.</td>
                 </tr>
             `;
             return;
@@ -170,7 +202,7 @@ async function loadProducts() {
 
         productTableBody.innerHTML = `
             <tr>
-                <td colspan="10">Không thể tải dữ liệu sản phẩm.</td>
+                <td colspan="9">Không thể tải dữ liệu sản phẩm.</td>
             </tr>
         `;
     }
@@ -192,66 +224,43 @@ function createProductRow(product) {
             </td>
 
             <td>
-                <input
-                    id="product-name-${escapeAttribute(productId)}"
-                    value="${escapeAttribute(product.product_name)}"
-                >
+                <div class="product-summary-name">
+                    ${escapeHtml(product.product_name)}
+                </div>
             </td>
 
             <td>
-                ${renderCategoryDropdownForProduct(product)}
+                ${escapeHtml(product.category_name || "Chưa phân loại")}
             </td>
 
             <td>
-                <input
-                    id="product-price-${escapeAttribute(productId)}"
-                    type="number"
-                    value="${escapeAttribute(product.price)}"
-                >
+                ${Number(product.price).toLocaleString("vi-VN")} đ
             </td>
 
             <td>
-                <input
-                    id="product-stock-${escapeAttribute(productId)}"
-                    type="number"
-                    value="${escapeAttribute(product.stock_quantity)}"
-                >
+                <span class="readonly-number">
+                    ${escapeHtml(product.stock_quantity || 0)}
+                </span>
             </td>
 
             <td>
-                <input
-                    id="product-sold-${escapeAttribute(productId)}"
-                    type="number"
-                    min="0"
-                    step="1"
-                    value="${escapeAttribute(product.sold_quantity || 0)}"
-                >
+                <span class="readonly-number">
+                    ${escapeHtml(product.sold_quantity || 0)}
+                </span>
             </td>
 
             <td>
-                <textarea id="product-description-${escapeAttribute(productId)}">${escapeHtml(product.description || "")}</textarea>
-            </td>
-
-            <td>
-                <input
-                    id="product-image-key-${escapeAttribute(productId)}"
-                    type="hidden"
-                    value="${escapeAttribute(product.image_key || "")}"
-                >
-
-                <input
-                    id="product-image-file-${escapeAttribute(productId)}"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                >
+                <div class="product-summary-desc">
+                    ${escapeHtml(product.description || "")}
+                </div>
             </td>
 
             <td>
                 <button
-                    class="btn btn-blue update-product-btn"
+                    class="btn btn-blue edit-product-btn"
                     data-product-id="${escapeAttribute(productId)}"
                 >
-                    Lưu
+                    Sửa
                 </button>
 
                 <button
@@ -266,12 +275,12 @@ function createProductRow(product) {
 }
 
 function bindProductActionButtons() {
-    const updateButtons = document.querySelectorAll(".update-product-btn");
+    const editButtons = document.querySelectorAll(".edit-product-btn");
     const deleteButtons = document.querySelectorAll(".delete-product-btn");
 
-    updateButtons.forEach(button => {
+    editButtons.forEach(button => {
         button.addEventListener("click", () => {
-            updateProduct(button.dataset.productId);
+            openEditModal(button.dataset.productId);
         });
     });
 
@@ -291,11 +300,13 @@ async function createProduct() {
     const description = document.getElementById("newProductDescription").value.trim();
     const categoryIdRaw = document.getElementById("newCategoryId").value.trim();
     const priceRaw = document.getElementById("newPrice").value.trim();
-    const stockRaw = document.getElementById("newStockQuantity").value.trim();
-    const file = document.getElementById("newProductImage").files[0];
+    const mainFile = document.getElementById("newProductImage").files[0];
+    const subFiles = Array.from(document.getElementById("newProductSubImages").files || []);
 
-    if (!productName || !priceRaw || stockRaw === "") {
-        setMessage("Vui lòng nhập tên sản phẩm, giá và số lượng kho.", "danger");
+    let variants = [];
+
+    if (!productName || !priceRaw) {
+        setMessage("Vui lòng nhập tên sản phẩm và giá.", "danger");
         return;
     }
 
@@ -304,8 +315,10 @@ async function createProduct() {
         return;
     }
 
-    if (Number(stockRaw) < 0) {
-        setMessage("Số lượng kho không được nhỏ hơn 0.", "danger");
+    try {
+        variants = collectVariants("createVariantTableBody");
+    } catch (error) {
+        setMessage(error.message, "danger");
         return;
     }
 
@@ -315,9 +328,14 @@ async function createProduct() {
         setMessage("Đang tạo sản phẩm...", "success");
 
         let imageKey = null;
+        let subImageKeys = [];
 
-        if (file) {
-            imageKey = await uploadProductImage(file);
+        if (mainFile) {
+            imageKey = await uploadProductImage(mainFile);
+        }
+
+        if (subFiles.length > 0) {
+            subImageKeys = await uploadProductImages(subFiles);
         }
 
         const body = {
@@ -325,8 +343,9 @@ async function createProduct() {
             description,
             categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
             price: Number(priceRaw),
-            stockQuantity: Number(stockRaw),
-            imageKey
+            imageKey,
+            subImageKeys,
+            variants
         };
 
         const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products`, {
@@ -357,24 +376,137 @@ async function createProduct() {
     }
 }
 
-async function updateProduct(productId) {
+async function openEditModal(productId) {
     if (!checkAdmin()) return;
 
     clearMessage();
 
-    const productName = document.getElementById(`product-name-${productId}`).value.trim();
-    const description = document.getElementById(`product-description-${productId}`).value.trim();
-    const categoryIdRaw = document.getElementById(`product-category-${productId}`).value.trim();
-    const priceRaw = document.getElementById(`product-price-${productId}`).value.trim();
-    const stockRaw = document.getElementById(`product-stock-${productId}`).value.trim();
-    const soldRaw = document.getElementById(`product-sold-${productId}`).value.trim();
+    try {
+        setMessage("Đang tải chi tiết sản phẩm...", "success");
 
-    const currentImageKey = document.getElementById(`product-image-key-${productId}`).value.trim();
-    const fileInput = document.getElementById(`product-image-file-${productId}`);
-    const file = fileInput.files[0];
+        const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products/${productId}`);
+        const data = await response.json();
 
-    if (!productName || !priceRaw || stockRaw === "" || soldRaw === "") {
-        setMessage("Vui lòng nhập tên sản phẩm, giá, số lượng kho và số lượng đã bán.", "danger");
+        if (!response.ok) {
+            setMessage(data.error || "Không thể tải chi tiết sản phẩm.", "danger");
+            return;
+        }
+
+        editingProduct = data.product;
+        editingSubImageKeys = (editingProduct.images || []).map(image => image.image_key);
+
+        document.getElementById("editProductId").value = editingProduct.product_id;
+        document.getElementById("editProductName").value = editingProduct.product_name || "";
+        document.getElementById("editProductDescription").value = editingProduct.description || "";
+        document.getElementById("editPrice").value = editingProduct.price || "";
+        document.getElementById("editImageKey").value = editingProduct.image_key || "";
+        document.getElementById("editProductImage").value = "";
+        document.getElementById("editProductSubImages").value = "";
+
+        renderEditCategoryDropdown(editingProduct.category_id);
+
+        const mainImage = document.getElementById("editCurrentMainImage");
+
+        if (editingProduct.imageUrl) {
+            mainImage.src = editingProduct.imageUrl;
+            mainImage.style.display = "block";
+        } else {
+            mainImage.src = "";
+            mainImage.style.display = "none";
+        }
+
+        renderEditSubImagesPreview();
+
+        editVariantTableBody.innerHTML = "";
+
+        const variants = editingProduct.variants || [];
+
+        if (variants.length === 0) {
+            addVariantRow("editVariantTableBody");
+        } else {
+            variants.forEach(variant => {
+                addVariantRow("editVariantTableBody", variant);
+            });
+        }
+
+        editProductModal.classList.add("show");
+        clearMessage();
+
+    } catch (error) {
+        console.error("Lỗi mở modal sửa sản phẩm:", error);
+        setMessage(error.message || "Không thể mở form sửa sản phẩm.", "danger");
+    }
+}
+
+function closeEditModal() {
+    editProductModal.classList.remove("show");
+    editingProduct = null;
+    editingSubImageKeys = [];
+}
+
+function renderEditSubImagesPreview() {
+    const container = document.getElementById("editSubImagesPreview");
+
+    if (!editingProduct) {
+        container.innerHTML = "";
+        return;
+    }
+
+    const images = editingProduct.images || [];
+
+    const visibleImages = images.filter(image =>
+        editingSubImageKeys.includes(image.image_key)
+    );
+
+    if (visibleImages.length === 0) {
+        container.innerHTML = `<span class="small-text">Chưa có ảnh phụ.</span>`;
+        return;
+    }
+
+    container.innerHTML = visibleImages.map(image => `
+        <div class="sub-image-item">
+            <img src="${escapeAttribute(image.imageUrl)}" alt="Ảnh phụ">
+
+            <button
+                type="button"
+                class="remove-sub-image-btn"
+                data-image-key="${escapeAttribute(image.image_key)}"
+            >
+                ×
+            </button>
+        </div>
+    `).join("");
+
+    container.querySelectorAll(".remove-sub-image-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const imageKey = button.dataset.imageKey;
+
+            editingSubImageKeys = editingSubImageKeys.filter(key => key !== imageKey);
+
+            renderEditSubImagesPreview();
+        });
+    });
+}
+
+async function saveEditProduct() {
+    if (!checkAdmin()) return;
+
+    clearMessage();
+
+    const productId = document.getElementById("editProductId").value;
+    const productName = document.getElementById("editProductName").value.trim();
+    const description = document.getElementById("editProductDescription").value.trim();
+    const categoryIdRaw = document.getElementById("editCategoryId").value.trim();
+    const priceRaw = document.getElementById("editPrice").value.trim();
+    const currentImageKey = document.getElementById("editImageKey").value.trim();
+
+    const mainFile = document.getElementById("editProductImage").files[0];
+    const newSubFiles = Array.from(document.getElementById("editProductSubImages").files || []);
+
+    let variants = [];
+
+    if (!productName || !priceRaw) {
+        setMessage("Vui lòng nhập tên sản phẩm và giá.", "danger");
         return;
     }
 
@@ -383,23 +515,28 @@ async function updateProduct(productId) {
         return;
     }
 
-    if (Number(stockRaw) < 0) {
-        setMessage("Số lượng tồn kho không được nhỏ hơn 0.", "danger");
-        return;
-    }
-
-    if (Number(soldRaw) < 0) {
-        setMessage("Số lượng đã bán không được nhỏ hơn 0.", "danger");
+    try {
+        variants = collectVariants("editVariantTableBody");
+    } catch (error) {
+        setMessage(error.message, "danger");
         return;
     }
 
     try {
+        saveEditProductBtn.disabled = true;
+        saveEditProductBtn.textContent = "Đang lưu...";
         setMessage("Đang cập nhật sản phẩm...", "success");
 
         let imageKey = currentImageKey || null;
 
-        if (file) {
-            imageKey = await uploadProductImage(file);
+        if (mainFile) {
+            imageKey = await uploadProductImage(mainFile);
+        }
+
+        let newSubImageKeys = [];
+
+        if (newSubFiles.length > 0) {
+            newSubImageKeys = await uploadProductImages(newSubFiles);
         }
 
         const body = {
@@ -407,9 +544,12 @@ async function updateProduct(productId) {
             description,
             categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
             price: Number(priceRaw),
-            stockQuantity: Number(stockRaw),
-            soldQuantity: Number(soldRaw),
-            imageKey
+            imageKey,
+            subImageKeys: [
+                ...editingSubImageKeys,
+                ...newSubImageKeys
+            ],
+            variants
         };
 
         const response = await fetchWithAuth(`${PRODUCT_SERVICE_URL}/api/products/${productId}`, {
@@ -426,11 +566,17 @@ async function updateProduct(productId) {
 
         setMessage(data.message || "Cập nhật sản phẩm thành công.", "success");
 
+        closeEditModal();
+
         await loadProducts();
 
     } catch (error) {
         console.error("Lỗi cập nhật sản phẩm:", error);
         setMessage(error.message || "Không thể cập nhật sản phẩm.", "danger");
+
+    } finally {
+        saveEditProductBtn.disabled = false;
+        saveEditProductBtn.textContent = "Lưu thay đổi";
     }
 }
 
@@ -497,6 +643,17 @@ async function uploadProductImage(file) {
     return imageKey;
 }
 
+async function uploadProductImages(files) {
+    const imageKeys = [];
+
+    for (const file of files) {
+        const imageKey = await uploadProductImage(file);
+        imageKeys.push(imageKey);
+    }
+
+    return imageKeys;
+}
+
 async function loadCategoriesForProductForm() {
     try {
         const response = await fetch(`${PRODUCT_SERVICE_URL}/api/categories`);
@@ -517,6 +674,35 @@ async function loadCategoriesForProductForm() {
     }
 }
 
+async function loadSizesAndColors() {
+    try {
+        const [sizeResponse, colorResponse] = await Promise.all([
+            fetch(`${PRODUCT_SERVICE_URL}/api/sizes`),
+            fetch(`${PRODUCT_SERVICE_URL}/api/colors`)
+        ]);
+
+        const sizeData = await sizeResponse.json();
+        const colorData = await colorResponse.json();
+
+        if (!sizeResponse.ok) {
+            setMessage(sizeData.error || "Không thể tải danh sách size.", "danger");
+            return;
+        }
+
+        if (!colorResponse.ok) {
+            setMessage(colorData.error || "Không thể tải danh sách màu.", "danger");
+            return;
+        }
+
+        sizes = sizeData.sizes || [];
+        colors = colorData.colors || [];
+
+    } catch (error) {
+        console.error("Lỗi load sizes/colors:", error);
+        setMessage("Không thể tải size hoặc màu.", "danger");
+    }
+}
+
 function renderCreateCategoryDropdown() {
     const select = document.getElementById("newCategoryId");
 
@@ -524,6 +710,22 @@ function renderCreateCategoryDropdown() {
         <option value="">Chưa phân loại</option>
         ${categories.map(category => `
             <option value="${escapeAttribute(category.category_id)}">
+                ${escapeHtml(category.category_name)}
+            </option>
+        `).join("")}
+    `;
+}
+
+function renderEditCategoryDropdown(selectedCategoryId) {
+    const select = document.getElementById("editCategoryId");
+
+    select.innerHTML = `
+        <option value="">Chưa phân loại</option>
+        ${categories.map(category => `
+            <option
+                value="${escapeAttribute(category.category_id)}"
+                ${Number(selectedCategoryId) === Number(category.category_id) ? "selected" : ""}
+            >
                 ${escapeHtml(category.category_name)}
             </option>
         `).join("")}
@@ -552,9 +754,133 @@ function clearProductForm() {
     document.getElementById("newProductDescription").value = "";
     document.getElementById("newCategoryId").value = "";
     document.getElementById("newPrice").value = "";
-    document.getElementById("newStockQuantity").value = "";
     document.getElementById("newProductImage").value = "";
+    document.getElementById("newProductSubImages").value = "";
 
     productPreviewImage.style.display = "none";
     productPreviewImage.src = "";
+
+    renderCreateVariantDefaultRows();
+}
+function renderSizeOptions(selectedSizeId = "") {
+    return sizes.map(size => `
+        <option
+            value="${escapeAttribute(size.size_id)}"
+            ${Number(selectedSizeId) === Number(size.size_id) ? "selected" : ""}
+        >
+            ${escapeHtml(size.size_name)}
+        </option>
+    `).join("");
+}
+
+function renderColorOptions(selectedColorId = "") {
+    return colors.map(color => `
+        <option
+            value="${escapeAttribute(color.color_id)}"
+            ${Number(selectedColorId) === Number(color.color_id) ? "selected" : ""}
+        >
+            ${escapeHtml(color.color_name)}
+        </option>
+    `).join("");
+}
+
+function addVariantRow(tableBodyId, variant = null) {
+    const tbody = document.getElementById(tableBodyId);
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>
+            <select class="variant-size">
+                <option value="">Chọn size</option>
+                ${renderSizeOptions(variant?.size_id || variant?.sizeId || "")}
+            </select>
+        </td>
+
+        <td>
+            <select class="variant-color">
+                <option value="">Chọn màu</option>
+                ${renderColorOptions(variant?.color_id || variant?.colorId || "")}
+            </select>
+        </td>
+
+        <td>
+            <input
+                class="variant-stock"
+                type="number"
+                min="0"
+                step="1"
+                value="${escapeAttribute(variant?.stock_quantity ?? variant?.stockQuantity ?? 0)}"
+            >
+        </td>
+
+        <td>
+            <button type="button" class="btn btn-red remove-variant-btn">
+                Xóa
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(tr);
+
+    tr.querySelector(".remove-variant-btn").addEventListener("click", () => {
+        tr.remove();
+    });
+}
+
+function renderCreateVariantDefaultRows() {
+    createVariantTableBody.innerHTML = "";
+
+    addVariantRow("createVariantTableBody");
+}
+
+function collectVariants(tableBodyId) {
+    const tbody = document.getElementById(tableBodyId);
+    const rows = tbody.querySelectorAll("tr");
+
+    const variants = [];
+
+    rows.forEach(row => {
+        const sizeId = row.querySelector(".variant-size").value;
+        const colorId = row.querySelector(".variant-color").value;
+        const stockQuantity = row.querySelector(".variant-stock").value;
+
+        if (!sizeId && !colorId && stockQuantity === "") {
+            return;
+        }
+
+        variants.push({
+            sizeId: Number(sizeId),
+            colorId: Number(colorId),
+            stockQuantity: Number(stockQuantity)
+        });
+    });
+
+    if (variants.length === 0) {
+        throw new Error("Vui lòng thêm ít nhất một biến thể sản phẩm.");
+    }
+
+    for (const variant of variants) {
+        if (!variant.sizeId || !variant.colorId) {
+            throw new Error("Mỗi biến thể phải có size và màu.");
+        }
+
+        if (!Number.isInteger(variant.stockQuantity) || variant.stockQuantity < 0) {
+            throw new Error("Số lượng tồn kho của biến thể không hợp lệ.");
+        }
+    }
+
+    const duplicateMap = new Set();
+
+    for (const variant of variants) {
+        const key = `${variant.sizeId}:${variant.colorId}`;
+
+        if (duplicateMap.has(key)) {
+            throw new Error("Không được tạo trùng biến thể cùng size và màu.");
+        }
+
+        duplicateMap.add(key);
+    }
+
+    return variants;
 }

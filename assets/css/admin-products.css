@@ -162,3 +162,148 @@ th {
         padding: 16px;
     }
 }
+
+.form-label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #333;
+}
+
+.variant-section {
+    margin-top: 18px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    background: #fafafa;
+}
+
+.variant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.variant-header h4 {
+    margin: 0;
+}
+
+.variant-table {
+    min-width: 0;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.variant-table th,
+.variant-table td {
+    padding: 8px;
+}
+
+.product-summary-name {
+    font-weight: bold;
+}
+
+.product-summary-desc {
+    max-width: 260px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close-btn {
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-preview-img {
+    display: none;
+    margin-bottom: 10px;
+}
+
+.sub-images-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 8px 0 12px;
+}
+
+.sub-image-item {
+    position: relative;
+    width: 90px;
+}
+
+.sub-image-item img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.remove-sub-image-btn {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    border: none;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.readonly-number {
+    font-weight: bold;
+    color: #333;
+}

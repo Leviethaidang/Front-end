@@ -31,11 +31,35 @@
 
             <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
 
-            <input id="newStockQuantity" type="number" placeholder="Số lượng kho, ví dụ 10">
-
+            <label class="form-label">Ảnh chính</label>
             <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-
             <img id="productPreviewImage" class="preview-img" alt="Preview">
+            <label class="form-label">Ảnh phụ</label>
+            <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+
+            <div class="variant-section">
+                <div class="variant-header">
+                    <h4>Biến thể sản phẩm</h4>
+
+                    <button id="addCreateVariantBtn" type="button" class="btn btn-blue">
+                        Thêm biến thể
+                    </button>
+                </div>
+
+                <table class="variant-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Màu</th>
+                            <th>Số lượng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="createVariantTableBody">
+                    </tbody>
+                </table>
+            </div>
 
             <button id="createProductBtn" class="btn btn-green">
                 Tạo sản phẩm
@@ -56,20 +80,93 @@
                         <th>Tồn kho</th>
                         <th>Đã bán</th>
                         <th>Mô tả</th>
-                        <th>Đổi ảnh</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
 
                 <tbody id="productTableBody">
                     <tr>
-                        <td colspan="10">Đang tải...</td>
+                        <td colspan="9">Đang tải...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <div id="editProductModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Sửa sản phẩm</h3>
+                <button id="closeEditModalBtn" type="button" class="modal-close-btn">
+                    ×
+                </button>
+            </div>
+
+            <input id="editProductId" type="hidden">
+            <input id="editImageKey" type="hidden">
+
+            <label class="form-label">Tên sản phẩm</label>
+            <input id="editProductName" placeholder="Tên sản phẩm">
+
+            <label class="form-label">Mô tả</label>
+            <textarea id="editProductDescription" placeholder="Mô tả sản phẩm"></textarea>
+
+            <label class="form-label">Danh mục</label>
+            <select id="editCategoryId">
+                <option value="">Chưa phân loại</option>
+            </select>
+
+            <label class="form-label">Giá</label>
+            <input id="editPrice" type="number" placeholder="Giá sản phẩm">
+
+            <label class="form-label">Ảnh chính hiện tại</label>
+            <img id="editCurrentMainImage" class="preview-img modal-preview-img" alt="Ảnh chính hiện tại">
+
+            <label class="form-label">Đổi ảnh chính</label>
+            <input id="editProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+
+            <label class="form-label">Ảnh phụ hiện tại</label>
+            <div id="editSubImagesPreview" class="sub-images-preview"></div>
+
+            <label class="form-label">Thêm ảnh phụ mới</label>
+            <input id="editProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+
+            <div class="variant-section">
+                <div class="variant-header">
+                    <h4>Biến thể size / màu / tồn kho</h4>
+
+                    <button id="addEditVariantBtn" type="button" class="btn btn-blue">
+                        Thêm biến thể
+                    </button>
+                </div>
+
+                <table class="variant-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Màu</th>
+                            <th>Số lượng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="editVariantTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions">
+                <button id="saveEditProductBtn" type="button" class="btn btn-green">
+                    Lưu thay đổi
+                </button>
+
+                <button id="cancelEditProductBtn" type="button" class="btn btn-red">
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/admin-products.js"></script>
