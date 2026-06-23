@@ -13,24 +13,78 @@
 
     <div class="container">
         <div class="page-header">
-            <h2>Admin - Quản lý danh mục</h2>
-            <p>Thêm, sửa, xóa danh mục sản phẩm.</p>
+            <h2>Admin - Quản lý danh mục, size và màu</h2>
+            <p>Thêm, sửa, xóa danh mục sản phẩm, size và màu sắc.</p>
         </div>
 
         <p id="message" class="message"></p>
 
-        <div class="box">
-            <h3>Thêm danh mục mới</h3>
+        <div class="management-grid">
+            <div class="box">
+                <h3>Thêm danh mục mới</h3>
 
-            <div class="form-row">
-                <input
-                    id="newCategoryName"
-                    placeholder="Tên danh mục, ví dụ: Quần jean"
-                >
+                <div class="form-row">
+                    <input
+                        id="newCategoryName"
+                        placeholder="Tên danh mục, ví dụ: Quần jean"
+                    >
 
-                <button id="createCategoryBtn" class="btn btn-green">
-                    Tạo danh mục
-                </button>
+                    <button id="createCategoryBtn" class="btn btn-green">
+                        Tạo danh mục
+                    </button>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Thêm size mới</h3>
+
+                <div class="form-row">
+                    <input
+                        id="newSizeName"
+                        placeholder="Tên size, ví dụ: XXXL"
+                    >
+
+                    <input
+                        id="newSizeDisplayOrder"
+                        type="number"
+                        min="0"
+                        placeholder="Thứ tự"
+                        class="order-input"
+                    >
+
+                    <button id="createSizeBtn" class="btn btn-green">
+                        Tạo size
+                    </button>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Thêm màu mới</h3>
+
+                <div class="form-row">
+                    <input
+                        id="newColorName"
+                        placeholder="Tên màu, ví dụ: Hồng pastel"
+                    >
+
+                    <input
+                        id="newColorCode"
+                        placeholder="Mã màu, ví dụ: #F8BBD0"
+                        class="color-code-input"
+                    >
+
+                    <input
+                        id="newColorDisplayOrder"
+                        type="number"
+                        min="0"
+                        placeholder="Thứ tự"
+                        class="order-input"
+                    >
+
+                    <button id="createColorBtn" class="btn btn-green">
+                        Tạo màu
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -50,6 +104,51 @@
                 <tbody id="categoryTableBody">
                     <tr>
                         <td colspan="4">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách size</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Size ID</th>
+                        <th>Tên size</th>
+                        <th>Thứ tự hiển thị</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="sizeTableBody">
+                    <tr>
+                        <td colspan="5">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách màu</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Color ID</th>
+                        <th>Tên màu</th>
+                        <th>Mã màu</th>
+                        <th>Thứ tự hiển thị</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="colorTableBody">
+                    <tr>
+                        <td colspan="6">Đang tải...</td>
                     </tr>
                 </tbody>
             </table>

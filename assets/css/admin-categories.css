@@ -128,3 +128,70 @@ th {
         padding: 8px;
     }
 }
+
+.management-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.table-section {
+    margin-bottom: 24px;
+}
+
+.order-input {
+    max-width: 110px;
+}
+
+.color-code-input {
+    max-width: 170px;
+}
+
+.color-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid #aaa;
+    display: inline-block;
+    background: #fff;
+}
+
+.color-dot.empty {
+    background: repeating-linear-gradient(
+        45deg,
+        #fff,
+        #fff 4px,
+        #ddd 4px,
+        #ddd 8px
+    );
+}
+
+.table-input-small {
+    max-width: 110px;
+}
+
+.table-input-color {
+    max-width: 150px;
+}
+
+.section-note {
+    color: #666;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+    .order-input,
+    .color-code-input,
+    .table-input-small,
+    .table-input-color {
+        max-width: none;
+    }
+}
