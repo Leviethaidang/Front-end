@@ -10,6 +10,7 @@ const messageBox = document.getElementById("message");
 const state = {
     mode: "CART",
     productId: null,
+    variantId: null,
     quantity: 1,
     profile: null,
     paymentMethods: [],
@@ -62,6 +63,16 @@ function formatPrice(value) {
     });
 }
 
+function findVariantById(product, variantId) {
+    if (!product || !Array.isArray(product.variants)) {
+        return null;
+    }
+
+    return product.variants.find(variant => {
+        return Number(variant.variant_id) === Number(variantId);
+    }) || null;
+}
+
 function showMessage(message, type = "success") {
     messageBox.className = `message ${type}`;
     messageBox.textContent = message;
@@ -107,10 +118,15 @@ function detectMode() {
     if (path.includes("/buy-now") || params.get("mode") === "buy-now") {
         state.mode = "BUY_NOW";
         state.productId = Number(params.get("productId"));
+        state.variantId = Number(params.get("variantId"));
         state.quantity = Number(params.get("quantity") || 1);
 
         if (!Number.isInteger(state.productId) || state.productId <= 0) {
             throw new Error("Thiếu productId hợp lệ cho mua ngay.");
+        }
+        
+        if (!Number.isInteger(state.variantId) || state.variantId <= 0) {
+            throw new Error("Thiếu variantId hợp lệ cho mua ngay.");
         }
 
         if (!Number.isInteger(state.quantity) || state.quantity <= 0) {
@@ -199,19 +215,29 @@ async function loadCartCheckoutItems() {
         throw new Error("Giỏ hàng đang trống.");
     }
 
-    const invalidItem = cart.items.find(item => item.productDeleted || !item.product);
+    const invalidItem = cart.items.find(item => {
+        return item.productDeleted || !item.product || item.variantDeleted || !item.variant;
+    });
 
     if (invalidItem) {
-        throw new Error("Giỏ hàng có sản phẩm đã bị xóa. Vui lòng quay lại giỏ hàng để xóa sản phẩm lỗi.");
+        throw new Error("Giỏ hàng có sản phẩm hoặc biến thể lỗi. Vui lòng quay lại giỏ hàng để xử lý trước.");
     }
 
     state.items = cart.items.map(item => {
         const product = item.product;
+        const variant = item.variant;
 
         return {
             productId: item.productId,
+            variantId: item.variantId,
+
             productName: product.productName,
             categoryName: product.categoryName || "Chưa phân loại",
+
+            sizeName: variant.sizeName || "",
+            colorName: variant.colorName || "",
+            colorCode: variant.colorCode || "",
+
             imageUrl: product.imageUrl || "",
             unitPrice: Number(product.price),
             quantity: Number(item.quantity),
@@ -221,7 +247,7 @@ async function loadCartCheckoutItems() {
 
     state.totalQuantity = Number(cart.totalQuantity || 0);
     state.totalAmount = Number(cart.totalAmount || 0);
-}
+}   
 
 async function loadBuyNowCheckoutItems() {
     const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products/${state.productId}`);
@@ -238,15 +264,21 @@ async function loadBuyNowCheckoutItems() {
         throw new Error("Sản phẩm không tồn tại.");
     }
 
-    const stockQuantity = Number(product.stock_quantity || 0);
+    const variant = findVariantById(product, state.variantId);
+
+    if (!variant) {
+        throw new Error("Biến thể sản phẩm không tồn tại hoặc đã bị ngừng bán.");
+    }
+
+    const stockQuantity = Number(variant.stock_quantity || 0);
     const unitPrice = Number(product.price);
 
     if (stockQuantity <= 0) {
-        throw new Error("Sản phẩm đã hết hàng.");
+        throw new Error("Biến thể này đã hết hàng.");
     }
 
     if (state.quantity > stockQuantity) {
-        throw new Error(`Số lượng mua vượt quá tồn kho. Tồn kho hiện tại: ${stockQuantity}`);
+        throw new Error(`Số lượng mua vượt quá tồn kho của biến thể. Tồn kho hiện tại: ${stockQuantity}`);
     }
 
     const subtotal = unitPrice * state.quantity;
@@ -254,8 +286,15 @@ async function loadBuyNowCheckoutItems() {
     state.items = [
         {
             productId: product.product_id,
+            variantId: variant.variant_id,
+
             productName: product.product_name,
             categoryName: product.category_name || "Chưa phân loại",
+
+            sizeName: variant.size_name || "",
+            colorName: variant.color_name || "",
+            colorCode: variant.color_code || "",
+
             imageUrl: product.imageUrl || "",
             unitPrice,
             quantity: state.quantity,
@@ -392,6 +431,10 @@ function renderOrderItem(item) {
         ? `<img class="order-image" src="${escapeAttribute(item.imageUrl)}" alt="${escapeAttribute(item.productName)}">`
         : "Không có ảnh";
 
+    const colorDotHtml = item.colorCode
+        ? `<span class="order-color-dot" style="background: ${escapeAttribute(item.colorCode)};"></span>`
+        : "";
+
     return `
         <div class="order-item">
             <div class="order-image-wrap">
@@ -405,6 +448,17 @@ function renderOrderItem(item) {
 
                 <div class="order-product-meta">
                     ${escapeHtml(item.categoryName)}
+                </div>
+
+                <div class="order-variant-info">
+                    <span class="order-variant-badge">
+                        Size: ${escapeHtml(item.sizeName || "Không rõ")}
+                    </span>
+
+                    <span class="order-variant-badge">
+                        ${colorDotHtml}
+                        Màu: ${escapeHtml(item.colorName || "Không rõ")}
+                    </span>
                 </div>
 
                 <div class="order-product-meta">
@@ -502,6 +556,7 @@ async function submitOrder() {
 
     if (state.mode === "BUY_NOW") {
         payload.productId = state.productId;
+        payload.variantId = state.variantId;
         payload.quantity = state.quantity;
     }
 
