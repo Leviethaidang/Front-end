@@ -101,6 +101,29 @@ async function loadCart() {
     }
 }
 
+function isInvalidCartItem(item) {
+    if (item.productDeleted || !item.product) {
+        return true;
+    }
+
+    if (item.variantDeleted || !item.variant) {
+        return true;
+    }
+
+    const quantity = Number(item.quantity || 0);
+    const stockQuantity = Number(item.variant.stockQuantity || 0);
+
+    if (stockQuantity <= 0) {
+        return true;
+    }
+
+    if (quantity > stockQuantity) {
+        return true;
+    }
+
+    return false;
+}
+
 function renderCart(cart) {
     const items = cart.items || [];
 
@@ -117,6 +140,8 @@ function renderCart(cart) {
         .map(item => renderCartItem(item))
         .join("");
 
+    const hasInvalidItem = items.some(item => isInvalidCartItem(item));
+
     cartContent.className = "cart-layout";
     cartContent.innerHTML = `
         <div class="cart-list">
@@ -127,7 +152,7 @@ function renderCart(cart) {
             <div class="summary-title">Tóm tắt đơn hàng</div>
 
             <div class="summary-row">
-                <span>Tổng số lượng</span>
+                <span>Tổng số lượng hợp lệ</span>
                 <strong>${escapeHtml(cart.totalQuantity || 0)}</strong>
             </div>
 
@@ -136,10 +161,15 @@ function renderCart(cart) {
                 <span>${formatPrice(cart.totalAmount || 0)}</span>
             </div>
 
+            ${hasInvalidItem ? `
+                <div class="variant-warning">
+                    Có sản phẩm hoặc biến thể không hợp lệ. Vui lòng xóa hoặc điều chỉnh trước khi thanh toán.
+                </div>
+            ` : ""}
+
             <button class="checkout-btn" id="go-checkout-btn">
                 Thanh toán
             </button>
-
         </div>
     `;
 
@@ -147,43 +177,103 @@ function renderCart(cart) {
     bindCheckoutButton(items);
 }
 
-function renderCartItem(item) {
-    if (item.productDeleted || !item.product) {
-        return `
-            <div class="cart-item">
-                <div class="cart-image-wrap">
-                    Không có ảnh
+function renderDeletedProductItem(item) {
+    const cartItemId = Number(item.cartItemId);
+
+    return `
+        <div class="cart-item invalid-item">
+            <div class="cart-image-wrap">
+                Không có ảnh
+            </div>
+
+            <div class="cart-info">
+                <div class="deleted-product">
+                    Sản phẩm này đã bị xóa khỏi hệ thống
                 </div>
 
-                <div class="cart-info">
-                    <div class="deleted-product">Sản phẩm này đã bị xóa khỏi hệ thống</div>
+                <div>Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
 
-                    <div>Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
-
-                    <div class="item-actions">
-                        <button
-                            class="remove-btn remove-item-btn"
-                            data-product-id="${escapeAttribute(item.productId)}"
-                        >
-                            Xóa khỏi giỏ
-                        </button>
-                    </div>
+                <div class="item-actions">
+                    <button
+                        class="remove-btn remove-item-btn"
+                        data-cart-item-id="${escapeAttribute(cartItemId)}"
+                    >
+                        Xóa khỏi giỏ
+                    </button>
                 </div>
             </div>
-        `;
+        </div>
+    `;
+}
+
+function renderDeletedVariantItem(item) {
+    const product = item.product;
+    const cartItemId = Number(item.cartItemId);
+    const productId = Number(item.productId);
+
+    const imageHtml = product?.imageUrl
+        ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
+        : "Không có ảnh";
+
+    return `
+        <div class="cart-item invalid-item">
+            <div class="cart-image-wrap">
+                ${imageHtml}
+            </div>
+
+            <div class="cart-info">
+                <a class="product-name" href="/products/${escapeAttribute(productId)}">
+                    ${escapeHtml(product?.productName || "Sản phẩm")}
+                </a>
+
+                <div class="variant-warning">
+                    Biến thể size/màu này không còn tồn tại hoặc đã bị ngừng bán.
+                </div>
+
+                <div>Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
+
+                <div class="item-actions">
+                    <button
+                        class="remove-btn remove-item-btn"
+                        data-cart-item-id="${escapeAttribute(cartItemId)}"
+                    >
+                        Xóa khỏi giỏ
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCartItem(item) {
+    if (item.productDeleted || !item.product) {
+        return renderDeletedProductItem(item);
+    }
+
+    if (item.variantDeleted || !item.variant) {
+        return renderDeletedVariantItem(item);
     }
 
     const product = item.product;
-    const stockQuantity = Number(product.stockQuantity || 0);
-    const quantity = Number(item.quantity || 1);
+    const variant = item.variant;
+
+    const cartItemId = Number(item.cartItemId);
     const productId = Number(item.productId);
+    const quantity = Number(item.quantity || 1);
+    const stockQuantity = Number(variant.stockQuantity || 0);
+
+    const isStockInvalid = stockQuantity <= 0 || quantity > stockQuantity;
 
     const imageHtml = product.imageUrl
         ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
         : "Không có ảnh";
 
+    const colorDotHtml = variant.colorCode
+        ? `<span class="color-dot" style="background: ${escapeAttribute(variant.colorCode)};"></span>`
+        : "";
+
     return `
-        <div class="cart-item">
+        <div class="cart-item ${isStockInvalid ? "invalid-item" : ""}">
             <div class="cart-image-wrap">
                 ${imageHtml}
             </div>
@@ -197,19 +287,36 @@ function renderCartItem(item) {
                     ${escapeHtml(product.categoryName || "Chưa phân loại")}
                 </div>
 
+                <div class="variant-info">
+                    <span class="variant-badge">
+                        Size: ${escapeHtml(variant.sizeName || "Không rõ")}
+                    </span>
+
+                    <span class="variant-badge">
+                        ${colorDotHtml}
+                        Màu: ${escapeHtml(variant.colorName || "Không rõ")}
+                    </span>
+                </div>
+
                 <div class="product-price">
                     ${formatPrice(product.price)}
                 </div>
 
-                <div class="stock-info">
-                    Còn lại: ${escapeHtml(stockQuantity)}
+                <div class="stock-info ${isStockInvalid ? "warning" : ""}">
+                    Còn lại biến thể này: ${escapeHtml(stockQuantity)}
                 </div>
+
+                ${quantity > stockQuantity ? `
+                    <div class="variant-warning">
+                        Số lượng trong giỏ đang vượt quá tồn kho hiện tại.
+                    </div>
+                ` : ""}
 
                 <div class="item-actions">
                     <div class="quantity-control">
                         <button
                             class="qty-btn decrease-qty-btn"
-                            data-product-id="${escapeAttribute(productId)}"
+                            data-cart-item-id="${escapeAttribute(cartItemId)}"
                             data-current-quantity="${escapeAttribute(quantity)}"
                             ${quantity <= 1 ? "disabled" : ""}
                         >
@@ -220,7 +327,7 @@ function renderCartItem(item) {
 
                         <button
                             class="qty-btn increase-qty-btn"
-                            data-product-id="${escapeAttribute(productId)}"
+                            data-cart-item-id="${escapeAttribute(cartItemId)}"
                             data-current-quantity="${escapeAttribute(quantity)}"
                             data-stock-quantity="${escapeAttribute(stockQuantity)}"
                             ${quantity >= stockQuantity ? "disabled" : ""}
@@ -231,7 +338,7 @@ function renderCartItem(item) {
 
                     <button
                         class="remove-btn remove-item-btn"
-                        data-product-id="${escapeAttribute(productId)}"
+                        data-cart-item-id="${escapeAttribute(cartItemId)}"
                     >
                         Xóa
                     </button>
@@ -253,7 +360,7 @@ function bindCartActionButtons() {
     increaseButtons.forEach(button => {
         button.addEventListener("click", () => {
             increaseQuantity(
-                button.dataset.productId,
+                button.dataset.cartItemId,
                 button.dataset.currentQuantity,
                 button.dataset.stockQuantity
             );
@@ -263,7 +370,7 @@ function bindCartActionButtons() {
     decreaseButtons.forEach(button => {
         button.addEventListener("click", () => {
             decreaseQuantity(
-                button.dataset.productId,
+                button.dataset.cartItemId,
                 button.dataset.currentQuantity
             );
         });
@@ -271,14 +378,14 @@ function bindCartActionButtons() {
 
     removeButtons.forEach(button => {
         button.addEventListener("click", () => {
-            removeItem(button.dataset.productId);
+            removeItem(button.dataset.cartItemId);
         });
     });
 }
 
-async function updateQuantity(productId, quantity) {
+async function updateQuantity(cartItemId, quantity) {
     try {
-        const response = await fetchWithAuth(`${CART_SERVICE_URL}/api/cart/items/${productId}`, {
+        const response = await fetchWithAuth(`${CART_SERVICE_URL}/api/cart/items/${cartItemId}`, {
             method: "PUT",
             body: JSON.stringify({
                 quantity
@@ -301,18 +408,18 @@ async function updateQuantity(productId, quantity) {
     }
 }
 
-function increaseQuantity(productId, currentQuantity, stockQuantity) {
+function increaseQuantity(cartItemId, currentQuantity, stockQuantity) {
     const nextQuantity = Number(currentQuantity) + 1;
 
     if (nextQuantity > Number(stockQuantity)) {
-        showMessage("Số lượng đã đạt tối đa tồn kho.", "error");
+        showMessage("Số lượng đã đạt tối đa tồn kho của biến thể này.", "error");
         return;
     }
 
-    updateQuantity(productId, nextQuantity);
+    updateQuantity(cartItemId, nextQuantity);
 }
 
-function decreaseQuantity(productId, currentQuantity) {
+function decreaseQuantity(cartItemId, currentQuantity) {
     const nextQuantity = Number(currentQuantity) - 1;
 
     if (nextQuantity < 1) {
@@ -320,16 +427,16 @@ function decreaseQuantity(productId, currentQuantity) {
         return;
     }
 
-    updateQuantity(productId, nextQuantity);
+    updateQuantity(cartItemId, nextQuantity);
 }
 
-async function removeItem(productId) {
+async function removeItem(cartItemId) {
     const confirmed = confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?");
 
     if (!confirmed) return;
 
     try {
-        const response = await fetchWithAuth(`${CART_SERVICE_URL}/api/cart/items/${productId}`, {
+        const response = await fetchWithAuth(`${CART_SERVICE_URL}/api/cart/items/${cartItemId}`, {
             method: "DELETE"
         });
 
@@ -356,11 +463,11 @@ function bindCheckoutButton(items) {
 
     if (!checkoutButton) return;
 
-    const hasInvalidItem = items.some(item => item.productDeleted || !item.product);
+    const hasInvalidItem = items.some(item => isInvalidCartItem(item));
 
     if (hasInvalidItem) {
         checkoutButton.disabled = true;
-        checkoutButton.textContent = "Vui lòng xóa sản phẩm lỗi trước";
+        checkoutButton.textContent = "Vui lòng xử lý sản phẩm lỗi trước";
         return;
     }
 
