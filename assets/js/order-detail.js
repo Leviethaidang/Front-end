@@ -321,6 +321,11 @@ function renderOrderDetail(order) {
 function renderOrderItem(item) {
     const productName = item.productName || item.product_name;
     const categoryName = item.categoryName || item.category_name || "Chưa phân loại";
+
+    const sizeName = item.sizeName || item.size_name || "";
+    const colorName = item.colorName || item.color_name || "";
+    const colorCode = item.colorCode || item.color_code || "";
+
     const imageUrl = item.imageUrl || item.image_url;
     const unitPrice = item.unitPrice || item.unit_price || 0;
     const quantity = item.quantity || 0;
@@ -329,6 +334,25 @@ function renderOrderItem(item) {
     const imageHtml = imageUrl
         ? `<img class="order-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
         : "Không có ảnh";
+
+    const colorDotHtml = colorCode
+        ? `<span class="order-color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
+        : "";
+
+    const variantHtml = (sizeName || colorName)
+        ? `
+            <div class="order-variant-info">
+                <span class="order-variant-badge">
+                    Size: ${escapeHtml(sizeName || "Không rõ")}
+                </span>
+
+                <span class="order-variant-badge">
+                    ${colorDotHtml}
+                    Màu: ${escapeHtml(colorName || "Không rõ")}
+                </span>
+            </div>
+        `
+        : "";
 
     return `
         <div class="order-item">
@@ -344,6 +368,8 @@ function renderOrderItem(item) {
                 <div class="order-product-meta">
                     ${escapeHtml(categoryName)}
                 </div>
+
+                ${variantHtml}
 
                 <div class="order-product-meta">
                     Số lượng: ${escapeHtml(quantity)}
