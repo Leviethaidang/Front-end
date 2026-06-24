@@ -1,4 +1,5 @@
 const PRODUCT_SERVICE_URL = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
+const INVENTORY_SERVICE_URL = window.APP_CONFIG?.INVENTORY_SERVICE_URL || "";
 const accessToken = localStorage.getItem("accessToken");
 
 const message = document.getElementById("message");
@@ -189,7 +190,25 @@ async function loadProducts() {
             return;
         }
 
-        productTableBody.innerHTML = products
+        const productIds = products
+            .map(product => product.product_id)
+            .filter(Boolean);
+
+        const inventorySummaryMap = await loadInventoryProductSummaries(productIds);
+
+        const mergedProducts = products.map(product => {
+            const summary = inventorySummaryMap.get(Number(product.product_id));
+
+            return {
+                ...product,
+                quantity_available: summary?.quantity_available ?? 0,
+                quantity_on_hand: summary?.quantity_on_hand ?? 0,
+                quantity_reserved: summary?.quantity_reserved ?? 0,
+                quantity_sold: summary?.quantity_sold ?? 0
+            };
+        });
+
+        productTableBody.innerHTML = mergedProducts
             .map(product => createProductRow(product))
             .join("");
 
@@ -239,13 +258,17 @@ function createProductRow(product) {
 
             <td>
                 <span class="readonly-number">
-                    ${escapeHtml(product.stock_quantity || 0)}
+                    ${escapeHtml(product.quantity_available || 0)}
                 </span>
+                <div class="small-text">
+                    On hand: ${escapeHtml(product.quantity_on_hand || 0)},
+                    Reserved: ${escapeHtml(product.quantity_reserved || 0)}
+                </div>
             </td>
 
             <td>
                 <span class="readonly-number">
-                    ${escapeHtml(product.sold_quantity || 0)}
+                    ${escapeHtml(product.quantity_sold || 0)}
                 </span>
             </td>
 
@@ -393,6 +416,15 @@ async function openEditModal(productId) {
         }
 
         editingProduct = data.product;
+
+        const variantIds = (editingProduct.variants || [])
+            .map(variant => variant.variant_id)
+            .filter(Boolean);
+
+        const inventoryMap = await loadVariantInventories(variantIds);
+
+        editingProduct = mergeInventoryIntoProduct(editingProduct, inventoryMap);
+
         editingSubImageKeys = (editingProduct.images || []).map(image => image.image_key);
 
         document.getElementById("editProductId").value = editingProduct.product_id;
@@ -810,7 +842,12 @@ function addVariantRow(tableBodyId, variant = null) {
                 type="number"
                 min="0"
                 step="1"
-                value="${escapeAttribute(variant?.stock_quantity ?? variant?.stockQuantity ?? 0)}"
+                value="${escapeAttribute(
+                    variant?.quantity_on_hand
+                    ?? variant?.stock_quantity
+                    ?? variant?.stockQuantity
+                    ?? 0
+                )}"
             >
         </td>
 
@@ -852,7 +889,7 @@ function collectVariants(tableBodyId) {
         variants.push({
             sizeId: Number(sizeId),
             colorId: Number(colorId),
-            stockQuantity: Number(stockQuantity)
+            quantityOnHand: Number(stockQuantity)
         });
     });
 
@@ -865,7 +902,7 @@ function collectVariants(tableBodyId) {
             throw new Error("Mỗi biến thể phải có size và màu.");
         }
 
-        if (!Number.isInteger(variant.stockQuantity) || variant.stockQuantity < 0) {
+        if (!Number.isInteger(variant.quantityOnHand) || variant.quantityOnHand < 0) {
             throw new Error("Số lượng tồn kho của biến thể không hợp lệ.");
         }
     }
@@ -883,4 +920,100 @@ function collectVariants(tableBodyId) {
     }
 
     return variants;
+}
+
+async function loadInventoryProductSummaries(productIds) {
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+        return new Map();
+    }
+
+    try {
+        const response = await fetch(`${INVENTORY_SERVICE_URL}/api/inventory/products/summary`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ productIds })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Không thể tải tổng tồn kho sản phẩm.");
+        }
+
+        const summaries = data.summaries || [];
+        const summaryMap = new Map();
+
+        for (const summary of summaries) {
+            summaryMap.set(Number(summary.product_id), {
+                quantity_on_hand: Number(summary.quantity_on_hand) || 0,
+                quantity_reserved: Number(summary.quantity_reserved) || 0,
+                quantity_available: Number(summary.quantity_available) || 0,
+                quantity_sold: Number(summary.quantity_sold) || 0
+            });
+        }
+
+        return summaryMap;
+
+    } catch (error) {
+        console.error("Lỗi load inventory summaries:", error);
+        return new Map();
+    }
+}
+async function loadVariantInventories(variantIds) {
+    if (!Array.isArray(variantIds) || variantIds.length === 0) {
+        return new Map();
+    }
+
+    try {
+        const response = await fetch(`${INVENTORY_SERVICE_URL}/api/inventory/variants/batch`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ variantIds })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Không thể tải tồn kho biến thể.");
+        }
+
+        const inventories = data.inventories || [];
+        const inventoryMap = new Map();
+
+        for (const inventory of inventories) {
+            inventoryMap.set(Number(inventory.variant_id), {
+                quantity_on_hand: Number(inventory.quantity_on_hand) || 0,
+                quantity_reserved: Number(inventory.quantity_reserved) || 0,
+                quantity_available: Number(inventory.quantity_available) || 0,
+                quantity_sold: Number(inventory.quantity_sold) || 0
+            });
+        }
+
+        return inventoryMap;
+
+    } catch (error) {
+        console.error("Lỗi load variant inventories:", error);
+        return new Map();
+    }
+}
+
+function mergeInventoryIntoProduct(product, inventoryMap) {
+    return {
+        ...product,
+        variants: (product.variants || []).map(variant => {
+            const inventory = inventoryMap.get(Number(variant.variant_id));
+
+            return {
+                ...variant,
+                quantity_on_hand: inventory?.quantity_on_hand ?? 0,
+                quantity_reserved: inventory?.quantity_reserved ?? 0,
+                quantity_available: inventory?.quantity_available ?? 0,
+                quantity_sold: inventory?.quantity_sold ?? 0
+            };
+        })
+    };
 }
