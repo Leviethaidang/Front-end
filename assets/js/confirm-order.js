@@ -1,6 +1,7 @@
 const USER_SERVICE_URL = window.APP_CONFIG?.USER_SERVICE_URL || "";
 const CART_SERVICE_URL = window.APP_CONFIG?.CART_SERVICE_URL || "";
 const PRODUCT_SERVICE_URL = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
+const INVENTORY_SERVICE_URL = window.APP_CONFIG?.INVENTORY_SERVICE_URL || "";
 const PAYMENT_SERVICE_URL = window.APP_CONFIG?.PAYMENT_SERVICE_URL || "";
 const ORDER_SERVICE_URL = window.APP_CONFIG?.ORDER_SERVICE_URL || "";
 
@@ -71,6 +72,22 @@ function findVariantById(product, variantId) {
     return product.variants.find(variant => {
         return Number(variant.variant_id) === Number(variantId);
     }) || null;
+}
+
+async function loadInventoryByVariantId(variantId) {
+    const response = await fetch(`${INVENTORY_SERVICE_URL}/api/inventory/variants/${variantId}`);
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            return null;
+        }
+
+        throw new Error(data.error || "Không thể lấy tồn kho biến thể.");
+    }
+
+    return data.inventory;
 }
 
 function showMessage(message, type = "success") {
@@ -216,11 +233,28 @@ async function loadCartCheckoutItems() {
     }
 
     const invalidItem = cart.items.find(item => {
-        return item.productDeleted || !item.product || item.variantDeleted || !item.variant;
+        if (item.productDeleted || !item.product) {
+            return true;
+        }
+
+        if (item.variantDeleted || !item.variant) {
+            return true;
+        }
+
+        if (item.inventoryMissing) {
+            return true;
+        }
+
+        const quantity = Number(item.quantity || 0);
+        const availableQuantity = Number(
+            item.variant.quantityAvailable ?? item.variant.stockQuantity ?? 0
+        );
+
+        return availableQuantity <= 0 || quantity > availableQuantity;
     });
 
     if (invalidItem) {
-        throw new Error("Giỏ hàng có sản phẩm hoặc biến thể lỗi. Vui lòng quay lại giỏ hàng để xử lý trước.");
+        throw new Error("Giỏ hàng có sản phẩm, biến thể hoặc tồn kho không hợp lệ. Vui lòng quay lại giỏ hàng để xử lý trước.");
     }
 
     state.items = cart.items.map(item => {
@@ -247,7 +281,7 @@ async function loadCartCheckoutItems() {
 
     state.totalQuantity = Number(cart.totalQuantity || 0);
     state.totalAmount = Number(cart.totalAmount || 0);
-}   
+}
 
 async function loadBuyNowCheckoutItems() {
     const response = await fetch(`${PRODUCT_SERVICE_URL}/api/products/${state.productId}`);
@@ -270,15 +304,21 @@ async function loadBuyNowCheckoutItems() {
         throw new Error("Biến thể sản phẩm không tồn tại hoặc đã bị ngừng bán.");
     }
 
-    const stockQuantity = Number(variant.stock_quantity || 0);
+    const inventory = await loadInventoryByVariantId(state.variantId);
+
+    if (!inventory) {
+        throw new Error("Biến thể này chưa có tồn kho hoặc đã ngừng bán.");
+    }
+
+    const availableQuantity = Number(inventory.quantity_available || 0);
     const unitPrice = Number(product.price);
 
-    if (stockQuantity <= 0) {
+    if (availableQuantity <= 0) {
         throw new Error("Biến thể này đã hết hàng.");
     }
 
-    if (state.quantity > stockQuantity) {
-        throw new Error(`Số lượng mua vượt quá tồn kho của biến thể. Tồn kho hiện tại: ${stockQuantity}`);
+    if (state.quantity > availableQuantity) {
+        throw new Error(`Số lượng mua vượt quá tồn kho của biến thể. Tồn kho hiện tại: ${availableQuantity}`);
     }
 
     const subtotal = unitPrice * state.quantity;
