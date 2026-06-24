@@ -764,23 +764,6 @@ function renderEditCategoryDropdown(selectedCategoryId) {
     `;
 }
 
-function renderCategoryDropdownForProduct(product) {
-    return `
-        <select id="product-category-${escapeAttribute(product.product_id)}">
-            <option value="">Chưa phân loại</option>
-
-            ${categories.map(category => `
-                <option
-                    value="${escapeAttribute(category.category_id)}"
-                    ${Number(product.category_id) === Number(category.category_id) ? "selected" : ""}
-                >
-                    ${escapeHtml(category.category_name)}
-                </option>
-            `).join("")}
-        </select>
-    `;
-}
-
 function clearProductForm() {
     document.getElementById("newProductName").value = "";
     document.getElementById("newProductDescription").value = "";
@@ -838,16 +821,11 @@ function addVariantRow(tableBodyId, variant = null) {
 
         <td>
             <input
-                class="variant-stock"
+                class="variant-quantity-on-hand"
                 type="number"
                 min="0"
                 step="1"
-                value="${escapeAttribute(
-                    variant?.quantity_on_hand
-                    ?? variant?.stock_quantity
-                    ?? variant?.stockQuantity
-                    ?? 0
-                )}"
+                value="${escapeAttribute(variant?.quantity_on_hand ?? 0)}"
             >
         </td>
 
@@ -880,16 +858,16 @@ function collectVariants(tableBodyId) {
     rows.forEach(row => {
         const sizeId = row.querySelector(".variant-size").value;
         const colorId = row.querySelector(".variant-color").value;
-        const stockQuantity = row.querySelector(".variant-stock").value;
+        const quantityOnHand = row.querySelector(".variant-quantity-on-hand").value;
 
-        if (!sizeId && !colorId && stockQuantity === "") {
+        if (!sizeId && !colorId && quantityOnHand === "") {
             return;
         }
 
         variants.push({
             sizeId: Number(sizeId),
             colorId: Number(colorId),
-            quantityOnHand: Number(stockQuantity)
+            quantityOnHand: Number(quantityOnHand)
         });
     });
 

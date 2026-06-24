@@ -482,23 +482,23 @@ function updateSelectedVariantUI(product) {
         return;
     }
 
-    const stockQuantity = Number(selectedVariant.quantity_available || 0);
+    const availableQuantity = Number(selectedVariant.quantity_available || 0);
 
     info.innerHTML = `
         Đang chọn:
         <strong>${escapeHtml(selectedVariant.size_name)}</strong> /
         <strong>${escapeHtml(selectedVariant.color_name)}</strong>.
-        Còn lại: <strong>${escapeHtml(stockQuantity)}</strong>
+        Còn lại: <strong>${escapeHtml(availableQuantity)}</strong>
     `;
 
-    quantityInput.max = stockQuantity;
-    quantityInput.value = stockQuantity > 0 ? 1 : 0;
-    quantityInput.disabled = stockQuantity <= 0;
+    quantityInput.max = availableQuantity;
+    quantityInput.value = availableQuantity > 0 ? 1 : 0;
+    quantityInput.disabled = availableQuantity <= 0;
 
-    addButton.disabled = stockQuantity <= 0;
-    buyNowButton.disabled = stockQuantity <= 0;
+    addButton.disabled = availableQuantity <= 0;
+    buyNowButton.disabled = availableQuantity <= 0;
 
-    if (stockQuantity <= 0) {
+    if (availableQuantity <= 0) {
         addButton.textContent = "Hết hàng";
     } else {
         addButton.textContent = "Thêm vào giỏ hàng";
@@ -695,15 +695,15 @@ function getValidSelectedQuantity() {
     }
 
     const quantity = Number(quantityInput.value);
-    const maxQuantity = Number(quantityInput.max);
+    const maxAvailableQuantity = Number(quantityInput.max);
 
     if (!Number.isInteger(quantity) || quantity <= 0) {
         showCartMessage("Số lượng phải là số nguyên lớn hơn 0.", "error");
         return null;
     }
 
-    if (quantity > maxQuantity) {
-        showCartMessage("Số lượng không được vượt quá tồn kho của biến thể.", "error");
+    if (quantity > maxAvailableQuantity) {
+        showCartMessage("Số lượng không được vượt quá số lượng còn lại của biến thể.", "error");
         return null;
     }
 

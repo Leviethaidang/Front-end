@@ -99,8 +99,8 @@ async function loadInventorySummaries(productIds) {
     } catch (error) {
         console.error("Lỗi tải inventory summary:", error);
 
-        // Không để lỗi Inventory làm hỏng toàn bộ trang chủ.
-        // Nếu Inventory lỗi, vẫn hiển thị sản phẩm, chỉ coi sold/available = 0.
+        // Trang chủ vẫn hiển thị catalog nếu Inventory tạm thời lỗi.
+        // Khi đó sản phẩm được xem như chưa có tồn kho khả dụng.
         return new Map();
     }
 }
