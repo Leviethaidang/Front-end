@@ -1,4 +1,6 @@
 const PRODUCT_SERVICE_URL = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
+const INVENTORY_SERVICE_URL = window.APP_CONFIG?.INVENTORY_SERVICE_URL || "";
+
 const productsContainer = document.getElementById("products-container");
 
 loadProducts();
@@ -29,7 +31,23 @@ async function loadProducts() {
             return;
         }
 
-        productsContainer.innerHTML = products
+        const productIds = products
+            .map(product => product.product_id)
+            .filter(Boolean);
+
+        const inventorySummaryMap = await loadInventorySummaries(productIds);
+
+        const mergedProducts = products.map(product => {
+            const summary = inventorySummaryMap.get(Number(product.product_id));
+
+            return {
+                ...product,
+                quantity_available: summary?.quantity_available ?? 0,
+                quantity_sold: summary?.quantity_sold ?? 0
+            };
+        });
+
+        productsContainer.innerHTML = mergedProducts
             .map(product => createProductCard(product))
             .join("");
 
@@ -44,16 +62,68 @@ async function loadProducts() {
     }
 }
 
+async function loadInventorySummaries(productIds) {
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+        return new Map();
+    }
+
+    try {
+        const response = await fetch(`${INVENTORY_SERVICE_URL}/api/inventory/products/summary`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ productIds })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Không thể tải tồn kho sản phẩm");
+        }
+
+        const summaries = data.summaries || [];
+        const summaryMap = new Map();
+
+        for (const summary of summaries) {
+            summaryMap.set(Number(summary.product_id), {
+                quantity_on_hand: Number(summary.quantity_on_hand) || 0,
+                quantity_reserved: Number(summary.quantity_reserved) || 0,
+                quantity_available: Number(summary.quantity_available) || 0,
+                quantity_sold: Number(summary.quantity_sold) || 0
+            });
+        }
+
+        return summaryMap;
+
+    } catch (error) {
+        console.error("Lỗi tải inventory summary:", error);
+
+        // Không để lỗi Inventory làm hỏng toàn bộ trang chủ.
+        // Nếu Inventory lỗi, vẫn hiển thị sản phẩm, chỉ coi sold/available = 0.
+        return new Map();
+    }
+}
+
 function createProductCard(product) {
     const productName = product.product_name || "Không có tên";
     const categoryName = product.category_name || "Chưa phân loại";
     const price = formatPrice(product.price);
-    const soldQuantity = product.sold_quantity ?? 0;
+    const soldQuantity = product.quantity_sold ?? 0;
+    const availableQuantity = product.quantity_available ?? 0;
     const imageUrl = product.imageUrl;
 
     const imageHtml = imageUrl
         ? `<img class="product-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
         : `<span class="no-image">Không có ảnh</span>`;
+
+    const stockText = availableQuantity > 0
+        ? `Còn hàng`
+        : `Hết hàng`;
+
+    const stockClass = availableQuantity > 0
+        ? "in-stock"
+        : "out-of-stock";
 
     return `
         <a class="product-link" href="/products/${escapeAttribute(product.product_id)}">
@@ -66,7 +136,11 @@ function createProductCard(product) {
                     <div class="product-name">${escapeHtml(productName)}</div>
                     <div class="product-category">${escapeHtml(categoryName)}</div>
                     <div class="product-price">${price}</div>
-                    <div class="product-sold">Đã bán: ${escapeHtml(soldQuantity)}</div>
+
+                    <div class="product-meta">
+                        <span class="product-sold">Đã bán: ${escapeHtml(soldQuantity)}</span>
+                        <span class="product-stock ${stockClass}">${escapeHtml(stockText)}</span>
+                    </div>
                 </div>
             </div>
         </a>

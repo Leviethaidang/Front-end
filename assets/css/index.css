@@ -87,10 +87,29 @@ body {
     font-weight: bold;
 }
 
+.product-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
 .product-sold {
     color: #555;
-    font-size: 14px;
-    margin-top: 8px;
+}
+
+.product-stock {
+    font-weight: bold;
+}
+
+.product-stock.in-stock {
+    color: #198754;
+}
+
+.product-stock.out-of-stock {
+    color: #999;
 }
 
 .loading,
