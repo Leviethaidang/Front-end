@@ -246,15 +246,13 @@ async function loadCartCheckoutItems() {
         }
 
         const quantity = Number(item.quantity || 0);
-        const availableQuantity = Number(
-            item.variant.quantityAvailable ?? item.variant.stockQuantity ?? 0
-        );
+        const availableQuantity = Number(item.variant.quantityAvailable || 0);
 
         return availableQuantity <= 0 || quantity > availableQuantity;
     });
 
     if (invalidItem) {
-        throw new Error("Giỏ hàng có sản phẩm, biến thể hoặc tồn kho không hợp lệ. Vui lòng quay lại giỏ hàng để xử lý trước.");
+        throw new Error("Giỏ hàng có sản phẩm, biến thể hoặc số lượng không hợp lệ. Vui lòng quay lại giỏ hàng để xử lý trước.");
     }
 
     state.items = cart.items.map(item => {

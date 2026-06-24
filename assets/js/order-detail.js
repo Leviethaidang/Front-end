@@ -74,7 +74,6 @@ function getPendingPaymentKey(orderId) {
     return `pendingPaymentOrder:${orderId}`;
 }
 
-
 function clearPendingPaymentFlag(orderId) {
     sessionStorage.removeItem(getPendingPaymentKey(orderId));
 }
