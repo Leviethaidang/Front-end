@@ -1,4 +1,5 @@
 const PRODUCT_SERVICE_URL = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
+const INVENTORY_SERVICE_URL = window.APP_CONFIG?.INVENTORY_SERVICE_URL || "";
 const CART_SERVICE_URL = window.APP_CONFIG?.CART_SERVICE_URL || "";
 
 const detailContainer = document.getElementById("product-detail");
@@ -89,7 +90,14 @@ async function loadProductDetail() {
             throw new Error(data.error || "Không thể tải chi tiết sản phẩm.");
         }
 
-        currentProduct = data.product;
+        const product = data.product;
+        const variantIds = (product.variants || [])
+            .map(variant => variant.variant_id)
+            .filter(Boolean);
+
+        const inventoryMap = await loadVariantInventories(variantIds);
+
+        currentProduct = mergeInventoryIntoProduct(product, inventoryMap);
         renderProductDetail(currentProduct);
 
     } catch (error) {
@@ -104,9 +112,88 @@ async function loadProductDetail() {
     }
 }
 
+async function loadVariantInventories(variantIds) {
+    if (!Array.isArray(variantIds) || variantIds.length === 0) {
+        return new Map();
+    }
+
+    try {
+        const response = await fetch(`${INVENTORY_SERVICE_URL}/api/inventory/variants/batch`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ variantIds })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Không thể tải tồn kho biến thể.");
+        }
+
+        const inventories = data.inventories || [];
+        const inventoryMap = new Map();
+
+        for (const inventory of inventories) {
+            inventoryMap.set(Number(inventory.variant_id), {
+                quantity_on_hand: Number(inventory.quantity_on_hand) || 0,
+                quantity_reserved: Number(inventory.quantity_reserved) || 0,
+                quantity_available: Number(inventory.quantity_available) || 0,
+                quantity_sold: Number(inventory.quantity_sold) || 0
+            });
+        }
+
+        return inventoryMap;
+
+    } catch (error) {
+        console.error("Lỗi tải inventory variants:", error);
+
+        // Nếu Inventory lỗi thì vẫn hiển thị thông tin sản phẩm,
+        // nhưng toàn bộ biến thể sẽ được xem như hết hàng.
+        return new Map();
+    }
+}
+
+function mergeInventoryIntoProduct(product, inventoryMap) {
+    const variants = (product.variants || []).map(variant => {
+        const inventory = inventoryMap.get(Number(variant.variant_id));
+
+        return {
+            ...variant,
+            quantity_on_hand: inventory?.quantity_on_hand ?? 0,
+            quantity_reserved: inventory?.quantity_reserved ?? 0,
+            quantity_available: inventory?.quantity_available ?? 0,
+            quantity_sold: inventory?.quantity_sold ?? 0
+        };
+    });
+
+    const inventorySummary = variants.reduce(
+        (summary, variant) => {
+            summary.quantity_on_hand += Number(variant.quantity_on_hand) || 0;
+            summary.quantity_reserved += Number(variant.quantity_reserved) || 0;
+            summary.quantity_available += Number(variant.quantity_available) || 0;
+            summary.quantity_sold += Number(variant.quantity_sold) || 0;
+            return summary;
+        },
+        {
+            quantity_on_hand: 0,
+            quantity_reserved: 0,
+            quantity_available: 0,
+            quantity_sold: 0
+        }
+    );
+
+    return {
+        ...product,
+        variants,
+        inventorySummary
+    };
+}
+
 function getActiveVariants(product) {
     return (product.variants || []).filter(variant => {
-        return Number(variant.stock_quantity || 0) > 0;
+        return Number(variant.quantity_available || 0) > 0;
     });
 }
 
@@ -147,7 +234,7 @@ function findVariant(product, sizeId, colorId) {
     return (product.variants || []).find(variant => {
         return Number(variant.size_id) === Number(sizeId)
             && Number(variant.color_id) === Number(colorId)
-            && Number(variant.stock_quantity || 0) > 0;
+            && Number(variant.quantity_available || 0) > 0;
     }) || null;
 }
 
@@ -187,12 +274,12 @@ function renderProductDetail(product) {
 
             <div class="product-meta">
                 <strong>Đã bán:</strong>
-                ${escapeHtml(product.sold_quantity ?? 0)}
+                ${escapeHtml(product.inventorySummary?.quantity_sold ?? 0)}
             </div>
 
             <div class="product-meta">
                 <strong>Tổng còn lại:</strong>
-                ${escapeHtml(product.stock_quantity ?? 0)}
+                ${escapeHtml(product.inventorySummary?.quantity_available ?? 0)}
             </div>
 
             ${renderVariantSelector(product)}
@@ -395,7 +482,7 @@ function updateSelectedVariantUI(product) {
         return;
     }
 
-    const stockQuantity = Number(selectedVariant.stock_quantity || 0);
+    const stockQuantity = Number(selectedVariant.quantity_available || 0);
 
     info.innerHTML = `
         Đang chọn:
