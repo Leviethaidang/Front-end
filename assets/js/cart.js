@@ -111,7 +111,9 @@ function isInvalidCartItem(item) {
     }
 
     const quantity = Number(item.quantity || 0);
-    const stockQuantity = Number(item.variant.stockQuantity || 0);
+    const stockQuantity = Number(
+        item.variant.quantityAvailable ?? item.variant.stockQuantity ?? 0
+    );
 
     if (stockQuantity <= 0) {
         return true;
@@ -260,9 +262,12 @@ function renderCartItem(item) {
     const cartItemId = Number(item.cartItemId);
     const productId = Number(item.productId);
     const quantity = Number(item.quantity || 1);
-    const stockQuantity = Number(variant.stockQuantity || 0);
 
-    const isStockInvalid = stockQuantity <= 0 || quantity > stockQuantity;
+    const stockQuantity = Number(
+        variant.quantityAvailable ?? variant.stockQuantity ?? 0
+    );
+    const isStockInvalid =
+        item.inventoryMissing || stockQuantity <= 0 || quantity > stockQuantity;
 
     const imageHtml = product.imageUrl
         ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
@@ -309,6 +314,12 @@ function renderCartItem(item) {
                 ${quantity > stockQuantity ? `
                     <div class="variant-warning">
                         Số lượng trong giỏ đang vượt quá tồn kho hiện tại.
+                    </div>
+                ` : ""}
+
+                ${item.inventoryMissing ? `
+                    <div class="variant-warning">
+                        Biến thể này chưa có tồn kho hoặc đã ngừng bán.
                     </div>
                 ` : ""}
 
