@@ -316,7 +316,7 @@ async function loadBuyNowCheckoutItems() {
     }
 
     if (state.quantity > availableQuantity) {
-        throw new Error(`Số lượng mua vượt quá tồn kho của biến thể. Tồn kho hiện tại: ${availableQuantity}`);
+        throw new Error(`Số lượng mua vượt quá số lượng còn lại của biến thể. Hiện tại còn: ${availableQuantity}`);
     }
 
     const subtotal = unitPrice * state.quantity;
