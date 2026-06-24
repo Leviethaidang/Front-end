@@ -94,7 +94,7 @@ body {
     font-weight: bold;
 }
 
-.stock-info {
+.available-info {
     color: #555;
     font-size: 14px;
 }
@@ -308,7 +308,7 @@ body {
     padding-right: 8px;
 }
 
-.stock-info.warning {
+.available-info.warning {
     color: #c0392b;
     font-weight: bold;
 }

@@ -110,16 +110,18 @@ function isInvalidCartItem(item) {
         return true;
     }
 
-    const quantity = Number(item.quantity || 0);
-    const stockQuantity = Number(
-        item.variant.quantityAvailable ?? item.variant.stockQuantity ?? 0
-    );
-
-    if (stockQuantity <= 0) {
+    if (item.inventoryMissing) {
         return true;
     }
 
-    if (quantity > stockQuantity) {
+    const quantity = Number(item.quantity || 0);
+    const availableQuantity = Number(item.variant.quantityAvailable || 0);
+
+    if (availableQuantity <= 0) {
+        return true;
+    }
+
+    if (quantity > availableQuantity) {
         return true;
     }
 
@@ -263,11 +265,10 @@ function renderCartItem(item) {
     const productId = Number(item.productId);
     const quantity = Number(item.quantity || 1);
 
-    const stockQuantity = Number(
-        variant.quantityAvailable ?? variant.stockQuantity ?? 0
-    );
-    const isStockInvalid =
-        item.inventoryMissing || stockQuantity <= 0 || quantity > stockQuantity;
+    const availableQuantity = Number(variant.quantityAvailable || 0);
+
+    const isQuantityInvalid =
+        item.inventoryMissing || availableQuantity <= 0 || quantity > availableQuantity;
 
     const imageHtml = product.imageUrl
         ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
@@ -278,7 +279,7 @@ function renderCartItem(item) {
         : "";
 
     return `
-        <div class="cart-item ${isStockInvalid ? "invalid-item" : ""}">
+        <div class="cart-item ${isQuantityInvalid ? "invalid-item" : ""}">
             <div class="cart-image-wrap">
                 ${imageHtml}
             </div>
@@ -307,13 +308,13 @@ function renderCartItem(item) {
                     ${formatPrice(product.price)}
                 </div>
 
-                <div class="stock-info ${isStockInvalid ? "warning" : ""}">
-                    Còn lại biến thể này: ${escapeHtml(stockQuantity)}
+                <div class="available-info ${isQuantityInvalid ? "warning" : ""}">
+                    Còn lại biến thể này: ${escapeHtml(availableQuantity)}
                 </div>
 
-                ${quantity > stockQuantity ? `
+                ${quantity > availableQuantity ? `
                     <div class="variant-warning">
-                        Số lượng trong giỏ đang vượt quá tồn kho hiện tại.
+                        Số lượng trong giỏ đang vượt quá số lượng còn lại.
                     </div>
                 ` : ""}
 
@@ -340,8 +341,8 @@ function renderCartItem(item) {
                             class="qty-btn increase-qty-btn"
                             data-cart-item-id="${escapeAttribute(cartItemId)}"
                             data-current-quantity="${escapeAttribute(quantity)}"
-                            data-stock-quantity="${escapeAttribute(stockQuantity)}"
-                            ${quantity >= stockQuantity ? "disabled" : ""}
+                            data-available-quantity="${escapeAttribute(availableQuantity)}"
+                            ${quantity >= availableQuantity ? "disabled" : ""}
                         >
                             +
                         </button>
@@ -373,7 +374,7 @@ function bindCartActionButtons() {
             increaseQuantity(
                 button.dataset.cartItemId,
                 button.dataset.currentQuantity,
-                button.dataset.stockQuantity
+                button.dataset.availableQuantity
             );
         });
     });
@@ -419,11 +420,11 @@ async function updateQuantity(cartItemId, quantity) {
     }
 }
 
-function increaseQuantity(cartItemId, currentQuantity, stockQuantity) {
+function increaseQuantity(cartItemId, currentQuantity, availableQuantity) {
     const nextQuantity = Number(currentQuantity) + 1;
 
-    if (nextQuantity > Number(stockQuantity)) {
-        showMessage("Số lượng đã đạt tối đa tồn kho của biến thể này.", "error");
+    if (nextQuantity > Number(availableQuantity)) {
+        showMessage("Số lượng đã đạt tối đa số lượng còn lại của biến thể này.", "error");
         return;
     }
 
