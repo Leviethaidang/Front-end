@@ -408,6 +408,16 @@ function renderConfirmOrderPage() {
                 </div>
 
                 <div class="form-group">
+                    <label for="customer-email">Email nhận thông báo</label>
+                    <input
+                        id="customer-email"
+                        type="email"
+                        value="${escapeAttribute(profile.email || "")}"
+                        placeholder="Nhập email nhận thông báo đơn hàng"
+                    >
+                </div>
+
+                <div class="form-group">
                     <label for="shipping-address">Địa chỉ giao hàng</label>
                     <textarea
                         id="shipping-address"
@@ -561,6 +571,7 @@ async function submitOrder() {
 
     const receiverName = document.getElementById("receiver-name").value.trim();
     const receiverPhone = document.getElementById("receiver-phone").value.trim();
+    const customerEmail = document.getElementById("customer-email").value.trim();
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
 
@@ -571,6 +582,11 @@ async function submitOrder() {
 
     if (!receiverPhone) {
         showMessage("Vui lòng nhập số điện thoại người nhận.", "error");
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+        showMessage("Email nhận thông báo không hợp lệ.", "error");
         return;
     }
 
@@ -588,6 +604,7 @@ async function submitOrder() {
         sourceType: state.mode,
         receiverName,
         receiverPhone,
+        customerEmail,
         shippingAddress,
         paymentMethodId
     };
