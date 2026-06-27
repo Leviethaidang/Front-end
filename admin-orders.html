@@ -11,22 +11,131 @@
     <link rel="stylesheet" href="assets/css/navbar.css">
     <link rel="stylesheet" href="assets/css/admin-orders.css">
     <link rel="stylesheet" href="assets/css/admin-common.css">
+    <link rel="stylesheet" href="assets/css/admin-layout.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <h1 class="page-title">Quản lý đơn hàng</h1>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h3>Chức năng</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-list-orders">
+                        <i class="bi bi-list-ul"></i>
+                        Danh sách đơn hàng
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-filter-orders">
+                        <i class="bi bi-funnel"></i>
+                        Bộ lọc
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-stats-orders">
+                        <i class="bi bi-bar-chart"></i>
+                        Thống kê
+                    </button>
+                </li>
+            </ul>
+        </aside>
 
-        <div id="message" class="message"></div>
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="admin-page-header">
+                <h1>Quản lý đơn hàng</h1>
+                <p>Xem và cập nhật trạng thái các đơn hàng.</p>
+            </div>
 
-        <div id="admin-orders-content" class="loading">
-            Đang tải danh sách đơn hàng...
-        </div>
+            <div id="message" class="message"></div>
+
+            <!-- Section: Danh sách đơn hàng -->
+            <section id="section-list-orders" class="section-container active">
+                <div id="admin-orders-content" class="loading">
+                    Đang tải danh sách đơn hàng...
+                </div>
+            </section>
+
+            <!-- Section: Bộ lọc -->
+            <section id="section-filter-orders" class="section-container">
+                <div class="box">
+                    <h3>Bộ lọc nâng cao</h3>
+
+                    <label class="form-label">Mã đơn hàng:</label>
+                    <input type="text" id="advFilterOrderId" placeholder="Nhập mã đơn...">
+
+                    <label class="form-label">Ngày từ:</label>
+                    <input type="date" id="advFilterDateFrom">
+
+                    <label class="form-label">Ngày đến:</label>
+                    <input type="date" id="advFilterDateTo">
+
+                    <label class="form-label">Trạng thái đơn:</label>
+                    <select id="advFilterOrderStatus">
+                        <option value="">-- Tất cả --</option>
+                        <option value="PENDING_PAYMENT">Chờ thanh toán</option>
+                        <option value="CONFIRMED">Đã xác nhận</option>
+                        <option value="SHIPPING">Đang giao hàng</option>
+                        <option value="COMPLETED">Hoàn thành</option>
+                        <option value="CANCELLED">Đã hủy</option>
+                    </select>
+
+                    <label class="form-label">Trạng thái thanh toán:</label>
+                    <select id="advFilterPaymentStatus">
+                        <option value="">-- Tất cả --</option>
+                        <option value="PENDING">Chờ xử lý</option>
+                        <option value="PAID">Đã thanh toán</option>
+                        <option value="FAILED">Thất bại</option>
+                    </select>
+
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button class="btn btn-green" id="advApplyFilterOrdersBtn">
+                            <i class="bi bi-search"></i> Áp dụng bộ lọc
+                        </button>
+                        <button class="btn btn-blue" id="advResetFilterOrdersBtn">
+                            <i class="bi bi-arrow-clockwise"></i> Đặt lại
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Thống kê -->
+            <section id="section-stats-orders" class="section-container">
+                <div class="box">
+                    <h3>Thống kê đơn hàng</h3>
+                    <p style="color: var(--text-muted); margin-top: 16px;">
+                        Các thống kê về đơn hàng sẽ được hiển thị tại đây.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                        <div style="padding: 16px; background: rgba(255, 255, 255, 0.08); border-radius: 12px; border: 1px solid var(--dark-border);">
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">Tổng đơn hàng</div>
+                            <div id="statsTotal" style="font-size: 2rem; font-weight: 700; color: var(--primary-orange);">-</div>
+                        </div>
+                        <div style="padding: 16px; background: rgba(255, 255, 255, 0.08); border-radius: 12px; border: 1px solid var(--dark-border);">
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">Đơn đang chờ</div>
+                            <div id="statsPending" style="font-size: 2rem; font-weight: 700; color: #ffd65a;">-</div>
+                        </div>
+                        <div style="padding: 16px; background: rgba(255, 255, 255, 0.08); border-radius: 12px; border: 1px solid var(--dark-border);">
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">Đơn hoàn thành</div>
+                            <div id="statsCompleted" style="font-size: 2rem; font-weight: 700; color: #86efac;">-</div>
+                        </div>
+                        <div style="padding: 16px; background: rgba(255, 255, 255, 0.08); border-radius: 12px; border: 1px solid var(--dark-border);">
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">Đơn hủy</div>
+                            <div id="statsCancelled" style="font-size: 2rem; font-weight: 700; color: #fca5a5;">-</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script src="assets/js/config.js"></script>
     <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/admin-sidebar.js"></script>
     <script src="assets/js/admin-orders.js"></script>
 </body>
 </html>

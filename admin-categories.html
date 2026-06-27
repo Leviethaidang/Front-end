@@ -11,156 +11,182 @@
     <link rel="stylesheet" href="assets/css/navbar.css">
     <link rel="stylesheet" href="assets/css/admin-categories.css">
     <link rel="stylesheet" href="assets/css/admin-common.css">
+    <link rel="stylesheet" href="assets/css/admin-layout.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Admin - Quản lý danh mục, size và màu</h2>
-            <p>Thêm, sửa, xóa danh mục sản phẩm, size và màu sắc.</p>
-        </div>
-
-        <p id="message" class="message"></p>
-
-        <div class="management-grid">
-            <div class="box">
-                <h3>Thêm danh mục mới</h3>
-
-                <div class="form-row">
-                    <input
-                        id="newCategoryName"
-                        placeholder="Tên danh mục, ví dụ: Quần jean"
-                    >
-
-                    <button id="createCategoryBtn" class="btn btn-green">
-                        Tạo danh mục
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h3>Chức năng</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-create-category">
+                        <i class="bi bi-plus-circle"></i>
+                        Thêm danh mục
                     </button>
-                </div>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-list-categories">
+                        <i class="bi bi-list-ul"></i>
+                        Danh sách danh mục
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-create-size">
+                        <i class="bi bi-plus-circle"></i>
+                        Thêm Size
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-list-sizes">
+                        <i class="bi bi-list-ul"></i>
+                        Danh sách Size
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-create-color">
+                        <i class="bi bi-plus-circle"></i>
+                        Thêm màu
+                    </button>
+                </li>
+                <li class="sidebar-menu-item">
+                    <button class="sidebar-menu-btn" data-target="section-list-colors">
+                        <i class="bi bi-list-ul"></i>
+                        Danh sách màu
+                    </button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="admin-page-header">
+                <h1>Quản lý danh mục, size và màu</h1>
+                <p>Thêm, sửa, xóa danh mục sản phẩm, size và màu sắc.</p>
             </div>
 
-            <div class="box">
-                <h3>Thêm size mới</h3>
+            <p id="message" class="message"></p>
 
-                <div class="form-row">
-                    <input
-                        id="newSizeName"
-                        placeholder="Tên size, ví dụ: XXXL"
-                    >
-
-                    <input
-                        id="newSizeDisplayOrder"
-                        type="number"
-                        min="0"
-                        placeholder="Thứ tự"
-                        class="order-input"
-                    >
-
-                    <button id="createSizeBtn" class="btn btn-green">
-                        Tạo size
-                    </button>
+            <!-- Section: Thêm danh mục -->
+            <section id="section-create-category" class="section-container active">
+                <div class="box">
+                    <h3>Thêm danh mục mới</h3>
+                    <div class="form-row">
+                        <input id="newCategoryName" placeholder="Tên danh mục, ví dụ: Quần jean">
+                        <button id="createCategoryBtn" class="btn btn-green">
+                            <i class="bi bi-check-circle me-2"></i>Tạo danh mục
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="box">
-                <h3>Thêm màu mới</h3>
-
-                <div class="form-row">
-                    <input
-                        id="newColorName"
-                        placeholder="Tên màu, ví dụ: Hồng pastel"
-                    >
-
-                    <input
-                        id="newColorCode"
-                        placeholder="Mã màu, ví dụ: #F8BBD0"
-                        class="color-code-input"
-                    >
-
-                    <input
-                        id="newColorDisplayOrder"
-                        type="number"
-                        min="0"
-                        placeholder="Thứ tự"
-                        class="order-input"
-                    >
-
-                    <button id="createColorBtn" class="btn btn-green">
-                        Tạo màu
-                    </button>
+            <!-- Section: Danh sách danh mục -->
+            <section id="section-list-categories" class="section-container">
+                <div class="table-section">
+                    <h3>Danh sách danh mục</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category ID</th>
+                                <th>Tên danh mục</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            <tr>
+                                <td colspan="4">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="table-section">
-            <h3>Danh sách danh mục</h3>
+            <!-- Section: Thêm Size -->
+            <section id="section-create-size" class="section-container">
+                <div class="box">
+                    <h3>Thêm size mới</h3>
+                    <div class="form-row">
+                        <input id="newSizeName" placeholder="Tên size, ví dụ: XXXL">
+                        <input id="newSizeDisplayOrder" type="number" min="0" placeholder="Thứ tự" class="order-input">
+                        <button id="createSizeBtn" class="btn btn-green">
+                            <i class="bi bi-check-circle me-2"></i>Tạo size
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Category ID</th>
-                        <th>Tên danh mục</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
+            <!-- Section: Danh sách Size -->
+            <section id="section-list-sizes" class="section-container">
+                <div class="table-section">
+                    <h3>Danh sách size</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Size ID</th>
+                                <th>Tên size</th>
+                                <th>Thứ tự hiển thị</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sizeTableBody">
+                            <tr>
+                                <td colspan="5">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-                <tbody id="categoryTableBody">
-                    <tr>
-                        <td colspan="4">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <!-- Section: Thêm màu -->
+            <section id="section-create-color" class="section-container">
+                <div class="box">
+                    <h3>Thêm màu mới</h3>
+                    <div class="form-row">
+                        <input id="newColorName" placeholder="Tên màu, ví dụ: Hồng pastel">
+                        <input id="newColorCode" placeholder="Mã màu, ví dụ: #F8BBD0" class="color-code-input">
+                        <input id="newColorDisplayOrder" type="number" min="0" placeholder="Thứ tự" class="order-input">
+                        <button id="createColorBtn" class="btn btn-green">
+                            <i class="bi bi-check-circle me-2"></i>Tạo màu
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-        <div class="table-section">
-            <h3>Danh sách size</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Size ID</th>
-                        <th>Tên size</th>
-                        <th>Thứ tự hiển thị</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="sizeTableBody">
-                    <tr>
-                        <td colspan="5">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-section">
-            <h3>Danh sách màu</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Color ID</th>
-                        <th>Tên màu</th>
-                        <th>Mã màu</th>
-                        <th>Thứ tự hiển thị</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="colorTableBody">
-                    <tr>
-                        <td colspan="6">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <!-- Section: Danh sách màu -->
+            <section id="section-list-colors" class="section-container">
+                <div class="table-section">
+                    <h3>Danh sách màu</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Color ID</th>
+                                <th>Tên màu</th>
+                                <th>Mã màu</th>
+                                <th>Thứ tự hiển thị</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="colorTableBody">
+                            <tr>
+                                <td colspan="6">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script src="assets/js/config.js"></script>
     <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/admin-sidebar.js"></script>
     <script src="assets/js/admin-categories.js"></script>
 </body>
 </html>
