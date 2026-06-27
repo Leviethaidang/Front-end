@@ -143,7 +143,7 @@ async function fetchWithAuth(url, options = {}) {
         setMessage("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "danger");
 
         setTimeout(() => {
-            window.location.href = "/login";
+            window.location.href = "login.html";
         }, 1200);
     }
 

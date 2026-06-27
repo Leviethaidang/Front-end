@@ -12,7 +12,7 @@ function getAccessToken() {
 }
 
 function redirectToLogin() {
-    window.location.href = "/login";
+    window.location.href = "login.html";
 }
 
 function escapeHtml(value) {
