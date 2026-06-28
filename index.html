@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HaShop - Trang Chủ</title>
+    <title>HaShop - Trang Chủ | Thời trang chất lượng cao</title>
+    <meta name="description" content="HaShop - Mua sắm thời trang chất lượng cao với giá hợp lý. Đa dạng mẫu mã, size và màu sắc.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/css/navbar.css">
     <link rel="stylesheet" href="/assets/css/index.css">
@@ -21,21 +26,40 @@
                         <span>Sản phẩm chất lượng cao</span>
                     </div>
                     <h1 class="hero-title">
-                        Khám phá <em>sản phẩm tuyệt vời</em>
+                        Khám phá <em>phong cách tuyệt vời</em>
                     </h1>
                     <p class="hero-sub">
-                        Tại HaShop, chúng tôi mang đến những sản phẩm chất lượng, đa dạng với mức giá hợp lý. Trải nghiệm mua sắm trực tuyến dễ dàng và tiện lợi!
+                        Tại HaShop, chúng tôi mang đến những sản phẩm thời trang chất lượng, đa dạng size & màu sắc với mức giá hợp lý. Trải nghiệm mua sắm trực tuyến dễ dàng và tiện lợi!
                     </p>
+                    <div class="hero-cta">
+                        <a href="#products-section" class="btn-primary-lg">
+                            Mua sắm ngay →
+                        </a>
+                        <a href="/cart" class="btn-outline-lg">
+                            🛒 Giỏ hàng
+                        </a>
+                    </div>
                 </div>
                 <div class="hero-visual">
                     <div class="hero-dashboard">
                         <div class="dashboard-bar">
                             <div class="db-dot"></div><div class="db-dot"></div><div class="db-dot"></div>
+                            <span style="margin-left: 8px; font-size: 0.78rem; color: var(--text-3); font-weight: 500;">hashop.vn</span>
                         </div>
                         <div class="dashboard-body">
                             <div class="db-header">
-                                <div class="db-title">Sản phẩm nổi bật</div>
-                                <div class="db-tag">New</div>
+                                <div class="db-title">Tổng quan cửa hàng</div>
+                                <div class="db-tag">Live</div>
+                            </div>
+                            <div class="db-stats">
+                                <div class="db-stat-card">
+                                    <div class="db-stat-label">Sản phẩm</div>
+                                    <div class="db-stat-value">100+</div>
+                                </div>
+                                <div class="db-stat-card">
+                                    <div class="db-stat-label">Đã bán</div>
+                                    <div class="db-stat-value">5k+</div>
+                                </div>
                             </div>
                             <div class="db-chart">
                                 <div class="db-bar" style="height: 45%;"></div>
@@ -43,6 +67,7 @@
                                 <div class="db-bar" style="height: 55%;"></div>
                                 <div class="db-bar active" style="height: 85%;"></div>
                                 <div class="db-bar" style="height: 70%;"></div>
+                                <div class="db-bar active" style="height: 90%;"></div>
                             </div>
                         </div>
                     </div>
@@ -52,12 +77,29 @@
     </section>
 
     <!-- Products Section -->
-    <section class="products-section">
+    <section class="products-section" id="products-section">
         <div class="container">
             <div class="section-header">
                 <div class="section-label">Sản phẩm</div>
                 <h2 class="section-title">Danh sách <em>sản phẩm mới nhất</em></h2>
+                <p class="section-sub">Khám phá bộ sưu tập đa dạng với nhiều size & màu sắc phong phú</p>
             </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filter-bar" style="display:none;">
+                <span class="filter-label">Lọc theo danh mục:</span>
+                <div class="filter-tabs" id="category-tabs">
+                    <button class="filter-tab active" data-category="all">Tất cả</button>
+                </div>
+                <select class="sort-select" id="sort-select">
+                    <option value="default">Mặc định</option>
+                    <option value="price-asc">Giá tăng dần</option>
+                    <option value="price-desc">Giá giảm dần</option>
+                    <option value="sold-desc">Bán chạy nhất</option>
+                    <option value="stock-asc">Sắp hết hàng</option>
+                </select>
+            </div>
+
             <div id="products-container" class="products-grid"></div>
         </div>
     </section>

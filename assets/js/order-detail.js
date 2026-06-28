@@ -103,37 +103,37 @@ function getOrderStatusText(status) {
 
 function getPaymentStatusText(status) {
     const map = {
-        PENDING: "Chờ xử lý",
+        PENDING: "Chờ thanh toán",
         PAID: "Đã thanh toán",
-        FAILED: "Thất bại",
+        FAILED: "Thanh toán thất bại",
         UNPAID: "Chưa thanh toán"
     };
 
     return map[status] || status || "Không rõ";
 }
 
-function getStatusClass(status) {
-    if (status === "PENDING_PAYMENT" || status === "PENDING") {
-        return "pending";
-    }
-
-    if (status === "CONFIRMED" || status === "PAID") {
-        return "processing";
-    }
-
-    if (status === "SHIPPING") {
-        return "shipped";
-    }
-
-    if (status === "COMPLETED") {
-        return "delivered";
-    }
-
-    if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") {
-        return "cancelled";
-    }
-
+function getOrderStatusClass(status) {
+    if (status === "PENDING_PAYMENT") return "pending";
+    if (status === "CONFIRMED") return "processing";
+    if (status === "SHIPPING") return "shipped";
+    if (status === "COMPLETED") return "delivered";
+    if (status === "CANCELLED" || status === "PAYMENT_FAILED") return "cancelled";
     return "pending";
+}
+
+function getPaymentStatusClass(status) {
+    if (status === "PAID") return "payment-paid";
+    if (status === "FAILED") return "payment-failed";
+    return "payment-pending";
+}
+
+function getPaymentMethodTypeLabel(type) {
+    const map = {
+        COD: "💵 COD (Thanh toán khi nhận hàng)",
+        MOMO: "📱 Ví MoMo",
+        BANK: "🏦 Chuyển khoản ngân hàng"
+    };
+    return map[(type || "").toUpperCase()] || type || "Không rõ";
 }
 
 async function fetchWithAuth(url, options = {}) {
@@ -205,45 +205,215 @@ async function loadOrderDetail() {
 function renderOrderDetail(order) {
     const orderId = order.orderId || order.order_id;
     const orderStatus = order.orderStatus || order.order_status;
+    const paymentStatus = order.paymentStatus || order.payment_status;
+    const paymentMethodType = order.paymentMethodType || order.payment_method_type;
+    const paymentMethodDisplay = order.paymentMethodDisplayName || order.payment_method_display_name || "";
+    const receiverName = order.receiverName || order.receiver_name || "";
+    const receiverPhone = order.receiverPhone || order.receiver_phone || "";
+    const shippingAddress = order.shippingAddress || order.shipping_address || "";
+    const customerEmail = order.customerEmail || order.customer_email || "";
+    const paidAt = order.paidAt || order.paid_at;
+    const paymentError = order.paymentError || order.payment_error || "";
+    const sourceType = order.sourceType || order.source_type || "";
     const items = order.items || [];
 
     currentOrderId = orderId;
-    currentOrderIsPaymentFailed =
-        orderStatus === "PAYMENT_FAILED";
+    currentOrderIsPaymentFailed = orderStatus === "PAYMENT_FAILED";
 
-    const itemsHtml = items
-        .map(item => renderOrderItem(item))
-        .join("");
+    const orderStatusClass = getOrderStatusClass(orderStatus);
+    const paymentStatusClass = getPaymentStatusClass(paymentStatus);
 
-    detailContent.className = "order-detail-card";
+    const itemsHtml = items.map(item => renderOrderItem(item)).join("");
+
+    const canCancel = !["SHIPPING", "COMPLETED", "CANCELLED", "PAYMENT_FAILED"].includes(orderStatus);
+    const canConfirmReceived = orderStatus === "SHIPPING";
+
+    const actionButtonsHtml = (canCancel || canConfirmReceived) ? `
+        <div class="detail-section order-detail-side" style="position: static;">
+            <div class="detail-section-header">
+                <div class="detail-section-title">⚙️ Thao tác</div>
+            </div>
+            <div class="detail-section-body action-buttons">
+                ${canConfirmReceived ? `
+                    <button class="btn-received" id="received-order-btn">
+                        ✅ Tôi đã nhận hàng
+                    </button>
+                ` : ""}
+                ${canCancel ? `
+                    <button class="btn-cancel" id="cancel-order-btn">
+                        ✖ Hủy đơn hàng
+                    </button>
+                ` : ""}
+            </div>
+        </div>
+    ` : "";
+
+    const sourceLabel = sourceType === "CART" ? "Từ giỏ hàng" : sourceType === "BUY_NOW" ? "Mua ngay" : sourceType;
+
+    detailContent.className = "";
     detailContent.innerHTML = `
-        <div class="order-header">
-            <div class="order-id">Đơn hàng #${escapeHtml(orderId)}</div>
-            <div class="order-date">${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
-            <span class="order-status ${getStatusClass(orderStatus)}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
-        </div>
+        <div class="order-detail-layout">
+            <!-- Main Column -->
+            <div class="order-detail-main">
 
-        <div class="order-items">
-            <div class="section-title">Sản phẩm</div>
-            ${itemsHtml}
-        </div>
+                <!-- Header Card -->
+                <div class="detail-section">
+                    <div class="detail-section-body">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-id">Đơn hàng #${escapeHtml(orderId)}</div>
+                                <div class="order-date">🕐 ${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
+                            </div>
+                            <div class="order-statuses">
+                                <span class="status-badge ${orderStatusClass}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
+                                <span class="status-badge ${paymentStatusClass}">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="order-summary">
-            <div class="summary-row">
-                <span>Tổng số lượng</span>
-                <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
+                <!-- Products Card -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <div class="detail-section-title">🛍️ Sản phẩm đặt hàng</div>
+                        <span style="font-size: 0.875rem; color: var(--text-3);">${items.length} sản phẩm</span>
+                    </div>
+                    <div class="detail-section-body">
+                        ${itemsHtml}
+                    </div>
+                </div>
+
+                <!-- Receiver Info Card -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <div class="detail-section-title">📦 Thông tin giao hàng</div>
+                    </div>
+                    <div class="detail-section-body">
+                        ${receiverName ? `
+                            <div class="info-row">
+                                <span class="info-label">Người nhận</span>
+                                <span class="info-value">${escapeHtml(receiverName)}</span>
+                            </div>
+                        ` : ""}
+                        ${receiverPhone ? `
+                            <div class="info-row">
+                                <span class="info-label">Điện thoại</span>
+                                <span class="info-value">${escapeHtml(receiverPhone)}</span>
+                            </div>
+                        ` : ""}
+                        ${customerEmail ? `
+                            <div class="info-row">
+                                <span class="info-label">Email</span>
+                                <span class="info-value">${escapeHtml(customerEmail)}</span>
+                            </div>
+                        ` : ""}
+                        ${shippingAddress ? `
+                            <div class="info-row">
+                                <span class="info-label">Địa chỉ</span>
+                                <span class="info-value shipping-address">${escapeHtml(shippingAddress)}</span>
+                            </div>
+                        ` : ""}
+                        ${!receiverName && !receiverPhone && !shippingAddress ? `
+                            <div style="color: var(--text-3); font-size: 0.9rem;">Không có thông tin giao hàng.</div>
+                        ` : ""}
+                    </div>
+                </div>
+
+                <!-- Payment Info Card -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <div class="detail-section-title">💳 Thông tin thanh toán</div>
+                    </div>
+                    <div class="detail-section-body">
+                        <div class="info-row">
+                            <span class="info-label">Phương thức</span>
+                            <span class="info-value">${escapeHtml(getPaymentMethodTypeLabel(paymentMethodType))}</span>
+                        </div>
+                        ${paymentMethodDisplay ? `
+                            <div class="info-row">
+                                <span class="info-label">Tên/Số TK</span>
+                                <span class="info-value">${escapeHtml(paymentMethodDisplay)}</span>
+                            </div>
+                        ` : ""}
+                        <div class="info-row">
+                            <span class="info-label">Trạng thái TT</span>
+                            <span class="info-value">
+                                <span class="status-badge ${paymentStatusClass}" style="font-size: 0.8rem; padding: 4px 12px;">
+                                    ${escapeHtml(getPaymentStatusText(paymentStatus))}
+                                </span>
+                            </span>
+                        </div>
+                        ${paidAt ? `
+                            <div class="info-row">
+                                <span class="info-label">Thanh toán lúc</span>
+                                <span class="info-value">${escapeHtml(formatDate(paidAt))}</span>
+                            </div>
+                        ` : ""}
+                        ${paymentError ? `
+                            <div class="info-row">
+                                <span class="info-label">Lỗi TT</span>
+                                <span class="info-value" style="color: #d70018;">${escapeHtml(paymentError)}</span>
+                            </div>
+                        ` : ""}
+                        ${sourceLabel ? `
+                            <div class="info-row">
+                                <span class="info-label">Loại đơn</span>
+                                <span class="info-value">${escapeHtml(sourceLabel)}</span>
+                            </div>
+                        ` : ""}
+                    </div>
+                </div>
+
             </div>
-            <div class="summary-row summary-total">
-                <span>Tổng tiền</span>
-                <span>${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
+
+            <!-- Side Column -->
+            <div class="order-detail-side">
+
+                <!-- Summary Card -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <div class="detail-section-title">🧾 Tóm tắt đơn hàng</div>
+                    </div>
+                    <div class="detail-section-body">
+                        <div class="summary-row">
+                            <span>Số lượng sản phẩm</span>
+                            <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>Tổng tiền</span>
+                            <span>${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                ${(canCancel || canConfirmReceived) ? `
+                    <div class="detail-section">
+                        <div class="detail-section-header">
+                            <div class="detail-section-title">⚙️ Thao tác</div>
+                        </div>
+                        <div class="detail-section-body action-buttons">
+                            ${canConfirmReceived ? `
+                                <button class="btn-received" id="received-order-btn">
+                                    ✅ Tôi đã nhận hàng
+                                </button>
+                            ` : ""}
+                            ${canCancel ? `
+                                <button class="btn-cancel" id="cancel-order-btn">
+                                    ✖ Hủy đơn hàng
+                                </button>
+                            ` : ""}
+                        </div>
+                    </div>
+                ` : ""}
+
+                <!-- Back Link -->
+                <a class="back-link" href="/orders">
+                    ← Quay lại danh sách đơn hàng
+                </a>
+
             </div>
         </div>
-
-        ${renderActionButtons(order)}
-
-        <a class="back-link" href="/orders">
-            ← Quay lại danh sách đơn hàng
-        </a>
     `;
 
     bindActionButtons(order);
@@ -252,19 +422,18 @@ function renderOrderDetail(order) {
 
 function renderOrderItem(item) {
     const productName = item.productName || item.product_name;
-
     const sizeName = item.sizeName || item.size_name || "";
     const colorName = item.colorName || item.color_name || "";
     const colorCode = item.colorCode || item.color_code || "";
-
     const imageUrl = item.imageUrl || item.image_url;
     const unitPrice = item.unitPrice || item.unit_price || 0;
     const quantity = item.quantity || 0;
     const subtotal = item.subtotal || 0;
+    const categoryName = item.categoryName || item.category_name || "";
 
     const imageHtml = imageUrl
         ? `<img class="item-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
-        : `<div class="no-image">Không ảnh</div>`;
+        : `<div style="font-size: 1.75rem;">📦</div>`;
 
     const colorDotHtml = colorCode
         ? `<span class="color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
@@ -273,8 +442,8 @@ function renderOrderItem(item) {
     const variantHtml = (sizeName || colorName)
         ? `
             <div class="variant-info">
-                ${sizeName ? `<span class="variant-badge">Size: ${escapeHtml(sizeName)}</span>` : ""}
-                ${colorName ? `<span class="variant-badge">${colorDotHtml} Màu: ${escapeHtml(colorName)}</span>` : ""}
+                ${sizeName ? `<span class="variant-badge">📏 ${escapeHtml(sizeName)}</span>` : ""}
+                ${colorName ? `<span class="variant-badge">${colorDotHtml} ${escapeHtml(colorName)}</span>` : ""}
             </div>
         `
         : "";
@@ -286,57 +455,19 @@ function renderOrderItem(item) {
             </div>
 
             <div class="item-info">
-                <div class="item-name">
-                    ${escapeHtml(productName)}
-                </div>
-
+                <div class="item-name">${escapeHtml(productName)}</div>
+                ${categoryName ? `<div class="item-meta">${escapeHtml(categoryName)}</div>` : ""}
                 ${variantHtml}
-
-                <div class="item-quantity">
-                    Số lượng: ${escapeHtml(quantity)}
-                </div>
-
-                <div class="item-price">
-                    ${formatPrice(unitPrice)}
+                <div class="item-bottom">
+                    <span class="item-qty">SL: ${escapeHtml(quantity)}</span>
+                    <div>
+                        <div class="item-price">${formatPrice(unitPrice)}</div>
+                        <div class="item-subtotal">Tạm tính: ${formatPrice(subtotal)}</div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
-}
-
-function renderActionButtons(order) {
-    const orderStatus = order.orderStatus || order.order_status;
-
-    const canCancel = ![
-        "SHIPPING",
-        "COMPLETED",
-        "CANCELLED",
-        "PAYMENT_FAILED"
-    ].includes(orderStatus);
-
-    const canConfirmReceived = orderStatus === "SHIPPING";
-
-    let html = `<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">`;
-
-    if (canCancel) {
-        html += `
-            <button class="btn-outline-lg" id="cancel-order-btn">
-                Hủy đơn hàng
-            </button>
-        `;
-    }
-
-    if (canConfirmReceived) {
-        html += `
-            <button class="btn-primary-lg" id="received-order-btn">
-                Tôi đã nhận hàng
-            </button>
-        `;
-    }
-
-    html += `</div>`;
-
-    return html;
 }
 
 function bindActionButtons(order) {
@@ -440,6 +571,7 @@ function setupPaymentStatusPolling(order) {
         loadOrderDetail();
     }, 2000);
 }
+
 async function cleanupFailedOrderBeforeLeave() {
     if (!currentOrderId || !currentOrderIsPaymentFailed || cleanupStarted) {
         return;

@@ -376,75 +376,101 @@ function renderConfirmOrderPage() {
             .join("")
         : `
             <div class="no-payment-method">
-                Hiện checkout hỗ trợ COD, MoMo hoặc Bank.
-                Bạn chưa có phương thức MoMo/Bank nào, vui lòng thêm phương thức thanh toán trước.
+                💳 Checkout hỗ trợ COD, MoMo hoặc Chuyển khoản.<br>
+                Bạn chưa có phương thức thanh toán nào, vui lòng thêm trong trang hồ sơ.
             </div>
         `;
+
+    const modeLabel = state.mode === "CART" ? "🛒 Giỏ hàng" : "⚡ Mua ngay";
 
     content.className = "confirm-layout";
     content.innerHTML = `
         <div class="confirm-main">
+
+            <!-- Receiver Info Section -->
             <div class="section">
-                <div class="section-title">Thông tin nhận hàng</div>
-
-                <div class="form-group">
-                    <label for="receiver-name">Họ và tên người nhận</label>
-                    <input
-                        id="receiver-name"
-                        type="text"
-                        value="${escapeAttribute(profile.full_name || "")}"
-                        placeholder="Nhập họ và tên người nhận"
-                    >
+                <div class="section-header">
+                    <div class="section-title">📦 Thông tin nhận hàng</div>
                 </div>
+                <div class="section-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="receiver-name">Họ và tên người nhận <span class="required">*</span></label>
+                            <input
+                                id="receiver-name"
+                                type="text"
+                                value="${escapeAttribute(profile.full_name || "")}"
+                                placeholder="Nguyễn Văn A"
+                            >
+                        </div>
 
-                <div class="form-group">
-                    <label for="receiver-phone">Số điện thoại</label>
-                    <input
-                        id="receiver-phone"
-                        type="text"
-                        value="${escapeAttribute(profile.phone_number || "")}"
-                        placeholder="Ví dụ: +84901234567"
-                    >
-                </div>
+                        <div class="form-group">
+                            <label for="receiver-phone">Số điện thoại <span class="required">*</span></label>
+                            <input
+                                id="receiver-phone"
+                                type="text"
+                                value="${escapeAttribute(profile.phone_number || "")}"
+                                placeholder="+84901234567"
+                            >
+                        </div>
 
-                <div class="form-group">
-                    <label for="customer-email">Email nhận thông báo</label>
-                    <input
-                        id="customer-email"
-                        type="email"
-                        value="${escapeAttribute(profile.email || "")}"
-                        placeholder="Nhập email nhận thông báo đơn hàng"
-                    >
-                </div>
+                        <div class="form-group">
+                            <label for="customer-email">Email nhận thông báo <span class="required">*</span></label>
+                            <input
+                                id="customer-email"
+                                type="email"
+                                value="${escapeAttribute(profile.email || "")}"
+                                placeholder="email@example.com"
+                            >
+                        </div>
 
-                <div class="form-group">
-                    <label for="shipping-address">Địa chỉ giao hàng</label>
-                    <textarea
-                        id="shipping-address"
-                        placeholder="Nhập địa chỉ giao hàng"
-                    >${escapeHtml(profile.default_shipping_address || "")}</textarea>
+                        <div class="form-group form-group-full">
+                            <label for="shipping-address">Địa chỉ giao hàng <span class="required">*</span></label>
+                            <textarea
+                                id="shipping-address"
+                                placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                            >${escapeHtml(profile.default_shipping_address || "")}</textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Products Section -->
             <div class="section">
-                <div class="section-title">Sản phẩm</div>
-                ${itemsHtml}
+                <div class="section-header">
+                    <div class="section-title">🛒 Sản phẩm đặt hàng</div>
+                    <span style="font-size: 0.875rem; color: var(--text-3);">${state.items.length} sản phẩm</span>
+                </div>
+                <div class="section-body">
+                    ${itemsHtml}
+                </div>
             </div>
 
+            <!-- Payment Methods Section -->
             <div class="section">
-                <div class="section-title">Phương thức thanh toán</div>
-                <div class="payment-method-list">
-                    ${paymentMethodsHtml}
+                <div class="section-header">
+                    <div class="section-title">💳 Phương thức thanh toán</div>
+                </div>
+                <div class="section-body">
+                    <div class="payment-method-list">
+                        ${paymentMethodsHtml}
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Summary Panel -->
         <div class="confirm-summary">
-            <div class="summary-title">Tóm tắt đơn hàng</div>
+            <div class="summary-title">🧭 Tóm tắt đơn hàng</div>
 
             <div class="summary-row">
                 <span>Loại đơn</span>
-                <strong>${state.mode === "CART" ? "Giỏ hàng" : "Mua ngay"}</strong>
+                <strong>${modeLabel}</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Số lượng sản phẩm</span>
+                <strong>${escapeHtml(state.items.length)}</strong>
             </div>
 
             <div class="summary-row">
@@ -462,11 +488,15 @@ function renderConfirmOrderPage() {
                 id="place-order-btn"
                 ${supportedPaymentMethods.length === 0 ? "disabled" : ""}
             >
-                Đặt hàng / Thanh toán
+                🛂 Đặt hàng và thanh toán
             </button>
 
+            <div class="security-note">
+                🔒 Giao dịch được bảo mật
+            </div>
+
             <a class="back-link" href="${state.mode === "CART" ? "/cart" : `/products/${state.productId}`}">
-                Quay lại
+                ← Quay lại
             </a>
         </div>
     `;
@@ -477,7 +507,7 @@ function renderConfirmOrderPage() {
 function renderOrderItem(item) {
     const imageHtml = item.imageUrl
         ? `<img class="order-image" src="${escapeAttribute(item.imageUrl)}" alt="${escapeAttribute(item.productName)}">`
-        : "Không có ảnh";
+        : "📦";
 
     const colorDotHtml = item.colorCode
         ? `<span class="order-color-dot" style="background: ${escapeAttribute(item.colorCode)};"></span>`
@@ -489,36 +519,22 @@ function renderOrderItem(item) {
                 ${imageHtml}
             </div>
 
-            <div>
-                <div class="order-product-name">
-                    ${escapeHtml(item.productName)}
-                </div>
+            <div class="order-item-info">
+                <div class="order-product-name">${escapeHtml(item.productName)}</div>
 
-                <div class="order-product-meta">
-                    ${escapeHtml(item.categoryName)}
-                </div>
+                ${item.categoryName ? `<div class="order-product-meta">${escapeHtml(item.categoryName)}</div>` : ""}
 
                 <div class="order-variant-info">
-                    <span class="order-variant-badge">
-                        Size: ${escapeHtml(item.sizeName || "Không rõ")}
-                    </span>
-
-                    <span class="order-variant-badge">
-                        ${colorDotHtml}
-                        Màu: ${escapeHtml(item.colorName || "Không rõ")}
-                    </span>
+                    ${item.sizeName ? `<span class="order-variant-badge">📏 ${escapeHtml(item.sizeName)}</span>` : ""}
+                    ${item.colorName ? `<span class="order-variant-badge">${colorDotHtml} ${escapeHtml(item.colorName)}</span>` : ""}
                 </div>
 
-                <div class="order-product-meta">
-                    Số lượng: ${escapeHtml(item.quantity)}
-                </div>
-
-                <div class="order-product-price">
-                    ${formatPrice(item.unitPrice)}
-                </div>
-
-                <div class="order-product-meta">
-                    Tạm tính: ${formatPrice(item.subtotal)}
+                <div class="order-item-bottom">
+                    <span class="order-item-qty">SL: <strong>${escapeHtml(item.quantity)}</strong></span>
+                    <div>
+                        <div class="order-product-price">${formatPrice(item.unitPrice)}</div>
+                        <div class="order-product-subtotal">Tạm tính: ${formatPrice(item.subtotal)}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -530,8 +546,16 @@ function renderPaymentMethod(method, defaultPaymentMethodId) {
     const checked = paymentMethodId === defaultPaymentMethodId ? "checked" : "";
     const methodType = normalizeMethodType(method.method_type);
 
+    const iconMap = { COD: "💵", MOMO: "📱", BANK: "🏦" };
+    const icon = iconMap[methodType] || "💳";
+
+    let subLabel = methodType;
+    if (methodType === "COD") subLabel = "Thanh toán khi nhận hàng";
+    else if (methodType === "MOMO") subLabel = `Ví MoMo${method.momo_phone_number ? ": " + method.momo_phone_number : ""}`;
+    else if (methodType === "BANK") subLabel = `${method.bank_name || "Ngân hàng"}${method.bank_account_number ? ": " + method.bank_account_number : ""}`;
+
     return `
-        <label class="payment-method-card">
+        <label class="payment-method-card" id="pm-${escapeAttribute(paymentMethodId)}">
             <input
                 type="radio"
                 name="payment-method"
@@ -539,16 +563,14 @@ function renderPaymentMethod(method, defaultPaymentMethodId) {
                 ${checked}
             >
 
-            <div>
-                <div class="payment-method-name">
-                    ${escapeHtml(method.display_name || "Phương thức thanh toán")}
-                </div>
+            <span class="payment-method-icon">${icon}</span>
 
-                <div class="payment-method-type">
-                    ${escapeHtml(methodType)}
-                    ${method.is_default ? " • Mặc định" : ""}
-                </div>
+            <div class="payment-method-texts">
+                <div class="payment-method-name">${escapeHtml(method.display_name || "Phương thức thanh toán")}</div>
+                <div class="payment-method-type">${escapeHtml(subLabel)}</div>
             </div>
+
+            ${method.is_default ? `<span class="payment-method-default">★ Mặc định</span>` : ""}
         </label>
     `;
 }
@@ -626,7 +648,7 @@ async function submitOrder() {
 
         if (!response) {
             button.disabled = false;
-            button.textContent = "Đặt hàng / Thanh toán";
+            button.textContent = "🛂 Đặt hàng và thanh toán";
             return;
         }
 
@@ -682,6 +704,6 @@ async function submitOrder() {
         showMessage(error.message || "Không thể tạo đơn hàng.", "error");
 
         button.disabled = false;
-        button.textContent = "Đặt hàng / Thanh toán";
+        button.textContent = "🛂 Đặt hàng và thanh toán";
     }
 }

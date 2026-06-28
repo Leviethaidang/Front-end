@@ -134,21 +134,33 @@ function renderCart(cart) {
     if (items.length === 0) {
         cartContent.className = "empty-cart";
         cartContent.innerHTML = `
-            <p>Giỏ hàng của bạn đang trống.</p>
-            <p><a href="/">Tiếp tục mua sắm</a></p>
+            <span class="empty-icon">🛒</span>
+            <p style="font-size: 1.125rem; font-weight: 600; color: var(--text-1);">Giỏ hàng của bạn đang trống</p>
+            <p>Hãy khám phá các sản phẩm và thêm vào giỏ hàng nhé!</p>
+            <p style="margin-top: 16px;">
+                <a href="/" class="btn-primary-lg" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    🛍️ Mua sắm ngay
+                </a>
+            </p>
         `;
         return;
     }
+
+    const validItems = items.filter(item => !isInvalidCartItem(item));
+    const invalidItems = items.filter(item => isInvalidCartItem(item));
+    const hasInvalidItem = invalidItems.length > 0;
 
     const itemsHtml = items
         .map(item => renderCartItem(item))
         .join("");
 
-    const hasInvalidItem = items.some(item => isInvalidCartItem(item));
-
     cartContent.className = "cart-layout";
     cartContent.innerHTML = `
         <div class="cart-list">
+            <div class="cart-list-header">
+                <div class="cart-list-title">🛒 Sản phẩm trong giỏ</div>
+                <span class="cart-item-count">${items.length} sản phẩm</span>
+            </div>
             ${itemsHtml}
         </div>
 
@@ -156,7 +168,12 @@ function renderCart(cart) {
             <div class="summary-title">Tóm tắt đơn hàng</div>
 
             <div class="summary-row">
-                <span>Tổng số lượng hợp lệ</span>
+                <span>Số loại sản phẩm</span>
+                <strong>${escapeHtml(items.length)}</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Tổng số lượng</span>
                 <strong>${escapeHtml(cart.totalQuantity || 0)}</strong>
             </div>
 
@@ -166,14 +183,16 @@ function renderCart(cart) {
             </div>
 
             ${hasInvalidItem ? `
-                <div class="variant-warning">
-                    Có sản phẩm hoặc biến thể không hợp lệ. Vui lòng xóa hoặc điều chỉnh trước khi thanh toán.
+                <div class="variant-warning" style="margin-top: 16px;">
+                    ⚠️ Có ${invalidItems.length} sản phẩm không hợp lệ. Vui lòng xóa hoặc điều chỉnh trước khi thanh toán.
                 </div>
             ` : ""}
 
             <button class="checkout-btn" id="go-checkout-btn">
-                Thanh toán
+                ${hasInvalidItem ? "⚠️ Vui lòng xử lý sản phẩm lỗi" : "✅ Thanh toán ngay"}
             </button>
+
+            <a class="cart-continue-link" href="/">← Tiếp tục mua sắm</a>
         </div>
     `;
 
@@ -186,23 +205,18 @@ function renderDeletedProductItem(item) {
 
     return `
         <div class="cart-item invalid-item">
-            <div class="cart-image-wrap">
-                Không có ảnh
-            </div>
+            <div class="cart-image-wrap">📦</div>
 
             <div class="cart-info">
-                <div class="deleted-product">
-                    Sản phẩm này đã bị xóa khỏi hệ thống
-                </div>
-
-                <div>Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
+                <div class="deleted-product">⚠️ Sản phẩm này đã bị xóa khỏi hệ thống</div>
+                <div class="available-info warning">Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
 
                 <div class="item-actions">
                     <button
                         class="remove-btn remove-item-btn"
                         data-cart-item-id="${escapeAttribute(cartItemId)}"
                     >
-                        Xóa khỏi giỏ
+                        🗑 Xóa khỏi giỏ
                     </button>
                 </div>
             </div>
@@ -217,7 +231,7 @@ function renderDeletedVariantItem(item) {
 
     const imageHtml = product?.imageUrl || product?.image_url
         ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl || product.image_url)}" alt="${escapeAttribute(product.productName || product.product_name)}">`
-        : "Không có ảnh";
+        : "📦";
 
     return `
         <div class="cart-item invalid-item">
@@ -231,17 +245,17 @@ function renderDeletedVariantItem(item) {
                 </a>
 
                 <div class="variant-warning">
-                    Biến thể size/màu này không còn tồn tại hoặc đã bị ngừng bán.
+                    ⚠️ Biến thể size/màu này không còn tồn tại hoặc đã bị ngừng bán.
                 </div>
 
-                <div>Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
+                <div class="available-info warning">Số lượng trong giỏ: ${escapeHtml(item.quantity)}</div>
 
                 <div class="item-actions">
                     <button
                         class="remove-btn remove-item-btn"
                         data-cart-item-id="${escapeAttribute(cartItemId)}"
                     >
-                        Xóa khỏi giỏ
+                        🗑 Xóa khỏi giỏ
                     </button>
                 </div>
             </div>
@@ -272,7 +286,7 @@ function renderCartItem(item) {
 
     const imageHtml = product.imageUrl || product.image_url
         ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl || product.image_url)}" alt="${escapeAttribute(product.productName || product.product_name)}">`
-        : "Không có ảnh";
+        : "📦";
 
     const colorDotHtml = variant.colorCode || variant.color_code
         ? `<span class="color-dot" style="background: ${escapeAttribute(variant.colorCode || variant.color_code)};"></span>`
@@ -295,32 +309,33 @@ function renderCartItem(item) {
 
                 <div class="variant-info">
                     <span class="variant-badge">
-                        Size: ${escapeHtml(variant.sizeName || variant.size_name || "Không rõ")}
+                        📏 Size: ${escapeHtml(variant.sizeName || variant.size_name || "Không rõ")}
                     </span>
 
                     <span class="variant-badge">
                         ${colorDotHtml}
-                        Màu: ${escapeHtml(variant.colorName || variant.color_name || "Không rõ")}
+                        ${escapeHtml(variant.colorName || variant.color_name || "Không rõ")}
                     </span>
                 </div>
 
-                <div class="product-price">
-                    ${formatPrice(product.price)}
-                </div>
+                <div class="product-price">${formatPrice(product.price)}</div>
 
                 <div class="available-info ${isQuantityInvalid ? "warning" : ""}">
-                    Còn lại biến thể này: ${escapeHtml(availableQuantity)}
+                    ${availableQuantity > 0
+                        ? `Còn lại: ${escapeHtml(availableQuantity)} sản phẩm`
+                        : "⚠️ Hết hàng"
+                    }
                 </div>
 
-                ${quantity > availableQuantity ? `
+                ${quantity > availableQuantity && availableQuantity > 0 ? `
                     <div class="variant-warning">
-                        Số lượng trong giỏ đang vượt quá số lượng còn lại.
+                        ⚠️ Số lượng trong giỏ (${quantity}) vượt quá số lượng còn lại (${availableQuantity}).
                     </div>
                 ` : ""}
 
                 ${item.inventoryMissing || item.inventory_missing ? `
                     <div class="variant-warning">
-                        Biến thể này chưa có tồn kho hoặc đã ngừng bán.
+                        ⚠️ Biến thể này chưa có tồn kho hoặc đã ngừng bán.
                     </div>
                 ` : ""}
 
@@ -352,12 +367,13 @@ function renderCartItem(item) {
                         class="remove-btn remove-item-btn"
                         data-cart-item-id="${escapeAttribute(cartItemId)}"
                     >
-                        Xóa
+                        🗑 Xóa
                     </button>
                 </div>
 
-                <div class="subtotal">
-                    Tạm tính: ${formatPrice(item.subtotal || 0)}
+                <div class="item-subtotal-row">
+                    <span class="subtotal-label">Tạm tính:</span>
+                    <span class="subtotal">${formatPrice(item.subtotal || 0)}</span>
                 </div>
             </div>
         </div>
@@ -479,7 +495,6 @@ function bindCheckoutButton(items) {
 
     if (hasInvalidItem) {
         checkoutButton.disabled = true;
-        checkoutButton.textContent = "Vui lòng xử lý sản phẩm lỗi trước";
         return;
     }
 
