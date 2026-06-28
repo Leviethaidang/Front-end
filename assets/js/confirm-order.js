@@ -271,7 +271,7 @@ async function loadCartCheckoutItems() {
             colorCode: variant.colorCode || variant.color_code || "",
 
             imageUrl: product.imageUrl || product.image_url || "",
-            unitPrice: Number(product.price),
+            price: Number(product.price),
             quantity: Number(item.quantity),
             subtotal: Number(item.subtotal)
         };
@@ -334,7 +334,7 @@ async function loadBuyNowCheckoutItems() {
             colorCode: variant.color_code || "",
 
             imageUrl: product.imageUrl || "",
-            unitPrice,
+            price: unitPrice,
             quantity: state.quantity,
             subtotal
         }
@@ -345,10 +345,42 @@ async function loadBuyNowCheckoutItems() {
 }
 
 function getSupportedPaymentMethods() {
-    return state.paymentMethods.filter(method => {
+    const supported = state.paymentMethods.filter(method => {
         const methodType = normalizeMethodType(method.method_type);
         return methodType === "MOMO" || methodType === "BANK" || methodType === "COD";
     });
+
+    // Check COD
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "COD")) {
+        supported.push({
+            payment_method_id: 0,
+            method_type: "COD",
+            display_name: "Thanh toán khi nhận hàng (COD)",
+            is_default: supported.length === 0 ? 1 : 0
+        });
+    }
+
+    // Check MOMO
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "MOMO")) {
+        supported.push({
+            payment_method_id: -1,
+            method_type: "MOMO",
+            display_name: "Ví MoMo",
+            is_default: 0
+        });
+    }
+
+    // Check BANK
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "BANK")) {
+        supported.push({
+            payment_method_id: -2,
+            method_type: "BANK",
+            display_name: "Chuyển khoản Ngân hàng",
+            is_default: 0
+        });
+    }
+
+    return supported;
 }
 
 function getDefaultSupportedPaymentMethodId(methods) {
@@ -532,7 +564,7 @@ function renderOrderItem(item) {
                 <div class="order-item-bottom">
                     <span class="order-item-qty">SL: <strong>${escapeHtml(item.quantity)}</strong></span>
                     <div>
-                        <div class="order-product-price">${formatPrice(item.unitPrice)}</div>
+                        <div class="order-product-price">${formatPrice(item.price)}</div>
                         <div class="order-product-subtotal">Tạm tính: ${formatPrice(item.subtotal)}</div>
                     </div>
                 </div>
@@ -597,6 +629,14 @@ async function submitOrder() {
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
 
+    if (paymentMethodId === "-1" || paymentMethodId === "-2") {
+        showMessage("Bạn chưa liên kết phương thức thanh toán này. Vui lòng cập nhật trong trang Hồ sơ trước khi sử dụng.", "error");
+        setTimeout(() => {
+            window.location.href = "/profile";
+        }, 3000);
+        return;
+    }
+
     if (!receiverName) {
         showMessage("Vui lòng nhập họ tên người nhận.", "error");
         return;
@@ -622,13 +662,21 @@ async function submitOrder() {
         return;
     }
 
+    const supportedPaymentMethods = getSupportedPaymentMethods();
+    const selectedMethod = supportedPaymentMethods.find(m => String(m.payment_method_id) === paymentMethodId);
+
     const payload = {
         sourceType: state.mode,
         receiverName,
         receiverPhone,
         customerEmail,
         shippingAddress,
-        paymentMethodId
+        paymentMethodId,
+        paymentMethodType: selectedMethod ? selectedMethod.method_type : "",
+        paymentMethodDisplayName: selectedMethod ? selectedMethod.display_name : "",
+        items: state.items,
+        totalQuantity: state.totalQuantity,
+        totalAmount: state.totalAmount
     };
 
     if (state.mode === "BUY_NOW") {

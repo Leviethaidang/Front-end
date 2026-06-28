@@ -508,7 +508,7 @@ async function cancelOrder(orderId) {
         }
 
         showMessage("Hủy đơn hàng thành công.", "success");
-        renderOrderDetail(data.order);
+        loadOrderDetail();
 
     } catch (error) {
         console.error("Lỗi hủy đơn hàng:", error);
@@ -535,7 +535,7 @@ async function confirmReceived(orderId) {
         }
 
         showMessage("Xác nhận đã nhận hàng thành công.", "success");
-        renderOrderDetail(data.order);
+        loadOrderDetail();
 
     } catch (error) {
         console.error("Lỗi xác nhận đã nhận hàng:", error);
