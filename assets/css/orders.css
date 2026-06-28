@@ -7,87 +7,86 @@ body {
 }
 
 .container {
+    max-width: 1160px;
+    margin: 0 auto;
     padding: 60px 32px;
 }
 
 .page-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.04em;
     color: var(--text-1);
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 }
 
-.orders-list,
-.loading,
-.error,
-.empty-orders {
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.order-card {
     background: var(--surface-2);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
+    padding: 28px;
+    transition: transform 0.3s;
 }
 
-.orders-list {
-    padding: 24px;
-}
-
-.order-card {
-    padding: 24px;
-    border-bottom: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 16px;
-    transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk);
-}
 .order-card:hover {
-    background: var(--surface);
     transform: translateY(-4px);
-    box-shadow: var(--shadow-sm);
-}
-.order-card:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
+    box-shadow: var(--shadow-md);
 }
 
 .order-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: wrap;
     gap: 16px;
     margin-bottom: 20px;
 }
+
 .order-id {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-1);
 }
+
 .order-date {
     color: var(--text-3);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
 }
+
 .order-status {
     font-weight: 600;
     padding: 6px 16px;
     border-radius: 100px;
     font-size: 0.875rem;
 }
+
 .order-status.pending {
     background: rgba(255, 138, 0, 0.12);
     color: #ff8a00;
 }
+
 .order-status.processing {
     background: var(--accent-ghost);
     color: var(--accent);
 }
+
 .order-status.shipped {
     background: rgba(26, 122, 110, 0.12);
     color: var(--accent);
 }
+
 .order-status.delivered {
     background: rgba(26, 122, 110, 0.12);
     color: var(--accent);
 }
+
 .order-status.cancelled {
     background: rgba(215, 0, 24, 0.12);
     color: #d70018;
@@ -95,25 +94,27 @@ body {
 
 .order-items {
     margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
 }
-.order-item {
+
+.order-items .order-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
 }
-.order-item:last-child {
-    border-bottom: none;
-}
+
 .item-name {
     font-weight: 600;
     color: var(--text-1);
 }
+
 .item-quantity {
     color: var(--text-3);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
 }
+
 .item-price {
     color: var(--accent);
     font-weight: 700;
@@ -126,11 +127,17 @@ body {
     flex-wrap: wrap;
     gap: 16px;
 }
+
 .order-total {
     font-size: 1.25rem;
     font-weight: 700;
+    color: var(--text-1);
+}
+
+.order-total strong {
     color: var(--accent);
 }
+
 .view-detail-btn {
     background: transparent;
     color: var(--accent);
@@ -143,6 +150,7 @@ body {
     text-decoration: none;
     transition: all 0.3s;
 }
+
 .view-detail-btn:hover {
     background: var(--accent-ghost);
 }
@@ -152,6 +160,10 @@ body {
 .empty-orders {
     padding: 48px;
     text-align: center;
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
 }
 
 .error {
@@ -165,12 +177,14 @@ body {
     display: none;
     font-weight: 600;
 }
+
 .message.success {
     display: block;
     background: var(--accent-ghost);
     color: var(--accent);
     border: 1px solid var(--accent-border);
 }
+
 .message.error {
     display: block;
     background: rgba(215, 0, 24, 0.08);
@@ -187,5 +201,13 @@ body {
     }
     .order-card {
         padding: 20px;
+    }
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .order-footer {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

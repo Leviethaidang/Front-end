@@ -106,12 +106,12 @@ async function loadInventorySummaries(productIds) {
 }
 
 function createProductCard(product) {
-    const productName = product.product_name || "Không có tên";
-    const categoryName = product.category_name || "Chưa phân loại";
+    const productName = product.product_name || product.productName || "Không có tên";
+    const categoryName = product.category_name || product.categoryName || "Chưa phân loại";
     const price = formatPrice(product.price);
-    const soldQuantity = product.quantity_sold ?? 0;
-    const availableQuantity = product.quantity_available ?? 0;
-    const imageUrl = product.imageUrl;
+    const soldQuantity = product.quantity_sold ?? product.quantitySold ?? 0;
+    const availableQuantity = product.quantity_available ?? product.quantityAvailable ?? 0;
+    const imageUrl = product.imageUrl || product.image_url || product.image_key;
 
     const imageHtml = imageUrl
         ? `<img class="product-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`

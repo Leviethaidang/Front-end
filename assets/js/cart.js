@@ -102,20 +102,20 @@ async function loadCart() {
 }
 
 function isInvalidCartItem(item) {
-    if (item.productDeleted || !item.product) {
+    if (item.productDeleted || item.product_deleted || !item.product) {
         return true;
     }
 
-    if (item.variantDeleted || !item.variant) {
+    if (item.variantDeleted || item.variant_deleted || !item.variant) {
         return true;
     }
 
-    if (item.inventoryMissing) {
+    if (item.inventoryMissing || item.inventory_missing) {
         return true;
     }
 
     const quantity = Number(item.quantity || 0);
-    const availableQuantity = Number(item.variant.quantityAvailable || 0);
+    const availableQuantity = Number(item.variant.quantityAvailable || item.variant.quantity_available || 0);
 
     if (availableQuantity <= 0) {
         return true;
@@ -182,7 +182,7 @@ function renderCart(cart) {
 }
 
 function renderDeletedProductItem(item) {
-    const cartItemId = Number(item.cartItemId);
+    const cartItemId = Number(item.cartItemId || item.cart_item_id);
 
     return `
         <div class="cart-item invalid-item">
@@ -212,11 +212,11 @@ function renderDeletedProductItem(item) {
 
 function renderDeletedVariantItem(item) {
     const product = item.product;
-    const cartItemId = Number(item.cartItemId);
-    const productId = Number(item.productId);
+    const cartItemId = Number(item.cartItemId || item.cart_item_id);
+    const productId = Number(item.productId || item.product_id);
 
-    const imageHtml = product?.imageUrl
-        ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
+    const imageHtml = product?.imageUrl || product?.image_url
+        ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl || product.image_url)}" alt="${escapeAttribute(product.productName || product.product_name)}">`
         : "Không có ảnh";
 
     return `
@@ -227,7 +227,7 @@ function renderDeletedVariantItem(item) {
 
             <div class="cart-info">
                 <a class="product-name" href="/products/${escapeAttribute(productId)}">
-                    ${escapeHtml(product?.productName || "Sản phẩm")}
+                    ${escapeHtml(product?.productName || product?.product_name || "Sản phẩm")}
                 </a>
 
                 <div class="variant-warning">
@@ -250,32 +250,32 @@ function renderDeletedVariantItem(item) {
 }
 
 function renderCartItem(item) {
-    if (item.productDeleted || !item.product) {
+    if (item.productDeleted || item.product_deleted || !item.product) {
         return renderDeletedProductItem(item);
     }
 
-    if (item.variantDeleted || !item.variant) {
+    if (item.variantDeleted || item.variant_deleted || !item.variant) {
         return renderDeletedVariantItem(item);
     }
 
     const product = item.product;
     const variant = item.variant;
 
-    const cartItemId = Number(item.cartItemId);
-    const productId = Number(item.productId);
+    const cartItemId = Number(item.cartItemId || item.cart_item_id);
+    const productId = Number(item.productId || item.product_id);
     const quantity = Number(item.quantity || 1);
 
-    const availableQuantity = Number(variant.quantityAvailable || 0);
+    const availableQuantity = Number(variant.quantityAvailable || variant.quantity_available || 0);
 
     const isQuantityInvalid =
-        item.inventoryMissing || availableQuantity <= 0 || quantity > availableQuantity;
+        item.inventoryMissing || item.inventory_missing || availableQuantity <= 0 || quantity > availableQuantity;
 
-    const imageHtml = product.imageUrl
-        ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.productName)}">`
+    const imageHtml = product.imageUrl || product.image_url
+        ? `<img class="cart-image" src="${escapeAttribute(product.imageUrl || product.image_url)}" alt="${escapeAttribute(product.productName || product.product_name)}">`
         : "Không có ảnh";
 
-    const colorDotHtml = variant.colorCode
-        ? `<span class="color-dot" style="background: ${escapeAttribute(variant.colorCode)};"></span>`
+    const colorDotHtml = variant.colorCode || variant.color_code
+        ? `<span class="color-dot" style="background: ${escapeAttribute(variant.colorCode || variant.color_code)};"></span>`
         : "";
 
     return `
@@ -286,21 +286,21 @@ function renderCartItem(item) {
 
             <div class="cart-info">
                 <a class="product-name" href="/products/${escapeAttribute(productId)}">
-                    ${escapeHtml(product.productName)}
+                    ${escapeHtml(product.productName || product.product_name)}
                 </a>
 
                 <div class="product-category">
-                    ${escapeHtml(product.categoryName || "Chưa phân loại")}
+                    ${escapeHtml(product.categoryName || product.category_name || "Chưa phân loại")}
                 </div>
 
                 <div class="variant-info">
                     <span class="variant-badge">
-                        Size: ${escapeHtml(variant.sizeName || "Không rõ")}
+                        Size: ${escapeHtml(variant.sizeName || variant.size_name || "Không rõ")}
                     </span>
 
                     <span class="variant-badge">
                         ${colorDotHtml}
-                        Màu: ${escapeHtml(variant.colorName || "Không rõ")}
+                        Màu: ${escapeHtml(variant.colorName || variant.color_name || "Không rõ")}
                     </span>
                 </div>
 
@@ -318,7 +318,7 @@ function renderCartItem(item) {
                     </div>
                 ` : ""}
 
-                ${item.inventoryMissing ? `
+                ${item.inventoryMissing || item.inventory_missing ? `
                     <div class="variant-warning">
                         Biến thể này chưa có tồn kho hoặc đã ngừng bán.
                     </div>

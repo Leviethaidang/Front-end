@@ -114,26 +114,26 @@ function getPaymentStatusText(status) {
 
 function getStatusClass(status) {
     if (status === "PENDING_PAYMENT" || status === "PENDING") {
-        return "status-pending";
+        return "pending";
     }
 
     if (status === "CONFIRMED" || status === "PAID") {
-        return "status-confirmed";
+        return "processing";
     }
 
     if (status === "SHIPPING") {
-        return "status-shipping";
+        return "shipped";
     }
 
     if (status === "COMPLETED") {
-        return "status-completed";
+        return "delivered";
     }
 
     if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") {
-        return "status-failed";
+        return "cancelled";
     }
 
-    return "status-default";
+    return "pending";
 }
 
 async function fetchWithAuth(url, options = {}) {
@@ -205,112 +205,45 @@ async function loadOrderDetail() {
 function renderOrderDetail(order) {
     const orderId = order.orderId || order.order_id;
     const orderStatus = order.orderStatus || order.order_status;
-    const paymentStatus = order.paymentStatus || order.payment_status;
     const items = order.items || [];
 
     currentOrderId = orderId;
     currentOrderIsPaymentFailed =
-        orderStatus === "PAYMENT_FAILED" || paymentStatus === "FAILED";
+        orderStatus === "PAYMENT_FAILED";
 
     const itemsHtml = items
         .map(item => renderOrderItem(item))
         .join("");
 
-    detailContent.className = "detail-layout";
+    detailContent.className = "order-detail-card";
     detailContent.innerHTML = `
-        <div class="detail-main">
-            <div class="section">
-                <div class="section-title">Thông tin đơn hàng</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Mã đơn hàng</strong>
-                        #${escapeHtml(orderId)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Ngày đặt</strong>
-                        ${escapeHtml(formatDate(order.createdAt || order.created_at))}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Trạng thái đơn hàng</strong>
-                        <span class="status-badge ${getStatusClass(orderStatus)}">
-                            ${escapeHtml(getOrderStatusText(orderStatus))}
-                        </span>
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Trạng thái thanh toán</strong>
-                        <span class="status-badge ${getStatusClass(paymentStatus)}">
-                            ${escapeHtml(getPaymentStatusText(paymentStatus))}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Thông tin nhận hàng</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Người nhận</strong>
-                        ${escapeHtml(order.receiverName || order.receiver_name)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Số điện thoại</strong>
-                        ${escapeHtml(order.receiverPhone || order.receiver_phone)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Địa chỉ giao hàng</strong>
-                        ${escapeHtml(order.shippingAddress || order.shipping_address)}
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Phương thức thanh toán</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Loại thanh toán</strong>
-                        ${escapeHtml(order.paymentMethodType || order.payment_method_type)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Phương thức</strong>
-                        ${escapeHtml(order.paymentMethodDisplayName || order.payment_method_display_name)}
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Sản phẩm</div>
-                ${itemsHtml}
-            </div>
+        <div class="order-header">
+            <div class="order-id">Đơn hàng #${escapeHtml(orderId)}</div>
+            <div class="order-date">${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
+            <span class="order-status ${getStatusClass(orderStatus)}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
         </div>
 
-        <div class="detail-summary">
-            <div class="summary-title">Tóm tắt đơn hàng</div>
+        <div class="order-items">
+            <div class="section-title">Sản phẩm</div>
+            ${itemsHtml}
+        </div>
 
+        <div class="order-summary">
             <div class="summary-row">
                 <span>Tổng số lượng</span>
                 <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
             </div>
-
             <div class="summary-row summary-total">
                 <span>Tổng tiền</span>
                 <span>${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
             </div>
-
-            ${renderActionButtons(order)}
-
-            <a class="back-link" href="/orders">
-                ← Quay lại danh sách đơn hàng
-            </a>
         </div>
+
+        ${renderActionButtons(order)}
+
+        <a class="back-link" href="/orders">
+            ← Quay lại danh sách đơn hàng
+        </a>
     `;
 
     bindActionButtons(order);
@@ -319,7 +252,6 @@ function renderOrderDetail(order) {
 
 function renderOrderItem(item) {
     const productName = item.productName || item.product_name;
-    const categoryName = item.categoryName || item.category_name || "Chưa phân loại";
 
     const sizeName = item.sizeName || item.size_name || "";
     const colorName = item.colorName || item.color_name || "";
@@ -331,55 +263,41 @@ function renderOrderItem(item) {
     const subtotal = item.subtotal || 0;
 
     const imageHtml = imageUrl
-        ? `<img class="order-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
-        : "Không có ảnh";
+        ? `<img class="item-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
+        : `<div class="no-image">Không ảnh</div>`;
 
     const colorDotHtml = colorCode
-        ? `<span class="order-color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
+        ? `<span class="color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
         : "";
 
     const variantHtml = (sizeName || colorName)
         ? `
-            <div class="order-variant-info">
-                <span class="order-variant-badge">
-                    Size: ${escapeHtml(sizeName || "Không rõ")}
-                </span>
-
-                <span class="order-variant-badge">
-                    ${colorDotHtml}
-                    Màu: ${escapeHtml(colorName || "Không rõ")}
-                </span>
+            <div class="variant-info">
+                ${sizeName ? `<span class="variant-badge">Size: ${escapeHtml(sizeName)}</span>` : ""}
+                ${colorName ? `<span class="variant-badge">${colorDotHtml} Màu: ${escapeHtml(colorName)}</span>` : ""}
             </div>
         `
         : "";
 
     return `
         <div class="order-item">
-            <div class="order-image-wrap">
+            <div class="item-image-wrap">
                 ${imageHtml}
             </div>
 
-            <div>
-                <div class="order-product-name">
+            <div class="item-info">
+                <div class="item-name">
                     ${escapeHtml(productName)}
-                </div>
-
-                <div class="order-product-meta">
-                    ${escapeHtml(categoryName)}
                 </div>
 
                 ${variantHtml}
 
-                <div class="order-product-meta">
+                <div class="item-quantity">
                     Số lượng: ${escapeHtml(quantity)}
                 </div>
 
-                <div class="order-product-price">
+                <div class="item-price">
                     ${formatPrice(unitPrice)}
-                </div>
-
-                <div class="order-product-meta">
-                    Tạm tính: ${formatPrice(subtotal)}
                 </div>
             </div>
         </div>
@@ -398,11 +316,11 @@ function renderActionButtons(order) {
 
     const canConfirmReceived = orderStatus === "SHIPPING";
 
-    let html = "";
+    let html = `<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">`;
 
     if (canCancel) {
         html += `
-            <button class="action-btn cancel-btn" id="cancel-order-btn">
+            <button class="btn-outline-lg" id="cancel-order-btn">
                 Hủy đơn hàng
             </button>
         `;
@@ -410,11 +328,13 @@ function renderActionButtons(order) {
 
     if (canConfirmReceived) {
         html += `
-            <button class="action-btn received-btn" id="received-order-btn">
+            <button class="btn-primary-lg" id="received-order-btn">
                 Tôi đã nhận hàng
             </button>
         `;
     }
+
+    html += `</div>`;
 
     return html;
 }

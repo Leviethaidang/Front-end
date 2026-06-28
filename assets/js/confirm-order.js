@@ -233,20 +233,20 @@ async function loadCartCheckoutItems() {
     }
 
     const invalidItem = cart.items.find(item => {
-        if (item.productDeleted || !item.product) {
+        if (item.productDeleted || item.product_deleted || !item.product) {
             return true;
         }
 
-        if (item.variantDeleted || !item.variant) {
+        if (item.variantDeleted || item.variant_deleted || !item.variant) {
             return true;
         }
 
-        if (item.inventoryMissing) {
+        if (item.inventoryMissing || item.inventory_missing) {
             return true;
         }
 
         const quantity = Number(item.quantity || 0);
-        const availableQuantity = Number(item.variant.quantityAvailable || 0);
+        const availableQuantity = Number(item.variant.quantityAvailable || item.variant.quantity_available || 0);
 
         return availableQuantity <= 0 || quantity > availableQuantity;
     });
@@ -260,25 +260,25 @@ async function loadCartCheckoutItems() {
         const variant = item.variant;
 
         return {
-            productId: item.productId,
-            variantId: item.variantId,
+            productId: item.productId || item.product_id,
+            variantId: item.variantId || item.variant_id,
 
-            productName: product.productName,
-            categoryName: product.categoryName || "Chưa phân loại",
+            productName: product.productName || product.product_name,
+            categoryName: product.categoryName || product.category_name || "Chưa phân loại",
 
-            sizeName: variant.sizeName || "",
-            colorName: variant.colorName || "",
-            colorCode: variant.colorCode || "",
+            sizeName: variant.sizeName || variant.size_name || "",
+            colorName: variant.colorName || variant.color_name || "",
+            colorCode: variant.colorCode || variant.color_code || "",
 
-            imageUrl: product.imageUrl || "",
+            imageUrl: product.imageUrl || product.image_url || "",
             unitPrice: Number(product.price),
             quantity: Number(item.quantity),
             subtotal: Number(item.subtotal)
         };
     });
 
-    state.totalQuantity = Number(cart.totalQuantity || 0);
-    state.totalAmount = Number(cart.totalAmount || 0);
+    state.totalQuantity = Number(cart.totalQuantity || cart.total_quantity || 0);
+    state.totalAmount = Number(cart.totalAmount || cart.total_amount || 0);
 }
 
 async function loadBuyNowCheckoutItems() {

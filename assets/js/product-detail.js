@@ -242,10 +242,20 @@ function renderProductDetail(product) {
     const activeVariants = getActiveVariants(product);
     const isOutOfStock = activeVariants.length === 0;
 
-    galleryImages = product.images || [];
+    // Handle both images (product_images array) and single imageUrl/image_key
+    const productImages = product.images || product.product_images || [];
+    galleryImages = productImages;
 
-    const imageHtml = product.imageUrl
-        ? `<img class="product-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.product_name)}">`
+    // Get main image: first product image or single imageUrl/image_key
+    let mainImageUrl = null;
+    if (productImages.length > 0) {
+        mainImageUrl = productImages[0].imageUrl || productImages[0].image_url || productImages[0].image_key;
+    } else {
+        mainImageUrl = product.imageUrl || product.image_url || product.image_key;
+    }
+
+    const imageHtml = mainImageUrl
+        ? `<img class="product-image" src="${escapeAttribute(mainImageUrl)}" alt="${escapeHtml(product.product_name || product.productName)}">`
         : `<span class="no-image">Không có ảnh</span>`;
 
     detailContainer.className = "detail-card";
@@ -257,11 +267,11 @@ function renderProductDetail(product) {
 
         <div>
             <div class="product-name">
-                ${escapeHtml(product.product_name)}
+                ${escapeHtml(product.product_name || product.productName)}
             </div>
 
             <div class="product-category">
-                ${escapeHtml(product.category_name || "Chưa phân loại")}
+                ${escapeHtml(product.category_name || product.categoryName || "Chưa phân loại")}
             </div>
 
             <div class="product-description">
@@ -523,7 +533,7 @@ function bindActionButtons(product) {
 }
 
 function renderSubImageGallery(product) {
-    const images = product.images || [];
+    const images = product.images || product.product_images || [];
 
     if (images.length === 0) {
         return "";
@@ -538,17 +548,20 @@ function renderSubImageGallery(product) {
             </div>
 
             <div class="sub-image-list">
-                ${visibleImages.map((image, index) => `
-                    <div
-                        class="sub-image-thumb"
-                        data-image-index="${escapeAttribute(index)}"
-                    >
-                        <img
-                            src="${escapeAttribute(image.imageUrl)}"
-                            alt="Ảnh phụ ${escapeAttribute(index + 1)}"
+                ${visibleImages.map((image, index) => {
+                    const imgUrl = image.imageUrl || image.image_url || image.image_key;
+                    return `
+                        <div
+                            class="sub-image-thumb"
+                            data-image-index="${escapeAttribute(index)}"
                         >
-                    </div>
-                `).join("")}
+                            <img
+                                src="${escapeAttribute(imgUrl)}"
+                                alt="Ảnh phụ ${escapeAttribute(index + 1)}"
+                            >
+                        </div>
+                    `;
+                }).join("")}
             </div>
 
             ${images.length > 3 ? `
@@ -678,7 +691,8 @@ function updateImageModal() {
         return;
     }
 
-    modalImage.src = image.imageUrl;
+    const imgUrl = image.imageUrl || image.image_url || image.image_key;
+    modalImage.src = imgUrl;
     counter.textContent = `${currentGalleryIndex + 1} / ${galleryImages.length}`;
 }
 

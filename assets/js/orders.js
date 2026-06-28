@@ -81,26 +81,26 @@ function getPaymentStatusText(status) {
 
 function getStatusClass(status) {
     if (status === "PENDING_PAYMENT" || status === "PENDING") {
-        return "status-pending";
+        return "pending";
     }
 
     if (status === "CONFIRMED" || status === "PAID") {
-        return "status-confirmed";
+        return "processing";
     }
 
     if (status === "SHIPPING") {
-        return "status-shipping";
+        return "shipped";
     }
 
     if (status === "COMPLETED") {
-        return "status-completed";
+        return "delivered";
     }
 
     if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") {
-        return "status-failed";
+        return "cancelled";
     }
 
-    return "status-default";
+    return "pending";
 }
 
 async function fetchWithAuth(url, options = {}) {
@@ -172,51 +172,38 @@ function renderOrders(orders) {
 function renderOrderCard(order) {
     const orderId = order.orderId || order.order_id;
     const orderStatus = order.orderStatus || order.order_status;
-    const paymentStatus = order.paymentStatus || order.payment_status;
+    const items = order.items || [];
+
+    const itemsHtml = items.slice(0, 2).map(item => `
+        <div class="order-item">
+            <div class="item-name">
+                ${escapeHtml(item.productName || item.product_name)}
+            </div>
+            <div class="item-quantity">
+                x${escapeHtml(item.quantity)}
+            </div>
+            <div class="item-price">
+                ${formatPrice(item.unitPrice || item.unit_price || 0)}
+            </div>
+        </div>
+    `).join("");
 
     return `
         <div class="order-card">
-            <div>
-                <div class="order-title">
-                    Đơn hàng #${escapeHtml(orderId)}
-                </div>
-
-                <div class="order-info">
-                    <div>
-                        <strong>Ngày đặt:</strong>
-                        ${escapeHtml(formatDate(order.createdAt || order.created_at))}
-                    </div>
-
-                    <div>
-                        <strong>Số lượng:</strong>
-                        ${escapeHtml(order.totalQuantity || order.total_quantity || 0)}
-                    </div>
-
-                    <div>
-                        <strong>Tổng tiền:</strong>
-                        ${formatPrice(order.totalAmount || order.total_amount || 0)}
-                    </div>
-
-                    <div>
-                        <strong>Trạng thái đơn:</strong>
-                        <span class="status-badge ${getStatusClass(orderStatus)}">
-                            ${escapeHtml(getOrderStatusText(orderStatus))}
-                        </span>
-                    </div>
-
-                    <div>
-                        <strong>Thanh toán:</strong>
-                        <span class="status-badge ${getStatusClass(paymentStatus)}">
-                            ${escapeHtml(getPaymentStatusText(paymentStatus))}
-                        </span>
-                    </div>
-                </div>
+            <div class="order-header">
+                <div class="order-id">Đơn hàng #${escapeHtml(orderId)}</div>
+                <div class="order-date">${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
+                <span class="order-status ${getStatusClass(orderStatus)}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
             </div>
 
-            <div class="order-actions">
-                <a class="detail-btn" href="/orders/${escapeAttribute(orderId)}">
-                    Xem chi tiết
-                </a>
+            <div class="order-items">
+                ${itemsHtml}
+                ${items.length > 2 ? `<div style="color: var(--text-3);">Và ${items.length - 2} sản phẩm khác...</div>` : ""}
+            </div>
+
+            <div class="order-footer">
+                <div class="order-total">Tổng tiền: <strong>${formatPrice(order.totalAmount || order.total_amount || 0)}</strong></div>
+                <a class="view-detail-btn" href="/orders/${escapeAttribute(orderId)}">Xem chi tiết</a>
             </div>
         </div>
     `;
