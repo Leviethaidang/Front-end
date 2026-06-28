@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Trang Chủ</title>
 
     <link rel="stylesheet" href="/assets/css/navbar.css">
@@ -10,14 +11,56 @@
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-title">
-            <h1>HaShop</h1>
-            <p>Danh sách sản phẩm mới nhất</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-inner">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <div class="hero-badge-dot">✦</div>
+                        <span>Sản phẩm chất lượng cao</span>
+                    </div>
+                    <h1 class="hero-title">
+                        Khám phá <em>sản phẩm tuyệt vời</em>
+                    </h1>
+                    <p class="hero-sub">
+                        Tại HaShop, chúng tôi mang đến những sản phẩm chất lượng, đa dạng với mức giá hợp lý. Trải nghiệm mua sắm trực tuyến dễ dàng và tiện lợi!
+                    </p>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-dashboard">
+                        <div class="dashboard-bar">
+                            <div class="db-dot"></div><div class="db-dot"></div><div class="db-dot"></div>
+                        </div>
+                        <div class="dashboard-body">
+                            <div class="db-header">
+                                <div class="db-title">Sản phẩm nổi bật</div>
+                                <div class="db-tag">New</div>
+                            </div>
+                            <div class="db-chart">
+                                <div class="db-bar" style="height: 45%;"></div>
+                                <div class="db-bar" style="height: 65%;"></div>
+                                <div class="db-bar" style="height: 55%;"></div>
+                                <div class="db-bar active" style="height: 85%;"></div>
+                                <div class="db-bar" style="height: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div id="products-container" class="products-grid"></div>
-    </div>
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Sản phẩm</div>
+                <h2 class="section-title">Danh sách <em>sản phẩm mới nhất</em></h2>
+            </div>
+            <div id="products-container" class="products-grid"></div>
+        </div>
+    </section>
 
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/navbar.js"></script>

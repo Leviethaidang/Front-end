@@ -1,12 +1,32 @@
-<div class="navbar">
-    <div>
-        <a class="brand-link" href="/">
-            <strong>HaShop</strong>
-        </a>
-    </div>
+<!-- Navbar - TemplateMo 622 Clearwave Style -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
 
-    <div id="navbar-auth-section" class="navbar-right">
-        <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
-        <a href="/login">Đăng nhập</a>
+<nav class="nav" id="mainNav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="/assets/images/LogoNhoHaShop.png" alt="HaShop Logo" style="height: 40px; display: block;">
+        </a>
+        <ul class="nav-links" role="list">
+            <li><a href="/">Trang chủ</a></li>
+            <li><a href="/orders">Đơn hàng</a></li>
+        </ul>
+        <div class="nav-cta" id="navbar-auth-section">
+            <!-- Dynamic auth content here -->
+        </div>
+        <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
     </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation">
+    <a href="/" style="display: flex; justify-content: center; padding: 20px 0;">
+        <img src="/assets/images/LogoNhoHaShop.png" alt="HaShop Logo" style="height: 40px;">
+    </a>
+    <a href="/">Trang chủ</a>
+    <a href="/orders">Đơn hàng</a>
+    <div id="mobile-auth-section"></div>
 </div>

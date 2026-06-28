@@ -1,0 +1,225 @@
+/* TemplateMo 622 Clearwave Design System - Adapted for HaShop */
+
+/* ── Design Tokens ── */
+:root {
+    --bg: #E8F4F2;
+    --bg-alt: #DFF0EE;
+    --surface: #F4FAFA;
+    --surface-2: #FFFFFF;
+    --accent: #1A7A6E;
+    --accent-mid: #2A9D8F;
+    --accent-light: #5BBFB5;
+    --accent-ghost: rgba(26, 122, 110, 0.08);
+    --accent-border: rgba(26, 122, 110, 0.15);
+    --text-1: #0D1E1C;
+    --text-2: #3A5C58;
+    --text-3: #6B8C88;
+    --border: rgba(13, 30, 28, 0.08);
+    --shadow-sm: 0 2px 12px rgba(13, 30, 28, 0.06);
+    --shadow-md: 0 8px 32px rgba(13, 30, 28, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 30, 28, 0.13);
+    --silk: cubic-bezier(0.16, 1, 0.3, 1);
+    --silk-dur: 0.8s;
+    --radius: 16px;
+    --radius-lg: 24px;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 80px; }
+body {
+    font-family: 'DM Sans', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/* ── Subtle Noise Texture ── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.022;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+}
+
+/* ── Utility Classes ── */
+.container {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+}
+
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-border);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+}
+.section-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.section-title {
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--text-1);
+}
+.section-title em {
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+    color: var(--accent);
+}
+
+.section-sub {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--text-2);
+    max-width: 520px;
+    margin-top: 16px;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    padding: 10px 22px;
+    border-radius: 100px;
+    transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk), box-shadow var(--silk-dur) var(--silk);
+    box-shadow: 0 4px 16px rgba(26, 122, 110, 0.25);
+}
+.btn-primary:hover {
+    background: var(--accent-mid);
+    transform: scale(1.02);
+    box-shadow: 0 6px 24px rgba(26, 122, 110, 0.35);
+}
+
+.btn-ghost {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-2);
+    padding: 9px 20px;
+    border-radius: 100px;
+    transition: color 0.3s, background 0.3s;
+}
+.btn-ghost:hover {
+    color: var(--accent);
+    background: var(--accent-ghost);
+}
+
+.btn-primary-lg {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    padding: 14px 32px;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk), box-shadow var(--silk-dur) var(--silk);
+    box-shadow: 0 6px 24px rgba(26, 122, 110, 0.30);
+}
+.btn-primary-lg:hover {
+    background: var(--accent-mid);
+    transform: scale(1.02);
+    box-shadow: 0 8px 32px rgba(26, 122, 110, 0.40);
+}
+
+.btn-outline-lg {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--accent);
+    border: 1.5px solid var(--accent-border);
+    padding: 13px 28px;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.4s var(--silk), border-color 0.4s var(--silk), transform var(--silk-dur) var(--silk);
+}
+.btn-outline-lg:hover {
+    background: var(--accent-ghost);
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+/* ── Cards & Containers ── */
+.card {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-lg {
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+}
+
+/* ── Loading & Error States ── */
+.loading,
+.empty,
+.error {
+    text-align: center;
+    padding: 40px;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.error {
+    color: var(--accent);
+}
+
+.message {
+    margin-bottom: 16px;
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    display: none;
+    font-weight: 500;
+}
+
+.message.success {
+    display: block;
+    background: var(--accent-ghost);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+}
+
+.message.error {
+    display: block;
+    background: rgba(215, 0, 24, 0.08);
+    color: #d70018;
+    border: 1px solid rgba(215, 0, 24, 0.15);
+}

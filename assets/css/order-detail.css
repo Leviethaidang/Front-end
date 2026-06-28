@@ -1,312 +1,220 @@
+/* Order Detail Page - TemplateMo 622 Clearwave Style */
+@import url('common.css');
+
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    background: #f5f5f5;
+    padding-top: 80px;
 }
 
 .container {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
+    padding: 60px 32px;
 }
 
 .page-title {
-    font-size: 32px;
-    margin-bottom: 24px;
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--text-1);
+    margin-bottom: 32px;
 }
 
-.detail-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 24px;
-}
-
-.detail-main,
-.detail-summary,
+.order-detail-card,
 .loading,
 .error {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
 }
 
-.detail-main {
-    padding: 22px;
+.order-detail-card {
+    padding: 32px;
 }
 
-.detail-summary {
-    padding: 22px;
-    height: fit-content;
-    position: sticky;
-    top: 20px;
+.order-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
 }
-
-.section {
-    margin-bottom: 28px;
+.order-id {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 8px;
 }
-
-.section:last-child {
-    margin-bottom: 0;
-}
-
-.section-title {
-    font-size: 22px;
-    font-weight: bold;
+.order-date {
+    color: var(--text-3);
+    font-size: 1rem;
     margin-bottom: 16px;
 }
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-    gap: 12px 18px;
+.order-status {
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.9375rem;
+    display: inline-block;
+}
+.order-status.pending {
+    background: rgba(255, 138, 0, 0.12);
+    color: #ff8a00;
+}
+.order-status.processing {
+    background: var(--accent-ghost);
+    color: var(--accent);
+}
+.order-status.shipped {
+    background: rgba(26, 122, 110, 0.12);
+    color: var(--accent);
+}
+.order-status.delivered {
+    background: rgba(26, 122, 110, 0.12);
+    color: var(--accent);
+}
+.order-status.cancelled {
+    background: rgba(215, 0, 24, 0.12);
+    color: #d70018;
 }
 
-.info-item {
-    color: #444;
-    line-height: 1.5;
+.order-items {
+    margin-bottom: 32px;
 }
-
-.info-item strong {
-    display: block;
-    color: #222;
-    margin-bottom: 4px;
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 20px;
 }
-
 .order-item {
     display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid #eee;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
 }
-
 .order-item:last-child {
     border-bottom: none;
 }
-
-.order-image-wrap {
-    width: 90px;
-    height: 90px;
-    background: #eee;
-    border-radius: 8px;
+.item-image-wrap {
+    width: 120px;
+    height: 120px;
+    background: var(--bg);
+    border-radius: var(--radius);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #777;
-    font-size: 13px;
+    color: var(--text-3);
 }
-
-.order-image {
+.item-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
-.order-product-name {
-    font-weight: bold;
-    color: #222;
-    margin-bottom: 6px;
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.item-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-1);
+}
+.item-category {
+    color: var(--text-3);
+    font-size: 0.875rem;
+}
+.item-quantity {
+    color: var(--text-2);
+    font-size: 1rem;
+}
+.item-price {
+    color: var(--accent);
+    font-size: 1.125rem;
+    font-weight: 700;
 }
 
-.order-product-meta {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 5px;
+.order-summary {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
 }
-
-.order-product-price {
-    color: #d70018;
-    font-weight: bold;
-}
-
-.summary-title {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 18px;
-}
-
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin: 12px 0;
-    font-size: 16px;
-    gap: 12px;
+    font-size: 1rem;
+    color: var(--text-2);
 }
-
 .summary-total {
-    border-top: 1px solid #eee;
-    padding-top: 16px;
-    margin-top: 16px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #d70018;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 20px;
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--accent);
 }
 
-.status-badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-confirmed {
-    background: #e8f5e9;
-    color: #188038;
-}
-
-.status-shipping {
-    background: #e3f2fd;
-    color: #0b57d0;
-}
-
-.status-completed {
-    background: #e8f5e9;
-    color: #137333;
-}
-
-.status-cancelled,
-.status-failed {
-    background: #fdecea;
-    color: #c0392b;
-}
-
-.status-default {
-    background: #eee;
-    color: #555;
-}
-
-.action-btn {
-    width: 100%;
-    margin-top: 12px;
-    border: none;
-    padding: 13px 16px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.cancel-btn {
-    background: #fff;
-    color: #c0392b;
-    border: 1px solid #c0392b;
-}
-
-.cancel-btn:hover {
-    background: #fdecea;
-}
-
-.received-btn {
-    background: #188038;
-    color: white;
-}
-
-.received-btn:hover {
-    background: #137333;
-}
-
-.action-btn:disabled {
-    background: #aaa;
-    color: white;
-    border: none;
-    cursor: not-allowed;
-}
-
-.back-link {
-    display: inline-block;
-    margin-top: 16px;
-    color: #555;
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    color: var(--accent);
     text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
 }
-
-.back-link:hover {
+.back-btn:hover {
     text-decoration: underline;
 }
 
 .loading,
 .error {
-    padding: 28px;
+    padding: 48px;
     text-align: center;
 }
 
 .error {
-    color: #c0392b;
+    color: #d70018;
 }
 
 .message {
-    margin-bottom: 16px;
-    padding: 12px 14px;
-    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    border-radius: var(--radius);
     display: none;
-    font-weight: bold;
+    font-weight: 600;
 }
-
 .message.success {
     display: block;
-    background: #e8f5e9;
-    color: #188038;
+    background: var(--accent-ghost);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
 }
-
 .message.error {
     display: block;
-    background: #fdecea;
-    color: #c0392b;
+    background: rgba(215, 0, 24, 0.08);
+    color: #d70018;
+    border: 1px solid rgba(215, 0, 24, 0.15);
 }
 
 @media (max-width: 768px) {
-    .detail-layout {
-        grid-template-columns: 1fr;
+    .container {
+        padding: 40px 20px;
     }
-
-    .detail-summary {
-        position: static;
+    .page-title {
+        font-size: 1.75rem;
     }
-
-    .info-grid {
-        grid-template-columns: 1fr;
+    .order-detail-card {
+        padding: 24px;
     }
-
     .order-item {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 90px 1fr;
+        gap: 16px;
     }
-
-    .order-image-wrap {
-        width: 80px;
-        height: 80px;
+    .item-image-wrap {
+        width: 90px;
+        height: 90px;
     }
-}
-
-.order-variant-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 6px 0;
-}
-
-.order-variant-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #f1f3f4;
-    border: 1px solid #ddd;
-    border-radius: 999px;
-    padding: 4px 9px;
-    font-size: 13px;
-    color: #333;
-    font-weight: bold;
-}
-
-.order-color-dot {
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    border: 1px solid #aaa;
-    display: inline-block;
 }
