@@ -229,18 +229,18 @@ function renderOrderDetail(order) {
     const canConfirmReceived = orderStatus === "SHIPPING";
 
     const actionButtonsHtml = (canCancel || canConfirmReceived) ? `
-        <div class="detail-section order-detail-side" style="position: static;">
-            <div class="detail-section-header">
-                <div class="detail-section-title">⚙️ Thao tác</div>
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">⚙️ Thao tác</h5>
             </div>
-            <div class="detail-section-body action-buttons">
+            <div class="card-body">
                 ${canConfirmReceived ? `
-                    <button class="btn-received" id="received-order-btn">
+                    <button class="btn btn-success w-100 mb-2" id="received-order-btn">
                         ✅ Tôi đã nhận hàng
                     </button>
                 ` : ""}
                 ${canCancel ? `
-                    <button class="btn-cancel" id="cancel-order-btn">
+                    <button class="btn btn-outline-danger w-100" id="cancel-order-btn">
                         ✖ Hủy đơn hàng
                     </button>
                 ` : ""}
@@ -252,113 +252,114 @@ function renderOrderDetail(order) {
 
     detailContent.className = "";
     detailContent.innerHTML = `
-        <div class="order-detail-layout">
+        <div class="row">
             <!-- Main Column -->
-            <div class="order-detail-main">
-
+            <div class="col-lg-8">
                 <!-- Header Card -->
-                <div class="detail-section">
-                    <div class="detail-section-body">
-                        <div class="order-header">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <div>
-                                <div class="order-id">Đơn hàng #${escapeHtml(orderId)}</div>
-                                <div class="order-date">🕐 ${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
+                                <h5 class="mb-1 fw-bold">Đơn hàng #${escapeHtml(orderId)}</h5>
+                                <div class="text-muted small">
+                                    <i class="bi bi-clock"></i> ${escapeHtml(formatDate(order.createdAt || order.created_at))}
+                                </div>
                             </div>
-                            <div class="order-statuses">
-                                <span class="status-badge ${orderStatusClass}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
-                                <span class="status-badge ${paymentStatusClass}">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
+                            <div class="mt-2 mt-md-0">
+                                <span class="badge ${orderStatusClass === 'pending' ? 'bg-warning text-dark' : orderStatusClass === 'processing' ? 'bg-info text-dark' : orderStatusClass === 'shipped' ? 'bg-primary' : orderStatusClass === 'delivered' ? 'bg-success' : 'bg-danger'}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
+                                <span class="badge bg-secondary ms-1">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Products Card -->
-                <div class="detail-section">
-                    <div class="detail-section-header">
-                        <div class="detail-section-title">🛍️ Sản phẩm đặt hàng</div>
-                        <span style="font-size: 0.875rem; color: var(--text-3);">${items.length} sản phẩm</span>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">🛍️ Sản phẩm đặt hàng</h5>
+                        <span class="text-muted small">${items.length} sản phẩm</span>
                     </div>
-                    <div class="detail-section-body">
+                    <div class="card-body p-0">
                         ${itemsHtml}
                     </div>
                 </div>
 
                 <!-- Receiver Info Card -->
-                <div class="detail-section">
-                    <div class="detail-section-header">
-                        <div class="detail-section-title">📦 Thông tin giao hàng</div>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">📦 Thông tin giao hàng</h5>
                     </div>
-                    <div class="detail-section-body">
+                    <div class="card-body p-4">
                         ${receiverName ? `
-                            <div class="info-row">
-                                <span class="info-label">Người nhận</span>
-                                <span class="info-value">${escapeHtml(receiverName)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Người nhận</div>
+                                <div class="col-sm-8">${escapeHtml(receiverName)}</div>
                             </div>
                         ` : ""}
                         ${receiverPhone ? `
-                            <div class="info-row">
-                                <span class="info-label">Điện thoại</span>
-                                <span class="info-value">${escapeHtml(receiverPhone)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Điện thoại</div>
+                                <div class="col-sm-8">${escapeHtml(receiverPhone)}</div>
                             </div>
                         ` : ""}
                         ${customerEmail ? `
-                            <div class="info-row">
-                                <span class="info-label">Email</span>
-                                <span class="info-value">${escapeHtml(customerEmail)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Email</div>
+                                <div class="col-sm-8">${escapeHtml(customerEmail)}</div>
                             </div>
                         ` : ""}
                         ${shippingAddress ? `
-                            <div class="info-row">
-                                <span class="info-label">Địa chỉ</span>
-                                <span class="info-value shipping-address">${escapeHtml(shippingAddress)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Địa chỉ</div>
+                                <div class="col-sm-8">${escapeHtml(shippingAddress)}</div>
                             </div>
                         ` : ""}
                         ${!receiverName && !receiverPhone && !shippingAddress ? `
-                            <div style="color: var(--text-3); font-size: 0.9rem;">Không có thông tin giao hàng.</div>
+                            <div class="text-muted small">Không có thông tin giao hàng.</div>
                         ` : ""}
                     </div>
                 </div>
 
                 <!-- Payment Info Card -->
-                <div class="detail-section">
-                    <div class="detail-section-header">
-                        <div class="detail-section-title">💳 Thông tin thanh toán</div>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">💳 Thông tin thanh toán</h5>
                     </div>
-                    <div class="detail-section-body">
-                        <div class="info-row">
-                            <span class="info-label">Phương thức</span>
-                            <span class="info-value">${escapeHtml(getPaymentMethodTypeLabel(paymentMethodType))}</span>
+                    <div class="card-body p-4">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted fw-bold">Phương thức</div>
+                            <div class="col-sm-8">${escapeHtml(getPaymentMethodTypeLabel(paymentMethodType))}</div>
                         </div>
                         ${paymentMethodDisplay ? `
-                            <div class="info-row">
-                                <span class="info-label">Tên/Số TK</span>
-                                <span class="info-value">${escapeHtml(paymentMethodDisplay)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Tên/Số TK</div>
+                                <div class="col-sm-8">${escapeHtml(paymentMethodDisplay)}</div>
                             </div>
                         ` : ""}
-                        <div class="info-row">
-                            <span class="info-label">Trạng thái TT</span>
-                            <span class="info-value">
-                                <span class="status-badge ${paymentStatusClass}" style="font-size: 0.8rem; padding: 4px 12px;">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted fw-bold">Trạng thái TT</div>
+                            <div class="col-sm-8">
+                                <span class="badge ${paymentStatusClass === 'payment-paid' ? 'bg-success' : paymentStatusClass === 'payment-failed' ? 'bg-danger' : 'bg-warning text-dark'}">
                                     ${escapeHtml(getPaymentStatusText(paymentStatus))}
                                 </span>
-                            </span>
+                            </div>
                         </div>
                         ${paidAt ? `
-                            <div class="info-row">
-                                <span class="info-label">Thanh toán lúc</span>
-                                <span class="info-value">${escapeHtml(formatDate(paidAt))}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Thanh toán lúc</div>
+                                <div class="col-sm-8">${escapeHtml(formatDate(paidAt))}</div>
                             </div>
                         ` : ""}
                         ${paymentError ? `
-                            <div class="info-row">
-                                <span class="info-label">Lỗi TT</span>
-                                <span class="info-value" style="color: #d70018;">${escapeHtml(paymentError)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Lỗi TT</div>
+                                <div class="col-sm-8 text-danger">${escapeHtml(paymentError)}</div>
                             </div>
                         ` : ""}
                         ${sourceLabel ? `
-                            <div class="info-row">
-                                <span class="info-label">Loại đơn</span>
-                                <span class="info-value">${escapeHtml(sourceLabel)}</span>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Loại đơn</div>
+                                <div class="col-sm-8">${escapeHtml(sourceLabel)}</div>
                             </div>
                         ` : ""}
                     </div>
@@ -367,48 +368,31 @@ function renderOrderDetail(order) {
             </div>
 
             <!-- Side Column -->
-            <div class="order-detail-side">
+            <div class="col-lg-4">
 
                 <!-- Summary Card -->
-                <div class="detail-section">
-                    <div class="detail-section-header">
-                        <div class="detail-section-title">🧾 Tóm tắt đơn hàng</div>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">🧾 Tóm tắt đơn hàng</h5>
                     </div>
-                    <div class="detail-section-body">
-                        <div class="summary-row">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-2">
                             <span>Số lượng sản phẩm</span>
                             <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
                         </div>
-                        <div class="summary-row summary-total">
-                            <span>Tổng tiền</span>
-                            <span>${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fs-5 fw-bold">Tổng tiền</span>
+                            <span class="fs-5 fw-bold text-success">${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                ${(canCancel || canConfirmReceived) ? `
-                    <div class="detail-section">
-                        <div class="detail-section-header">
-                            <div class="detail-section-title">⚙️ Thao tác</div>
-                        </div>
-                        <div class="detail-section-body action-buttons">
-                            ${canConfirmReceived ? `
-                                <button class="btn-received" id="received-order-btn">
-                                    ✅ Tôi đã nhận hàng
-                                </button>
-                            ` : ""}
-                            ${canCancel ? `
-                                <button class="btn-cancel" id="cancel-order-btn">
-                                    ✖ Hủy đơn hàng
-                                </button>
-                            ` : ""}
-                        </div>
-                    </div>
-                ` : ""}
+                ${actionButtonsHtml}
 
                 <!-- Back Link -->
-                <a class="back-link" href="/orders">
+                <a class="text-center d-block text-decoration-none mt-3" href="/orders">
                     ← Quay lại danh sách đơn hàng
                 </a>
 
@@ -432,37 +416,38 @@ function renderOrderItem(item) {
     const categoryName = item.categoryName || item.category_name || "";
 
     const imageHtml = imageUrl
-        ? `<img class="item-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
-        : `<div style="font-size: 1.75rem;">📦</div>`;
+        ? `<img style="width:60px; height:60px; object-fit:cover;" class="rounded" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
+        : `<div class="d-flex align-items-center justify-content-center bg-light text-muted rounded" style="width:60px; height:60px; font-size:24px;">📦</div>`;
 
     const colorDotHtml = colorCode
-        ? `<span class="color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
+        ? `<span style="display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; border:1px solid #ddd; background: ${escapeAttribute(colorCode)};"></span>`
         : "";
 
     const variantHtml = (sizeName || colorName)
         ? `
-            <div class="variant-info">
-                ${sizeName ? `<span class="variant-badge">📏 ${escapeHtml(sizeName)}</span>` : ""}
-                ${colorName ? `<span class="variant-badge">${colorDotHtml} ${escapeHtml(colorName)}</span>` : ""}
+            <div class="small mb-1">
+                ${sizeName ? `<span class="badge bg-secondary me-1">Size: ${escapeHtml(sizeName)}</span>` : ""}
+                ${colorName ? `<span class="badge bg-secondary">${colorDotHtml} ${escapeHtml(colorName)}</span>` : ""}
             </div>
         `
         : "";
 
     return `
-        <div class="order-item">
-            <div class="item-image-wrap">
+        <div class="d-flex align-items-center p-3 border-bottom">
+            <div class="me-3">
                 ${imageHtml}
             </div>
 
-            <div class="item-info">
-                <div class="item-name">${escapeHtml(productName)}</div>
-                ${categoryName ? `<div class="item-meta">${escapeHtml(categoryName)}</div>` : ""}
+            <div class="flex-grow-1">
+                <div class="fw-bold">${escapeHtml(productName)}</div>
+                ${categoryName ? `<div class="small text-muted mb-1">${escapeHtml(categoryName)}</div>` : ""}
                 ${variantHtml}
-                <div class="item-bottom">
-                    <span class="item-qty">SL: ${escapeHtml(quantity)}</span>
-                    <div>
-                        <div class="item-price">${formatPrice(unitPrice)}</div>
-                        <div class="item-subtotal">Tạm tính: ${formatPrice(subtotal)}</div>
+                
+                <div class="d-flex align-items-center mt-2">
+                    <span class="px-3 fw-bold text-muted border-end">SL: ${escapeHtml(quantity)}</span>
+                    <div class="ms-3">
+                        <div class="text-muted small text-decoration-line-through">${formatPrice(unitPrice)}</div>
+                        <div class="fw-bold">${formatPrice(subtotal)}</div>
                     </div>
                 </div>
             </div>

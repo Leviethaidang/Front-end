@@ -36,8 +36,16 @@ function renderNavbarAuthSection() {
     if (authSection) {
         if (!accessToken) {
             authSection.innerHTML = `
-                <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
-                <a href="/login" class="btn-ghost">Đăng nhập</a>
+                <div class="list-inline-item me-4">
+                    <a href="/login" class="text-muted" title="Đăng nhập">
+                        <i class="bi bi-person"></i>
+                    </a>
+                </div>
+                <div class="list-inline-item me-4">
+                    <a class="text-muted position-relative" href="/cart" title="Giỏ hàng">
+                        <i class="bi bi-cart"></i>
+                    </a>
+                </div>
             `;
         } else {
             const payload = getTokenPayload(accessToken);
@@ -45,20 +53,25 @@ function renderNavbarAuthSection() {
             const isAdmin = groups.includes("Admin");
 
             authSection.innerHTML = `
-                <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
-
-                <div class="dropdown" onclick="toggleNavbarDropdown(event)">
-                    <span style="color: var(--text-2); font-weight: 500; padding: 9px 20px; border-radius: 100px;">Xin chào, ${escapeHtml(fullName)} ▼</span>
-
-                    <div id="navbar-dropdown-menu" class="dropdown-content">
-                        <a href="/profile">Profile</a>
-                        <a href="/orders">Đơn của tôi</a>
-                        ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
-                        ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
-                        ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
-                        ${isAdmin ? '<a href="/admin/orders">Quản lý đơn hàng</a>' : ''}
-                        <a href="#" onclick="logout(event)">Đăng xuất</a>
-                    </div>
+                <div class="list-inline-item me-4 dropdown">
+                    <a href="#" class="text-muted dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
+                        <i class="bi bi-person-check"></i> Xin chào, ${escapeHtml(fullName)}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li><a class="dropdown-item" href="/orders">Đơn của tôi</a></li>
+                        ${isAdmin ? '<li><a class="dropdown-item" href="/admin/users">Quản lý users</a></li>' : ''}
+                        ${isAdmin ? '<li><a class="dropdown-item" href="/admin/products">Quản lý sản phẩm</a></li>' : ''}
+                        ${isAdmin ? '<li><a class="dropdown-item" href="/admin/categories">Quản lý danh mục</a></li>' : ''}
+                        ${isAdmin ? '<li><a class="dropdown-item" href="/admin/orders">Quản lý đơn hàng</a></li>' : ''}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout(event)">Đăng xuất</a></li>
+                    </ul>
+                </div>
+                <div class="list-inline-item me-4">
+                    <a class="text-muted position-relative" href="/cart" title="Giỏ hàng">
+                        <i class="bi bi-cart"></i>
+                    </a>
                 </div>
             `;
         }
@@ -68,8 +81,10 @@ function renderNavbarAuthSection() {
     if (mobileAuthSection) {
         if (!accessToken) {
             mobileAuthSection.innerHTML = `
-                <a href="/cart">🛒 Giỏ hàng</a>
-                <a href="/login" class="mobile-cta">Đăng nhập</a>
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/cart">🛒 Giỏ hàng</a></li>
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/login">Đăng nhập</a></li>
+                </ul>
             `;
         } else {
             const payload = getTokenPayload(accessToken);
@@ -77,14 +92,16 @@ function renderNavbarAuthSection() {
             const isAdmin = groups.includes("Admin");
 
             mobileAuthSection.innerHTML = `
-                <a href="/cart">🛒 Giỏ hàng</a>
-                <a href="/profile">Profile</a>
-                <a href="/orders">Đơn của tôi</a>
-                ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
-                ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
-                ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
-                ${isAdmin ? '<a href="/admin/orders">Quản lý đơn hàng</a>' : ''}
-                <a href="#" onclick="logout(event)" class="mobile-cta">Đăng xuất</a>
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/cart">🛒 Giỏ hàng</a></li>
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/profile">Profile</a></li>
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/orders">Đơn của tôi</a></li>
+                    ${isAdmin ? '<li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/admin/users">Quản lý users</a></li>' : ''}
+                    ${isAdmin ? '<li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/admin/products">Quản lý sản phẩm</a></li>' : ''}
+                    ${isAdmin ? '<li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/admin/categories">Quản lý danh mục</a></li>' : ''}
+                    ${isAdmin ? '<li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/admin/orders">Quản lý đơn hàng</a></li>' : ''}
+                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="#" onclick="logout(event)">Đăng xuất</a></li>
+                </ul>
             `;
         }
     }

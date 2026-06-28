@@ -1,115 +1,138 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Trang Chủ | Thời trang chất lượng cao</title>
     <meta name="description" content="HaShop - Mua sắm thời trang chất lượng cao với giá hợp lý. Đa dạng mẫu mã, size và màu sắc.">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/index.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/plugin/nice-select/nice-select.css">
+    <link rel="stylesheet" href="/assets/plugin/OwlCarousel2-2.3.4/dist/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/plugin/OwlCarousel2-2.3.4/dist/assets/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/assets/plugin/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="/assets/plugin/slick/slick.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            border: 1px solid #dee2e6;
+            background: #fff;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-tab:hover, .filter-tab.active {
+            background: #198754;
+            color: white;
+            border-color: #198754;
+        }
+        .product-card {
+            height: 100%;
+        }
+        .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- Banner Slider -->
+    <div class="banner py-4">
         <div class="container">
-            <div class="hero-inner">
-                <div class="hero-content">
-                    <div class="hero-badge">
-                        <div class="hero-badge-dot">✦</div>
-                        <span>Sản phẩm chất lượng cao</span>
+             <div class="row">
+                 <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+                    <div class="owl-carousel owl-theme banner-slider">
+                        <div> <img src="/assets/images/banner/1.png" class="rounded" alt="Banner"> </div>
+                        <div> <img src="/assets/images/banner/2.png" class="rounded" alt="Banner"> </div>
                     </div>
-                    <h1 class="hero-title">
-                        Khám phá <em>phong cách tuyệt vời</em>
-                    </h1>
-                    <p class="hero-sub">
-                        Tại HaShop, chúng tôi mang đến những sản phẩm thời trang chất lượng, đa dạng size & màu sắc với mức giá hợp lý. Trải nghiệm mua sắm trực tuyến dễ dàng và tiện lợi!
-                    </p>
-                    <div class="hero-cta">
-                        <a href="#products-section" class="btn-primary-lg">
-                            Mua sắm ngay →
-                        </a>
-                        <a href="/cart" class="btn-outline-lg">
-                            🛒 Giỏ hàng
+                 </div>
+                 <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                      <div class="mb-4 shine">
+                         <a href="#">
+                             <img src="/assets/images/banner/5.png" class="rounded w-100" alt="Banner">
+                         </a>
+                      </div>
+                      <div class="text-center shine">
+                        <a href="#">
+                            <img src="/assets/images/banner/6.png" class="rounded w-100" alt="Banner">
                         </a>
                     </div>
-                </div>
-                <div class="hero-visual">
-                    <div class="hero-dashboard">
-                        <div class="dashboard-bar">
-                            <div class="db-dot"></div><div class="db-dot"></div><div class="db-dot"></div>
-                            <span style="margin-left: 8px; font-size: 0.78rem; color: var(--text-3); font-weight: 500;">hashop.vn</span>
-                        </div>
-                        <div class="dashboard-body">
-                            <div class="db-header">
-                                <div class="db-title">Tổng quan cửa hàng</div>
-                                <div class="db-tag">Live</div>
-                            </div>
-                            <div class="db-stats">
-                                <div class="db-stat-card">
-                                    <div class="db-stat-label">Sản phẩm</div>
-                                    <div class="db-stat-value">100+</div>
-                                </div>
-                                <div class="db-stat-card">
-                                    <div class="db-stat-label">Đã bán</div>
-                                    <div class="db-stat-value">5k+</div>
-                                </div>
-                            </div>
-                            <div class="db-chart">
-                                <div class="db-bar" style="height: 45%;"></div>
-                                <div class="db-bar" style="height: 65%;"></div>
-                                <div class="db-bar" style="height: 55%;"></div>
-                                <div class="db-bar active" style="height: 85%;"></div>
-                                <div class="db-bar" style="height: 70%;"></div>
-                                <div class="db-bar active" style="height: 90%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                 </div>
+             </div>
         </div>
-    </section>
-
-    <!-- Products Section -->
-    <section class="products-section" id="products-section">
+    </div>
+    
+    <!-- Product Section -->
+    <div class="product mt-50 mb-100">
         <div class="container">
-            <div class="section-header">
-                <div class="section-label">Sản phẩm</div>
-                <h2 class="section-title">Danh sách <em>sản phẩm mới nhất</em></h2>
-                <p class="section-sub">Khám phá bộ sưu tập đa dạng với nhiều size & màu sắc phong phú</p>
-            </div>
-
+            <h2 class="product-section-title mb-4">Sản phẩm của chúng tôi</h2>
+            
             <!-- Filter Bar -->
             <div class="filter-bar" id="filter-bar" style="display:none;">
-                <span class="filter-label">Lọc theo danh mục:</span>
-                <div class="filter-tabs" id="category-tabs">
-                    <button class="filter-tab active" data-category="all">Tất cả</button>
+                <div class="d-flex align-items-center flex-wrap gap-3">
+                    <span class="filter-label fw-bold">Danh mục:</span>
+                    <div class="filter-tabs" id="category-tabs">
+                        <button class="filter-tab active" data-category="all">Tất cả</button>
+                    </div>
                 </div>
-                <select class="sort-select" id="sort-select">
-                    <option value="default">Mặc định</option>
-                    <option value="price-asc">Giá tăng dần</option>
-                    <option value="price-desc">Giá giảm dần</option>
-                    <option value="sold-desc">Bán chạy nhất</option>
-                    <option value="stock-asc">Sắp hết hàng</option>
-                </select>
+                <div>
+                    <select class="form-select" id="sort-select" style="min-width: 150px;">
+                        <option value="default">Mặc định</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="sold-desc">Bán chạy nhất</option>
+                        <option value="stock-asc">Sắp hết hàng</option>
+                    </select>
+                </div>
             </div>
 
-            <div id="products-container" class="products-grid"></div>
+            <!-- Products Container -->
+            <div class="row g-4 row-cols-xl-4 row-cols-lg-3 row-cols-2 row-cols-sm-2 row-cols-md-2 mt-1" id="products-container">
+                <!-- Products dynamically loaded by JS -->
+            </div>
         </div>
-    </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/plugin/nice-select/jquery.nice-select.min.js"></script>
+    <script src="/assets/plugin/OwlCarousel2-2.3.4/dist/owl.carousel.min.js"></script>
+    <script src="/assets/plugin/nouislider/nouislider.min.js"></script>
+    <script src="/assets/plugin/slick/slick.min.js"></script>
+    <script src="/assets/js/main.js"></script>
 
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/index.js"></script>
-    <div id="footer-placeholder"></div>
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>
-

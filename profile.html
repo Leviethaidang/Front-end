@@ -1,37 +1,56 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Profile</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/profile.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Hồ sơ cá nhân</h2>
-            <p>Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
-        </div>
+    <main>
+        <section class="mt-50 mb-100">
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-2">Hồ sơ cá nhân</h2>
+                        <p class="text-muted">Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
+                    </div>
+                </div>
 
-        <div id="profile-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4" id="profile-content">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Đang tải dữ liệu...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 p-4 pt-0">
+                                <a href="/profile/edit" class="btn btn-primary" id="edit-button">
+                                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa thông tin
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        <div class="actions">
-            <a href="/profile/edit" class="btn btn-blue" id="edit-button">
-                Chỉnh sửa thông tin
-            </a>
-        </div>
-    </div>
+    <div id="footer-placeholder"></div>
 
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/profile.js"></script>
-    <div id="footer-placeholder"></div>
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>

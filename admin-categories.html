@@ -3,159 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Admin Categories</title>
-
-    <link rel="stylesheet" href="/assets/css/common.css">
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/admin-categories.css">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Admin - Quản lý danh mục, size và màu</h2>
-            <p>Thêm, sửa, xóa danh mục sản phẩm, size và màu sắc.</p>
-        </div>
-
-        <p id="message" class="message"></p>
-
-        <div class="management-grid">
-            <div class="box">
-                <h3>Thêm danh mục mới</h3>
-
-                <div class="form-row">
-                    <input
-                        id="newCategoryName"
-                        placeholder="Tên danh mục, ví dụ: Quần jean"
-                    >
-
-                    <button id="createCategoryBtn" class="btn btn-green">
-                        Tạo danh mục
-                    </button>
+    <main class="py-5 bg-light min-vh-100">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-2">Admin - Quản lý danh mục, size và màu</h2>
+                    <p class="text-muted">Thêm, sửa, xóa danh mục sản phẩm, size và màu sắc.</p>
                 </div>
             </div>
 
-            <div class="box">
-                <h3>Thêm size mới</h3>
+            <div id="message" class="mb-4"></div>
 
-                <div class="form-row">
-                    <input
-                        id="newSizeName"
-                        placeholder="Tên size, ví dụ: XXXL"
-                    >
+            <div class="row g-4 mb-5">
+                <!-- Thêm danh mục -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">Thêm danh mục mới</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Tên danh mục</label>
+                                <input id="newCategoryName" class="form-control" placeholder="Ví dụ: Quần jean">
+                            </div>
+                            <button id="createCategoryBtn" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-lg me-1"></i> Tạo danh mục
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                    <input
-                        id="newSizeDisplayOrder"
-                        type="number"
-                        min="0"
-                        placeholder="Thứ tự"
-                        class="order-input"
-                    >
+                <!-- Thêm size -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">Thêm size mới</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Tên size</label>
+                                <input id="newSizeName" class="form-control" placeholder="Ví dụ: XXXL">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Thứ tự hiển thị</label>
+                                <input id="newSizeDisplayOrder" type="number" min="0" class="form-control" placeholder="Thứ tự">
+                            </div>
+                            <button id="createSizeBtn" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-lg me-1"></i> Tạo size
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                    <button id="createSizeBtn" class="btn btn-green">
-                        Tạo size
-                    </button>
+                <!-- Thêm màu -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">Thêm màu mới</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Tên màu</label>
+                                <input id="newColorName" class="form-control" placeholder="Ví dụ: Hồng pastel">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Mã màu (Hex)</label>
+                                <input id="newColorCode" class="form-control" placeholder="Ví dụ: #F8BBD0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Thứ tự hiển thị</label>
+                                <input id="newColorDisplayOrder" type="number" min="0" class="form-control" placeholder="Thứ tự">
+                            </div>
+                            <button id="createColorBtn" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-lg me-1"></i> Tạo màu
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="box">
-                <h3>Thêm màu mới</h3>
+            <!-- Danh sách danh mục -->
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Danh sách danh mục</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category ID</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Ngày tạo</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoryTableBody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-                <div class="form-row">
-                    <input
-                        id="newColorName"
-                        placeholder="Tên màu, ví dụ: Hồng pastel"
-                    >
+            <!-- Danh sách size -->
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Danh sách size</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Size ID</th>
+                                    <th>Tên size</th>
+                                    <th>Thứ tự hiển thị</th>
+                                    <th>Ngày tạo</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sizeTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-                    <input
-                        id="newColorCode"
-                        placeholder="Mã màu, ví dụ: #F8BBD0"
-                        class="color-code-input"
-                    >
-
-                    <input
-                        id="newColorDisplayOrder"
-                        type="number"
-                        min="0"
-                        placeholder="Thứ tự"
-                        class="order-input"
-                    >
-
-                    <button id="createColorBtn" class="btn btn-green">
-                        Tạo màu
-                    </button>
+            <!-- Danh sách màu -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Danh sách màu</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Color ID</th>
+                                    <th>Tên màu</th>
+                                    <th>Mã màu</th>
+                                    <th>Thứ tự hiển thị</th>
+                                    <th>Ngày tạo</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="colorTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <div class="table-section">
-            <h3>Danh sách danh mục</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Category ID</th>
-                        <th>Tên danh mục</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="categoryTableBody">
-                    <tr>
-                        <td colspan="4">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-section">
-            <h3>Danh sách size</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Size ID</th>
-                        <th>Tên size</th>
-                        <th>Thứ tự hiển thị</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="sizeTableBody">
-                    <tr>
-                        <td colspan="5">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-section">
-            <h3>Danh sách màu</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Color ID</th>
-                        <th>Tên màu</th>
-                        <th>Mã màu</th>
-                        <th>Thứ tự hiển thị</th>
-                        <th>Ngày tạo</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="colorTableBody">
-                    <tr>
-                        <td colspan="6">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/admin-categories.js"></script>
 </body>

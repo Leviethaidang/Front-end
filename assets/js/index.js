@@ -207,25 +207,36 @@ function createProductCard(product) {
     const stockClass = inStock ? "in-stock" : "out-of-stock";
 
     return `
-        <a class="product-link" href="/products/${escapeAttribute(product.product_id)}" id="product-${escapeAttribute(product.product_id)}">
-            <div class="product-card">
-                <div class="product-image-wrap">
-                    ${imageHtml}
-                    <span class="product-stock-badge ${stockClass}">${stockText}</span>
+        <div class="col">
+            <div class="card product-card border-0 shadow-sm h-100">
+                <a href="/products/${escapeAttribute(product.product_id)}" id="product-${escapeAttribute(product.product_id)}">
+                    ${imageHtml.replace('class="product-image"', 'class="card-img-top image-first p-3" style="object-fit: cover; height: 250px;"')}
+                </a>
+                <div class="card-body pt-2 pb-0 position-relative">
+                    <span class="badge ${inStock ? 'bg-success' : 'bg-danger'} position-absolute" style="top: -240px; right: 15px;">${stockText}</span>
                 </div>
-
-                <div class="product-info">
-                    <div class="product-category">${escapeHtml(categoryName)}</div>
-                    <div class="product-name">${escapeHtml(productName)}</div>
-                    <div class="product-price">${price}</div>
-
-                    <div class="product-meta">
-                        <span class="product-sold">Đã bán: ${escapeHtml(soldQuantity)}</span>
-                        <span class="product-stock ${stockClass}">${escapeHtml(stockText)}</span>
+                <div class="product-price px-3 pb-2">
+                    <div class="text-muted small mb-1">${escapeHtml(categoryName)}</div>
+                    <h5 class="card-title mb-1" style="font-size: 1.1rem; min-height: 2.6rem;">
+                        <a href="/products/${escapeAttribute(product.product_id)}" class="text-dark text-decoration-none">
+                            ${escapeHtml(productName)}
+                        </a>
+                    </h5>
+                    <div class="mb-2 d-flex align-items-center">
+                        <small class="text-warning">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </small>
+                        <small class="text-muted ms-2">Đã bán: ${escapeHtml(soldQuantity)}</small>
+                    </div>
+                    <div class="d-block mb-2">
+                        <span class="sell-price fw-bold fs-5 text-success">${price}</span>
                     </div>
                 </div>
+                <div class="product-footer mt-auto">
+                    <a href="/products/${escapeAttribute(product.product_id)}" class="d-block rounded py-2 text-center border mx-3 mb-3 btn-cart text-decoration-none">Xem chi tiết</a>
+                </div>
             </div>
-        </a>
+        </div>
     `;
 }
 

@@ -1,34 +1,44 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Chi tiết sản phẩm</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/product-detail.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .product-image-main img { max-width: 100%; height: auto; }
+        .sub-image-gallery { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+        .sub-image-gallery img { width: 80px; height: 80px; object-fit: cover; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; }
+        .sub-image-gallery img:hover { border-color: #198754; }
+        .size-option-btn.selected, .color-option-btn.selected { background-color: #198754; color: white; border-color: #198754; }
+    </style>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <section class="product-detail-section">
-        <div class="container">
-            <div id="product-detail" class="loading">
-                Đang tải chi tiết sản phẩm...
+    <main>
+        <section class="mt-50 mb-100 product-detail-section">
+            <div class="container">
+                <div id="product-detail" class="loading text-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Đang tải chi tiết sản phẩm...</span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
+    <div id="footer-placeholder"></div>
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/product-detail.js"></script>
-    <div id="footer-placeholder"></div>
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>
-

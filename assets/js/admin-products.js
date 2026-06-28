@@ -58,12 +58,12 @@ productImageInput.addEventListener("change", () => {
 initPage();
 
 function setMessage(text, type = "success") {
-    message.className = `message ${type}`;
+    message.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
     message.textContent = text;
 }
 
 function clearMessage() {
-    message.className = "message";
+    message.className = "";
     message.textContent = "";
 }
 
@@ -231,66 +231,57 @@ function createProductRow(product) {
     const productId = product.product_id;
 
     const imageHtml = product.imageUrl
-        ? `<img class="product-img" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.product_name)}">`
-        : "Không có ảnh";
+        ? `<img class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.product_name)}">`
+        : `<div class="d-flex align-items-center justify-content-center bg-light text-muted rounded" style="width: 50px; height: 50px;"><i class="bi bi-image"></i></div>`;
 
     return `
         <tr>
-            <td>${escapeHtml(productId)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(productId)}</td>
 
-            <td>
+            <td class="align-middle">
                 ${imageHtml}
             </td>
 
-            <td>
-                <div class="product-summary-name">
-                    ${escapeHtml(product.product_name)}
-                </div>
+            <td class="align-middle fw-bold">
+                ${escapeHtml(product.product_name)}
             </td>
 
-            <td>
+            <td class="align-middle text-muted small">
                 ${escapeHtml(product.category_name || "Chưa phân loại")}
             </td>
 
-            <td>
+            <td class="align-middle text-success fw-bold">
                 ${Number(product.price).toLocaleString("vi-VN")} đ
             </td>
 
-            <td>
-                <span class="readonly-number">
+            <td class="align-middle">
+                <span class="badge bg-secondary">
                     ${escapeHtml(product.quantity_available || 0)}
                 </span>
-                <div class="small-text">
-                    On hand: ${escapeHtml(product.quantity_on_hand || 0)},
-                    Reserved: ${escapeHtml(product.quantity_reserved || 0)}
+                <div class="text-muted" style="font-size: 0.75rem;">
+                    Sẵn: ${escapeHtml(product.quantity_on_hand || 0)}, Đặt: ${escapeHtml(product.quantity_reserved || 0)}
                 </div>
             </td>
 
-            <td>
-                <span class="readonly-number">
+            <td class="align-middle">
+                <span class="badge bg-info text-dark">
                     ${escapeHtml(product.quantity_sold || 0)}
                 </span>
             </td>
 
-            <td>
-                <div class="product-summary-desc">
-                    ${escapeHtml(product.description || "")}
-                </div>
-            </td>
-
-            <td>
+            <td class="align-middle text-end text-nowrap">
                 <button
-                    class="btn btn-blue edit-product-btn"
+                    class="btn btn-sm btn-outline-primary edit-product-btn"
                     data-product-id="${escapeAttribute(productId)}"
                 >
-                    Sửa
+                    <i class="bi bi-pencil"></i> Sửa
                 </button>
 
                 <button
-                    class="btn btn-red delete-product-btn"
+                    class="btn btn-sm btn-outline-danger delete-product-btn ms-1"
                     data-product-id="${escapeAttribute(productId)}"
                 >
-                    Xóa
+                    <i class="bi bi-trash"></i> Xóa
                 </button>
             </td>
         </tr>
@@ -805,23 +796,23 @@ function addVariantRow(tableBodyId, variant = null) {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-        <td>
-            <select class="variant-size">
+        <td class="align-middle">
+            <select class="form-select form-select-sm variant-size">
                 <option value="">Chọn size</option>
                 ${renderSizeOptions(variant?.size_id || variant?.sizeId || "")}
             </select>
         </td>
 
-        <td>
-            <select class="variant-color">
+        <td class="align-middle">
+            <select class="form-select form-select-sm variant-color">
                 <option value="">Chọn màu</option>
                 ${renderColorOptions(variant?.color_id || variant?.colorId || "")}
             </select>
         </td>
 
-        <td>
+        <td class="align-middle">
             <input
-                class="variant-quantity-on-hand"
+                class="form-control form-control-sm variant-quantity-on-hand"
                 type="number"
                 min="0"
                 step="1"
@@ -829,9 +820,9 @@ function addVariantRow(tableBodyId, variant = null) {
             >
         </td>
 
-        <td>
-            <button type="button" class="btn btn-red remove-variant-btn">
-                Xóa
+        <td class="align-middle text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger remove-variant-btn">
+                <i class="bi bi-trash"></i>
             </button>
         </td>
     `;

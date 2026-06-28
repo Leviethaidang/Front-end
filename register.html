@@ -1,64 +1,100 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Đăng ký</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/register.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .message {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #d70018;
+        }
+        .message.success {
+            color: #198754;
+        }
+        .otp-box {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="register-page">
-        <div class="form-box">
-            <h2>Đăng ký tài khoản</h2>
+    <main>
+        <section class="mt-100 login-section mb-100">
+           <div class="container">
+              <div class="row justify-content-center">
+                 <div class="col-lg-5 col-md-8 col-sm-12 col-12 mb-lg-0 mb-md-4 mb-sm-4 mb-4">
+                    <div class="item border p-4 rounded shadow-sm">
+                        <div class="mb-4 text-center">
+                            <h2>Đăng ký tài khoản</h2>
+                            <p class="text-muted">Đăng ký để nhận ưu đãi và theo dõi đơn hàng dễ dàng.</p>
+                        </div>
+                        
+                        <form id="register-form">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="reg-name" class="form-label">Họ và tên<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="reg-name" placeholder="Họ và tên" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="reg-email" class="form-label">Email<span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control bg-light border-0 py-2" id="reg-email" placeholder="Email" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="reg-phone" class="form-label">Số điện thoại<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="reg-phone" placeholder="+84901234567" required>
+                                    <small class="text-muted">Số điện thoại nên dùng định dạng quốc tế</small>
+                                </div>
+                                <div class="col-12">
+                                    <label for="reg-password" class="form-label">Mật khẩu<span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control bg-light border-0 py-2" id="reg-password" placeholder="Mật khẩu" required>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" id="register-button" class="btn btn-primary px-4 w-100 py-2">Đăng ký</button>
+                                </div>
+                            </div>
+                        </form>
 
-            <form id="register-form">
-                <input id="reg-name" placeholder="Họ và tên">
+                        <div id="otp-box" class="otp-box border-top pt-4 mt-4">
+                            <p class="mb-3 text-center text-muted">Nhập mã xác nhận được gửi về email/số điện thoại:</p>
+                            <form id="confirm-form">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control bg-light border-0 py-2 text-center" id="otp-code" placeholder="Mã xác nhận" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" id="confirm-button" class="btn btn-success px-4 w-100 py-2">Xác nhận tài khoản</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
 
-                <input id="reg-email" type="email" placeholder="Email">
+                        <div id="register-message" class="message text-center w-100"></div>
 
-                <input id="reg-phone" placeholder="Số điện thoại, ví dụ +84901234567">
-                <div class="hint">Số điện thoại nên dùng định dạng quốc tế</div>
+                        <div class="col-12 text-center mt-4">
+                            Đã có tài khoản? <a href="/login" class="text-primary">Đăng nhập</a>
+                        </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
+     </main>
 
-                <input id="reg-password" type="password" placeholder="Mật khẩu">
+    <div id="footer-placeholder"></div>
 
-                <button id="register-button" type="submit">
-                    Đăng ký
-                </button>
-            </form>
-
-            <div id="otp-box" class="otp-box">
-                <hr>
-
-                <p>Nhập mã xác nhận được gửi về email/số điện thoại:</p>
-
-                <form id="confirm-form">
-                    <input id="otp-code" placeholder="Mã xác nhận">
-
-                    <button id="confirm-button" class="btn-blue" type="submit">
-                        Xác nhận tài khoản
-                    </button>
-                </form>
-            </div>
-
-            <div id="register-message" class="message"></div>
-
-            <div class="small-text">
-                Đã có tài khoản?
-                <a href="/login">Đăng nhập</a>
-            </div>
-
-            <a class="home-link" href="/">← Quay về trang chủ</a>
-        </div>
-    </div>
-
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/register.js"></script>
-    <div id="footer-placeholder"></div>
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>

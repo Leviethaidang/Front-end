@@ -3,70 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <title>HaShop - Admin Users</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/admin-users.css">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Admin - Quản lý người dùng</h2>
-            <p>Tạo, cập nhật, vô hiệu hóa hoặc xóa tài khoản người dùng.</p>
+    <main class="py-5 bg-light min-vh-100">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-2">Admin - Quản lý người dùng</h2>
+                    <p class="text-muted">Tạo, cập nhật, vô hiệu hóa hoặc xóa tài khoản người dùng.</p>
+                </div>
+            </div>
+
+            <div id="message" class="mb-4"></div>
+
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Thêm user mới</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input id="newFullName" class="form-control" placeholder="Họ và tên">
+                        </div>
+                        <div class="col-md-6">
+                            <input id="newEmail" type="email" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-md-6">
+                            <input id="newPhone" class="form-control" placeholder="Số điện thoại, ví dụ +84901234567">
+                        </div>
+                        <div class="col-md-6">
+                            <input id="newPassword" type="password" class="form-control" placeholder="Mật khẩu">
+                        </div>
+                        <div class="col-12">
+                            <textarea id="newAddress" class="form-control" placeholder="Địa chỉ giao hàng"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="newGroup" class="form-select">
+                                <option value="Customer">Customer</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button id="createUserBtn" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-2"></i>Tạo user
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Danh sách users</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <p id="message" class="message"></p>
-
-        <div class="box">
-            <h3>Thêm user mới</h3>
-
-            <input id="newFullName" placeholder="Họ và tên">
-
-            <input id="newEmail" type="email" placeholder="Email">
-
-            <input id="newPhone" placeholder="Số điện thoại, ví dụ +84901234567">
-
-            <input id="newPassword" type="password" placeholder="Mật khẩu">
-
-            <textarea id="newAddress" placeholder="Địa chỉ giao hàng"></textarea>
-
-            <select id="newGroup">
-                <option value="Customer">Customer</option>
-                <option value="Admin">Admin</option>
-            </select>
-
-            <button id="createUserBtn" class="btn btn-green">
-                Tạo user
-            </button>
-        </div>
-
-        <div class="table-section">
-            <h3>Danh sách users</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Địa chỉ</th>
-                        <th>Status</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-
-                <tbody id="userTableBody">
-                    <tr>
-                        <td colspan="7">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/admin-users.js"></script>
 </body>

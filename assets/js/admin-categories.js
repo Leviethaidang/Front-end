@@ -26,12 +26,12 @@ createColorBtn.addEventListener("click", createColor);
 loadAllData();
 
 function setMessage(text, type = "success") {
-    message.className = `message ${type}`;
+    message.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
     message.textContent = text;
 }
 
 function clearMessage() {
-    message.className = "message";
+    message.className = "";
     message.textContent = "";
 }
 
@@ -224,30 +224,31 @@ async function loadCategories() {
 function createCategoryRow(category) {
     return `
         <tr>
-            <td>${escapeHtml(category.category_id)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(category.category_id)}</td>
 
-            <td>
+            <td class="align-middle">
                 <input
+                    class="form-control form-control-sm"
                     id="category-name-${escapeAttribute(category.category_id)}"
                     value="${escapeAttribute(category.category_name)}"
                 >
             </td>
 
-            <td>${escapeHtml(category.created_at)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(category.created_at)}</td>
 
-            <td>
+            <td class="align-middle text-end text-nowrap">
                 <button
-                    class="btn btn-blue update-category-btn"
+                    class="btn btn-sm btn-outline-primary update-category-btn"
                     data-category-id="${escapeAttribute(category.category_id)}"
                 >
-                    Lưu
+                    <i class="bi bi-save"></i> Lưu
                 </button>
 
                 <button
-                    class="btn btn-red delete-category-btn"
+                    class="btn btn-sm btn-outline-danger delete-category-btn ms-1"
                     data-category-id="${escapeAttribute(category.category_id)}"
                 >
-                    Xóa
+                    <i class="bi bi-trash"></i> Xóa
                 </button>
             </td>
         </tr>
@@ -438,40 +439,42 @@ async function loadSizes() {
 function createSizeRow(size) {
     return `
         <tr>
-            <td>${escapeHtml(size.size_id)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(size.size_id)}</td>
 
-            <td>
+            <td class="align-middle">
                 <input
+                    class="form-control form-control-sm"
                     id="size-name-${escapeAttribute(size.size_id)}"
                     value="${escapeAttribute(size.size_name)}"
                 >
             </td>
 
-            <td>
+            <td class="align-middle">
                 <input
                     id="size-order-${escapeAttribute(size.size_id)}"
-                    class="table-input-small"
+                    class="form-control form-control-sm text-center"
+                    style="width: 80px"
                     type="number"
                     min="0"
                     value="${escapeAttribute(size.display_order)}"
                 >
             </td>
 
-            <td>${escapeHtml(size.created_at)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(size.created_at)}</td>
 
-            <td>
+            <td class="align-middle text-end text-nowrap">
                 <button
-                    class="btn btn-blue update-size-btn"
+                    class="btn btn-sm btn-outline-primary update-size-btn"
                     data-size-id="${escapeAttribute(size.size_id)}"
                 >
-                    Lưu
+                    <i class="bi bi-save"></i> Lưu
                 </button>
 
                 <button
-                    class="btn btn-red delete-size-btn"
+                    class="btn btn-sm btn-outline-danger delete-size-btn ms-1"
                     data-size-id="${escapeAttribute(size.size_id)}"
                 >
-                    Xóa
+                    <i class="bi bi-trash"></i> Xóa
                 </button>
             </td>
         </tr>
@@ -691,53 +694,56 @@ function createColorRow(color) {
 
     return `
         <tr>
-            <td>${escapeHtml(color.color_id)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(color.color_id)}</td>
 
-            <td>
+            <td class="align-middle">
                 <input
+                    class="form-control form-control-sm"
                     id="color-name-${escapeAttribute(color.color_id)}"
                     value="${escapeAttribute(color.color_name)}"
                 >
             </td>
 
-            <td>
-                <div class="color-preview-wrap">
-                    <span class="${colorDotClass}" ${colorDotStyle}></span>
+            <td class="align-middle">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle border border-secondary" style="display: inline-block; width: 24px; height: 24px; background: ${colorCode ? escapeAttribute(colorCode) : 'transparent'};"></span>
 
                     <input
                         id="color-code-${escapeAttribute(color.color_id)}"
-                        class="table-input-color"
+                        class="form-control form-control-sm"
+                        style="width: 100px"
                         value="${escapeAttribute(colorCode)}"
                         placeholder="#F8BBD0"
                     >
                 </div>
             </td>
 
-            <td>
+            <td class="align-middle">
                 <input
                     id="color-order-${escapeAttribute(color.color_id)}"
-                    class="table-input-small"
+                    class="form-control form-control-sm text-center"
+                    style="width: 80px"
                     type="number"
                     min="0"
                     value="${escapeAttribute(color.display_order)}"
                 >
             </td>
 
-            <td>${escapeHtml(color.created_at)}</td>
+            <td class="align-middle text-muted small">${escapeHtml(color.created_at)}</td>
 
-            <td>
+            <td class="align-middle text-end text-nowrap">
                 <button
-                    class="btn btn-blue update-color-btn"
+                    class="btn btn-sm btn-outline-primary update-color-btn"
                     data-color-id="${escapeAttribute(color.color_id)}"
                 >
-                    Lưu
+                    <i class="bi bi-save"></i> Lưu
                 </button>
 
                 <button
-                    class="btn btn-red delete-color-btn"
+                    class="btn btn-sm btn-outline-danger delete-color-btn ms-1"
                     data-color-id="${escapeAttribute(color.color_id)}"
                 >
-                    Xóa
+                    <i class="bi bi-trash"></i> Xóa
                 </button>
             </td>
         </tr>

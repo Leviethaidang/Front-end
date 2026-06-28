@@ -157,18 +157,30 @@ async function loadOrders() {
 }
 
 function renderOrdersWithTabs(orders) {
-    // Build page header + tabs
     const headerHtml = `
-        <div class="page-header">
-            <h1 class="page-title" style="display:none"></h1>
-        </div>
-        <div class="order-tabs" id="order-tabs">
-            <button class="order-tab active" data-tab="all">Tất cả (${orders.length})</button>
-            <button class="order-tab" data-tab="PENDING_PAYMENT">Chờ TT (${orders.filter(o => (o.orderStatus || o.order_status) === "PENDING_PAYMENT").length})</button>
-            <button class="order-tab" data-tab="CONFIRMED">Xác nhận (${orders.filter(o => (o.orderStatus || o.order_status) === "CONFIRMED").length})</button>
-            <button class="order-tab" data-tab="SHIPPING">Đang giao (${orders.filter(o => (o.orderStatus || o.order_status) === "SHIPPING").length})</button>
-            <button class="order-tab" data-tab="COMPLETED">Hoàn thành (${orders.filter(o => (o.orderStatus || o.order_status) === "COMPLETED").length})</button>
-            <button class="order-tab" data-tab="CANCELLED">Đã hủy (${orders.filter(o => ["CANCELLED","PAYMENT_FAILED"].includes(o.orderStatus || o.order_status)).length})</button>
+        <div class="row mb-4">
+            <div class="col-12">
+                <ul class="nav nav-pills justify-content-center" id="order-tabs">
+                    <li class="nav-item">
+                        <button class="nav-link active order-tab" data-tab="all">Tất cả (${orders.length})</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link order-tab" data-tab="PENDING_PAYMENT">Chờ TT (${orders.filter(o => (o.orderStatus || o.order_status) === "PENDING_PAYMENT").length})</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link order-tab" data-tab="CONFIRMED">Xác nhận (${orders.filter(o => (o.orderStatus || o.order_status) === "CONFIRMED").length})</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link order-tab" data-tab="SHIPPING">Đang giao (${orders.filter(o => (o.orderStatus || o.order_status) === "SHIPPING").length})</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link order-tab" data-tab="COMPLETED">Hoàn thành (${orders.filter(o => (o.orderStatus || o.order_status) === "COMPLETED").length})</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link order-tab" data-tab="CANCELLED">Đã hủy (${orders.filter(o => ["CANCELLED","PAYMENT_FAILED"].includes(o.orderStatus || o.order_status)).length})</button>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div id="orders-list-container"></div>
     `;
@@ -205,18 +217,20 @@ function renderFilteredOrders(orders) {
 
     if (filtered.length === 0) {
         container.innerHTML = `
-            <div class="empty-orders">
-                <span class="empty-icon">📋</span>
-                <p>Không có đơn hàng nào trong mục này.</p>
-                <p><a href="/">Tiếp tục mua sắm</a></p>
+            <div class="text-center py-5 bg-light rounded">
+                <div class="fs-1 mb-3">📋</div>
+                <h5 class="text-muted">Không có đơn hàng nào trong mục này.</h5>
+                <a href="/" class="btn btn-outline-primary mt-3">Tiếp tục mua sắm</a>
             </div>
         `;
         return;
     }
 
     container.innerHTML = `
-        <div class="orders-list">
-            ${filtered.map(order => renderOrderCard(order)).join("")}
+        <div class="row">
+            <div class="col-12">
+                ${filtered.map(order => renderOrderCard(order)).join("")}
+            </div>
         </div>
     `;
 }
@@ -266,40 +280,44 @@ function renderOrderCard(order) {
     const sourceLabel = sourceType === "CART" ? "🛒 Giỏ hàng" : sourceType === "BUY_NOW" ? "⚡ Mua ngay" : "";
 
     return `
-        <div class="order-card" id="order-card-${escapeAttribute(orderId)}">
-            <div class="order-header">
-                <div class="order-header-left">
-                    <div class="order-id">Đơn #${escapeHtml(orderId)}</div>
-                    <div class="order-date">
-                        🕐 ${escapeHtml(formatDate(order.createdAt || order.created_at))}
-                        ${sourceLabel ? `<span class="order-source">${sourceLabel}</span>` : ""}
+        <div class="card border-0 shadow-sm mb-4" id="order-card-${escapeAttribute(orderId)}">
+            <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h5 class="mb-1 fw-bold">Đơn #${escapeHtml(orderId)}</h5>
+                    <div class="text-muted small">
+                        <i class="bi bi-clock"></i> ${escapeHtml(formatDate(order.createdAt || order.created_at))}
+                        ${sourceLabel ? `<span class="badge bg-light text-dark ms-2 border">${sourceLabel}</span>` : ""}
                     </div>
                 </div>
-                <div class="order-header-right">
-                    <div class="order-statuses">
-                        <span class="status-badge ${orderStatusClass}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
-                        <span class="status-badge ${paymentStatusClass}">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
-                    </div>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge ${orderStatusClass === 'pending' ? 'bg-warning text-dark' : orderStatusClass === 'processing' ? 'bg-info text-dark' : orderStatusClass === 'shipped' ? 'bg-primary' : orderStatusClass === 'delivered' ? 'bg-success' : 'bg-danger'}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
+                    <span class="badge bg-secondary ms-1">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
                 </div>
             </div>
 
-            <div class="order-body">
-                <div class="order-items-preview">
-                    ${itemsHtml}
-                    ${moreItemsHtml}
-                </div>
+            <div class="card-body p-0">
+                ${itemsHtml.replaceAll('class="order-item-row"', 'class="d-flex align-items-center p-3 border-bottom"')
+                           .replaceAll('class="order-item-img"', 'class="me-3"')
+                           .replaceAll('class="order-item-img-placeholder"', 'class="d-flex align-items-center justify-content-center bg-light text-muted rounded" style="width:60px; height:60px; font-size:24px;"')
+                           .replaceAll('<img src', '<img style="width:60px; height:60px; object-fit:cover;" class="rounded" src')
+                           .replaceAll('class="order-item-info"', 'class="flex-grow-1"')
+                           .replaceAll('class="order-item-name"', 'class="fw-bold"')
+                           .replaceAll('class="order-item-variant"', 'class="small text-muted"')
+                           .replaceAll('class="order-item-qty"', 'class="px-3 fw-bold text-muted"')
+                           .replaceAll('class="order-item-price"', 'class="fw-bold ms-3"')}
+                ${moreItemsHtml ? `<div class="p-3 text-center text-muted small bg-light">${moreItemsHtml.replace('class="order-items-more"', '')}</div>` : ""}
             </div>
 
-            <div class="order-footer">
-                <div class="order-payment-info">
-                    <div class="order-payment-method">
+            <div class="card-footer bg-white p-4 d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <div class="small text-muted mb-1">
                         ${getPaymentMethodTypeLabel(paymentMethodType)}
                         ${paymentMethodDisplay ? `• ${escapeHtml(paymentMethodDisplay)}` : ""}
                     </div>
-                    <div class="order-total">Tổng: <strong>${formatPrice(order.totalAmount || order.total_amount || 0)}</strong></div>
+                    <div class="fs-5">Tổng: <strong class="text-success">${formatPrice(order.totalAmount || order.total_amount || 0)}</strong></div>
                 </div>
-                <a class="view-detail-btn" href="/orders/${escapeAttribute(orderId)}" id="view-order-${escapeAttribute(orderId)}">
-                    Xem chi tiết →
+                <a class="btn btn-outline-primary mt-3 mt-md-0" href="/orders/${escapeAttribute(orderId)}" id="view-order-${escapeAttribute(orderId)}">
+                    Xem chi tiết
                 </a>
             </div>
         </div>

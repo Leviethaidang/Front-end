@@ -1,35 +1,39 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Xác nhận đơn hàng</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/confirm-order.css">
-    <link rel="stylesheet" href="/assets/css/footer.css">
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <h1 class="page-title">Xác nhận đơn hàng</h1>
+    <main class="mt-50 mb-100">
+        <div class="container">
+            <h1 class="page-title mb-4">Xác nhận đơn hàng</h1>
 
-        <div id="message" class="message"></div>
+            <div id="message" class="message mb-4"></div>
 
-        <div id="confirm-order-content" class="loading">
-            Đang tải thông tin đơn hàng...
+            <div id="confirm-order-content" class="loading text-center py-5">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Đang tải thông tin đơn hàng...</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
+    <div id="footer-placeholder"></div>
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/confirm-order.js"></script>
-    <div id="footer-placeholder"></div>
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>
