@@ -1,23 +1,36 @@
 :root {
-    --bg-color: #f8f5f0;
-    --text-primary: #1a1a1a;
-    --text-secondary: #6b6b6b;
-    --accent-color: #3d3d3d;
-    --btn-primary: #2d2d2d;
-    --btn-secondary: #ffffff;
-    --border-color: #e0e0e0;
+    --primary-orange: #ff8c00;
+    --primary-orange-light: #ffb347;
+    --dark-bg: #1a1a1a;
+    --dark-card: #2a2a2a;
+    --dark-border: #555;
+    --text-light: #ffffff;
+    --text-muted: #cccccc;
 }
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
+    background-color: var(--dark-bg);
+    color: var(--text-light);
     line-height: 1.6;
 }
 
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.card {
+    background-color: var(--dark-card);
+    border-color: var(--dark-border);
+}
+
+.card-body {
+    color: var(--text-light);
+}
+
 .btn-primary-custom {
-    background-color: var(--btn-primary);
-    color: white;
+    background-color: var(--primary-orange);
+    color: #000000;
     border: none;
     padding: 12px 32px;
     border-radius: 8px;
@@ -26,16 +39,16 @@ body {
 }
 
 .btn-primary-custom:hover {
-    background-color: #4a4a4a;
-    color: white;
+    background-color: var(--primary-orange-light);
+    color: #000000;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
 }
 
 .btn-secondary-custom {
-    background-color: var(--btn-secondary);
-    color: var(--btn-primary);
-    border: 2px solid var(--btn-primary);
+    background-color: var(--dark-card);
+    color: var(--text-light);
+    border: 2px solid var(--dark-border);
     padding: 12px 32px;
     border-radius: 8px;
     font-weight: 500;
@@ -43,18 +56,57 @@ body {
 }
 
 .btn-secondary-custom:hover {
-    background-color: var(--btn-primary);
-    color: white;
+    background-color: var(--dark-border);
+    color: var(--text-light);
+}
+
+.form-control {
+    background-color: var(--dark-card);
+    border-color: var(--dark-border);
+    color: var(--text-light);
 }
 
 .form-control:focus {
-    border-color: var(--btn-primary);
-    box-shadow: 0 0 0 0.2rem rgba(45, 45, 45, 0.1);
+    background-color: var(--dark-card);
+    border-color: var(--primary-orange);
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--text-light);
 }
 
 .card-custom {
-    background: white;
+    background: var(--dark-card);
     border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    border: none;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--dark-border);
+}
+
+.dropdown-menu {
+    background-color: var(--dark-card);
+    border-color: var(--dark-border);
+}
+
+.dropdown-item {
+    color: var(--text-light);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--dark-border);
+    color: var(--text-light);
+}
+
+.dropdown-item.active {
+    background-color: var(--primary-orange);
+    color: #000000;
+}
+
+hr {
+    border-color: var(--dark-border);
 }
