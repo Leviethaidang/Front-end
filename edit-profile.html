@@ -2,25 +2,46 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Chỉnh sửa Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Chỉnh sửa hồ sơ</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
     <link rel="stylesheet" href="/assets/css/navbar.css">
     <link rel="stylesheet" href="/assets/css/edit-profile.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Chỉnh sửa hồ sơ</h2>
-        </div>
+    <div class="edit-profile-section">
+        <div class="container">
+            <div class="page-header mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="/profile">Hồ sơ</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
+                    </ol>
+                </nav>
+                <h1 class="fw-bold mb-2">Chỉnh sửa hồ sơ</h1>
+                <p class="text-muted">Cập nhật thông tin tài khoản và phương thức thanh toán của bạn.</p>
+            </div>
 
-        <div id="edit-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
-
-        <div class="actions">
-            <a href="/profile" class="btn">Quay lại hồ sơ</a>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card edit-card">
+                        <div class="card-body p-4 p-sm-5" id="edit-content">
+                            Đang tải dữ liệu...
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <a href="/profile" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left me-2"></i>Quay lại hồ sơ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,0 +1,60 @@
+:root {
+    --bg-color: #f8f5f0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --accent-color: #3d3d3d;
+    --btn-primary: #2d2d2d;
+    --btn-secondary: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.btn-primary-custom {
+    background-color: var(--btn-primary);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: #4a4a4a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary-custom {
+    background-color: var(--btn-secondary);
+    color: var(--btn-primary);
+    border: 2px solid var(--btn-primary);
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+    background-color: var(--btn-primary);
+    color: white;
+}
+
+.form-control:focus {
+    border-color: var(--btn-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 45, 45, 0.1);
+}
+
+.card-custom {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    border: none;
+}
