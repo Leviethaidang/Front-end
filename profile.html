@@ -2,33 +2,130 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Profile</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/profile.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Hồ sơ cá nhân</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/profile.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
-
-    <div class="container">
-        <div class="page-header">
-            <h2>Hồ sơ cá nhân</h2>
-            <p>Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">HaShop</a>
+            <div class="d-flex align-items-center gap-4">
+                <a href="index.html" class="text-decoration-none">Sản phẩm</a>
+                <div class="dropdown">
+                    <a href="#" class="text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle fs-4"></i>
+                        Nguyễn Văn A
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item active" href="profile.html"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                        <li><a class="dropdown-item" href="edit-profile.html"><i class="bi bi-pencil me-2"></i>Chỉnh sửa</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="login.html"><i class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <div id="profile-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
+    <div class="profile-section">
+        <div class="container">
+            <div class="page-header mb-5">
+                <h1 class="fw-bold mb-2">Hồ sơ cá nhân</h1>
+                <p class="text-muted">Quản lý thông tin tài khoản HaShop của bạn.</p>
+            </div>
 
-        <div class="actions">
-            <a href="/profile/edit" class="btn btn-blue" id="edit-button">
-                Chỉnh sửa thông tin
-            </a>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card profile-card">
+                        <div class="profile-header-card">
+                            <div class="avatar-wrapper">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <h3 class="fw-bold mt-3 mb-1">Nguyễn Văn A</h3>
+                            <p class="text-muted mb-0">nguyenvana@email.com</p>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <a href="profile.html" class="list-group-item list-group-item-action active">
+                                <i class="bi bi-person me-3"></i>Thông tin cá nhân
+                            </a>
+                            <a href="edit-profile.html" class="list-group-item list-group-item-action">
+                                <i class="bi bi-pencil-square me-3"></i>Chỉnh sửa hồ sơ
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-bag me-3"></i>Đơn hàng của tôi
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card info-card">
+                        <div class="card-header-custom">
+                            <h4 class="fw-bold mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin tài khoản</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-item">
+                                        <label class="text-muted mb-1 d-block">Họ và tên</label>
+                                        <div class="fw-semibold fs-5">Nguyễn Văn A</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-item">
+                                        <label class="text-muted mb-1 d-block">Email</label>
+                                        <div class="fw-semibold fs-5">nguyenvana@email.com</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-item">
+                                        <label class="text-muted mb-1 d-block">Số điện thoại</label>
+                                        <div class="fw-semibold fs-5">+84 901 234 567</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-item">
+                                        <label class="text-muted mb-1 d-block">Địa chỉ</label>
+                                        <div class="fw-semibold fs-5">Hà Nội, Việt Nam</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    <div class="info-item">
+                                        <label class="text-muted mb-1 d-block">Ngày tham gia</label>
+                                        <div class="fw-semibold fs-5">15 Tháng 6, 2024</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="edit-profile.html" class="btn btn-primary-gradient">
+                                <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa hồ sơ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/profile.js"></script>
+    <footer class="footer-minimal">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">HaShop</div>
+                <div class="footer-links">
+                    <a href="#">Về chúng tôi</a>
+                    <a href="#">Chính sách</a>
+                    <a href="#">Liên hệ</a>
+                    <a href="#">Quy định</a>
+                </div>
+                <div class="footer-copy">© 2024 HaShop. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
