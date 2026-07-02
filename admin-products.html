@@ -13,117 +13,145 @@
     <div id="navbar-placeholder"></div>
 
     <div class="container">
-        <div class="page-header">
-            <h2>Admin - Quản lý sản phẩm</h2>
-            <p>Thêm, sửa, xóa sản phẩm và quản lý ảnh sản phẩm.</p>
-        </div>
-
-        <p id="message" class="message"></p>
-
-        <div class="box">
-            <h3>Thêm sản phẩm mới</h3>
-
-            <input id="newProductName" placeholder="Tên sản phẩm">
-
-            <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
-
-            <select id="newCategoryId">
-                <option value="">Chưa phân loại</option>
-            </select>
-
-            <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
-
-            <label class="form-label">Ảnh chính</label>
-            <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-            <img id="productPreviewImage" class="preview-img" alt="Preview">
-            <label class="form-label">Ảnh phụ</label>
-            <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
-
-            <div class="variant-section">
-                <div class="variant-header">
-                    <h4>Biến thể sản phẩm</h4>
-
-                    <button id="addCreateVariantBtn" type="button" class="btn btn-blue">
-                        Thêm biến thể
-                    </button>
+        <div class="admin-wrapper">
+            <aside class="admin-sidebar" id="admin-sidebar">
+                <div class="admin-sidebar-header">
+                    <h3>Sản phẩm</h3>
                 </div>
 
-                <table class="variant-table">
-                    <thead>
-                        <tr>
-                            <th>Size</th>
-                            <th>Màu</th>
-                            <th>Số lượng</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item">
+                        <button type="button" class="sidebar-menu-btn" data-target="create-product-section">
+                            Tạo sản phẩm
+                        </button>
+                    </li>
 
-                    <tbody id="createVariantTableBody">
-                    </tbody>
-                </table>
-            </div>
+                    <li class="sidebar-menu-item">
+                        <button type="button" class="sidebar-menu-btn" data-target="list-product-section">
+                            Danh sách sản phẩm
+                        </button>
+                    </li>
+                </ul>
+            </aside>
 
-            <button id="createProductBtn" class="btn btn-green">
-                Tạo sản phẩm
-            </button>
-        </div>
-
-        <div class="table-section">
-            <h3>Danh sách sản phẩm</h3>
-
-            <div class="filter-bar section-filter-bar">
-                <div class="filter-group">
-                    <span class="filter-label">Tìm kiếm</span>
-                    <input
-                        id="productSearchInput"
-                        class="filter-input"
-                        placeholder="Tên sản phẩm, mô tả..."
-                    >
+            <main class="admin-content">
+                <div class="page-header">
+                    <h2>Admin - Quản lý sản phẩm</h2>
+                    <p>Thêm, sửa, xóa sản phẩm và quản lý ảnh sản phẩm.</p>
                 </div>
 
-                <div class="filter-group">
-                    <span class="filter-label">Danh mục</span>
-                    <select id="productCategoryFilter" class="filter-select">
-                        <option value="">Tất cả danh mục</option>
-                    </select>
-                </div>
+                <p id="message" class="message"></p>
 
-                <div class="filter-group">
-                    <span class="filter-label">Tồn kho</span>
-                    <select id="productStockFilter" class="filter-select">
-                        <option value="all">Tất cả</option>
-                        <option value="available">Còn hàng</option>
-                        <option value="low">Sắp hết</option>
-                        <option value="out">Hết hàng</option>
-                    </select>
-                </div>
+                <section id="create-product-section" class="section-container active">
+                    <div class="box">
+                        <h3>Thêm sản phẩm mới</h3>
 
-                <button id="resetProductFiltersBtn" type="button" class="filter-btn-reset">
-                    Xóa lọc
-                </button>
-            </div>
+                        <input id="newProductName" placeholder="Tên sản phẩm">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Category</th>
-                        <th>Giá</th>
-                        <th>Tồn kho</th>
-                        <th>Đã bán</th>
-                        <th>Mô tả</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
+                        <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
 
-                <tbody id="productTableBody">
-                    <tr>
-                        <td colspan="9">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
+                        <select id="newCategoryId">
+                            <option value="">Chưa phân loại</option>
+                        </select>
+
+                        <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
+
+                        <label class="form-label">Ảnh chính</label>
+                        <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+                        <img id="productPreviewImage" class="preview-img" alt="Preview">
+                        <label class="form-label">Ảnh phụ</label>
+                        <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+
+                        <div class="variant-section">
+                            <div class="variant-header">
+                                <h4>Biến thể sản phẩm</h4>
+
+                                <button id="addCreateVariantBtn" type="button" class="btn btn-blue">
+                                    Thêm biến thể
+                                </button>
+                            </div>
+
+                            <table class="variant-table">
+                                <thead>
+                                    <tr>
+                                        <th>Size</th>
+                                        <th>Màu</th>
+                                        <th>Số lượng</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="createVariantTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <button id="createProductBtn" class="btn btn-green">
+                            Tạo sản phẩm
+                        </button>
+                    </div>
+                </section>
+
+                <section id="list-product-section" class="section-container">
+                    <div class="table-section">
+                        <h3>Danh sách sản phẩm</h3>
+
+                        <div class="filter-bar section-filter-bar">
+                            <div class="filter-group">
+                                <span class="filter-label">Tìm kiếm</span>
+                                <input
+                                    id="productSearchInput"
+                                    class="filter-input"
+                                    placeholder="Tên sản phẩm, mô tả..."
+                                >
+                            </div>
+
+                            <div class="filter-group">
+                                <span class="filter-label">Danh mục</span>
+                                <select id="productCategoryFilter" class="filter-select">
+                                    <option value="">Tất cả danh mục</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <span class="filter-label">Tồn kho</span>
+                                <select id="productStockFilter" class="filter-select">
+                                    <option value="all">Tất cả</option>
+                                    <option value="available">Còn hàng</option>
+                                    <option value="low">Sắp hết</option>
+                                    <option value="out">Hết hàng</option>
+                                </select>
+                            </div>
+
+                            <button id="resetProductFiltersBtn" type="button" class="filter-btn-reset">
+                                Xóa lọc
+                            </button>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Category</th>
+                                    <th>Giá</th>
+                                    <th>Tồn kho</th>
+                                    <th>Đã bán</th>
+                                    <th>Mô tả</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="productTableBody">
+                                <tr>
+                                    <td colspan="9">Đang tải...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
@@ -203,6 +231,7 @@
     
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/navbar.js"></script>
+        <script src="/assets/js/admin-sidebar.js"></script>
     <script src="/assets/js/admin-products.js"></script>
 </body>
 </html>

@@ -13,90 +13,119 @@
     <div id="navbar-placeholder"></div>
 
     <div class="container">
-        <div class="page-header">
-            <h2>Admin - Quản lý người dùng</h2>
-            <p>Tạo, cập nhật, vô hiệu hóa hoặc xóa tài khoản người dùng.</p>
-        </div>
-
-        <p id="message" class="message"></p>
-
-        <div class="box">
-            <h3>Thêm user mới</h3>
-
-            <input id="newFullName" placeholder="Họ và tên">
-
-            <input id="newEmail" type="email" placeholder="Email">
-
-            <input id="newPhone" placeholder="Số điện thoại, ví dụ +84901234567">
-
-            <input id="newPassword" type="password" placeholder="Mật khẩu">
-
-            <textarea id="newAddress" placeholder="Địa chỉ giao hàng"></textarea>
-
-            <select id="newGroup">
-                <option value="Customer">Customer</option>
-                <option value="Admin">Admin</option>
-            </select>
-
-            <button id="createUserBtn" class="btn btn-green">
-                Tạo user
-            </button>
-        </div>
-
-        <div class="table-section">
-            <div class="section-head">
-                <h3>Danh sách users</h3>
-                <span class="section-note">Lọc nhanh theo tên, email, số điện thoại, địa chỉ hoặc trạng thái.</span>
-            </div>
-
-            <div class="filter-bar section-filter-bar">
-                <div class="filter-group">
-                    <span class="filter-label">Tìm kiếm</span>
-                    <input
-                        id="userSearchInput"
-                        class="filter-input"
-                        placeholder="Tên, email, số điện thoại, địa chỉ..."
-                    >
+        <div class="admin-wrapper">
+            <aside class="admin-sidebar" id="admin-sidebar">
+                <div class="admin-sidebar-header">
+                    <h3>Người dùng</h3>
                 </div>
 
-                <div class="filter-group">
-                    <span class="filter-label">Trạng thái</span>
-                    <select id="userStatusFilter" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="DISABLED">DISABLED</option>
-                    </select>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item">
+                        <button type="button" class="sidebar-menu-btn" data-target="create-user-section">
+                            Tạo user
+                        </button>
+                    </li>
+
+                    <li class="sidebar-menu-item">
+                        <button type="button" class="sidebar-menu-btn" data-target="list-user-section">
+                            Danh sách user
+                        </button>
+                    </li>
+                </ul>
+            </aside>
+
+            <main class="admin-content">
+                <div class="page-header">
+                    <h2>Admin - Quản lý người dùng</h2>
+                    <p>Tạo, cập nhật, vô hiệu hóa hoặc xóa tài khoản người dùng.</p>
                 </div>
 
-                <button id="resetUserFiltersBtn" type="button" class="filter-btn-reset">
-                    Xóa lọc
-                </button>
-            </div>
+                <p id="message" class="message"></p>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Địa chỉ</th>
-                        <th>Status</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
+                <section id="create-user-section" class="section-container active">
+                    <div class="box">
+                        <h3>Thêm user mới</h3>
 
-                <tbody id="userTableBody">
-                    <tr>
-                        <td colspan="7">Đang tải...</td>
-                    </tr>
-                </tbody>
-            </table>
+                        <input id="newFullName" placeholder="Họ và tên">
+
+                        <input id="newEmail" type="email" placeholder="Email">
+
+                        <input id="newPhone" placeholder="Số điện thoại, ví dụ +84901234567">
+
+                        <input id="newPassword" type="password" placeholder="Mật khẩu">
+
+                        <textarea id="newAddress" placeholder="Địa chỉ giao hàng"></textarea>
+
+                        <select id="newGroup">
+                            <option value="Customer">Customer</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+
+                        <button id="createUserBtn" class="btn btn-green">
+                            Tạo user
+                        </button>
+                    </div>
+                </section>
+
+                <section id="list-user-section" class="section-container">
+                    <div class="table-section">
+                        <div class="section-head">
+                            <h3>Danh sách users</h3>
+                            <span class="section-note">Lọc nhanh theo tên, email, số điện thoại, địa chỉ hoặc trạng thái.</span>
+                        </div>
+
+                        <div class="filter-bar section-filter-bar">
+                            <div class="filter-group">
+                                <span class="filter-label">Tìm kiếm</span>
+                                <input
+                                    id="userSearchInput"
+                                    class="filter-input"
+                                    placeholder="Tên, email, số điện thoại, địa chỉ..."
+                                >
+                            </div>
+
+                            <div class="filter-group">
+                                <span class="filter-label">Trạng thái</span>
+                                <select id="userStatusFilter" class="filter-select">
+                                    <option value="">Tất cả</option>
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="DISABLED">DISABLED</option>
+                                </select>
+                            </div>
+
+                            <button id="resetUserFiltersBtn" type="button" class="filter-btn-reset">
+                                Xóa lọc
+                            </button>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Status</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="userTableBody">
+                                <tr>
+                                    <td colspan="7">Đang tải...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/admin-sidebar.js"></script>
     <script src="/assets/js/admin-users.js"></script>
 </body>
 </html>
