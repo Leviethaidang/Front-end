@@ -13,6 +13,10 @@
 }
 
 body {
+    margin: 0;
+}
+
+body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background:
         radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 28%),
@@ -29,6 +33,27 @@ a {
     max-width: 1300px;
     margin: 32px auto 56px;
     padding: 0 20px;
+}
+
+.admin-layout-container {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow-x: clip;
+}
+
+.admin-layout-container .admin-wrapper {
+    width: 100%;
+}
+
+.admin-layout-container .page-header,
+.admin-layout-container .message,
+.admin-layout-container .section-container,
+.admin-layout-container .box,
+.admin-layout-container .table-section {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .page-header {

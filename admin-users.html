@@ -12,22 +12,29 @@
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="container">
+    <div class="admin-layout-container">
         <div class="admin-wrapper">
             <aside class="admin-sidebar" id="admin-sidebar">
-                <div class="admin-sidebar-header">
-                    <h3>Người dùng</h3>
+                <div class="admin-sidebar-brand">
+                    <div class="admin-sidebar-mark">U</div>
+                    <div class="admin-sidebar-header">
+                        <h3>Người dùng</h3>
+                        <p>Chọn mục bên trái</p>
+                    </div>
                 </div>
 
+                <div class="admin-sidebar-section-label">Menu</div>
                 <ul class="sidebar-menu">
                     <li class="sidebar-menu-item">
                         <button type="button" class="sidebar-menu-btn" data-target="create-user-section">
+                            <span class="sidebar-menu-icon" aria-hidden="true">+</span>
                             Tạo user
                         </button>
                     </li>
 
                     <li class="sidebar-menu-item">
                         <button type="button" class="sidebar-menu-btn" data-target="list-user-section">
+                            <span class="sidebar-menu-icon" aria-hidden="true">≡</span>
                             Danh sách user
                         </button>
                     </li>
