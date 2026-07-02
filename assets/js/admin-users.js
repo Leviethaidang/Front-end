@@ -3,9 +3,31 @@ const accessToken = localStorage.getItem("accessToken");
 
 const message = document.getElementById("message");
 const userTableBody = document.getElementById("userTableBody");
+const userSearchInput = document.getElementById("userSearchInput");
+const userStatusFilter = document.getElementById("userStatusFilter");
+const resetUserFiltersBtn = document.getElementById("resetUserFiltersBtn");
 const createUserBtn = document.getElementById("createUserBtn");
 
+let allUsers = [];
+
 createUserBtn.addEventListener("click", createUser);
+
+if (userSearchInput) {
+    userSearchInput.addEventListener("input", renderFilteredUsers);
+}
+
+if (userStatusFilter) {
+    userStatusFilter.addEventListener("change", renderFilteredUsers);
+}
+
+if (resetUserFiltersBtn) {
+    resetUserFiltersBtn.addEventListener("click", () => {
+        if (userSearchInput) userSearchInput.value = "";
+        if (userStatusFilter) userStatusFilter.value = "";
+
+        renderFilteredUsers();
+    });
+}
 
 loadUsers();
 
@@ -95,7 +117,7 @@ async function fetchWithAuth(url, options = {}) {
         setMessage("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "danger");
 
         setTimeout(() => {
-            window.location.href = "login.html";
+            window.location.href = "/login";
         }, 1200);
     }
 
@@ -131,11 +153,8 @@ async function loadUsers() {
             return;
         }
 
-        userTableBody.innerHTML = users
-            .map(user => createUserRow(user))
-            .join("");
-
-        bindUserActionButtons();
+        allUsers = users;
+        renderFilteredUsers();
 
     } catch (error) {
         console.error("Lỗi load users:", error);
@@ -366,4 +385,59 @@ function clearCreateUserForm() {
     document.getElementById("newPassword").value = "";
     document.getElementById("newAddress").value = "";
     document.getElementById("newGroup").value = "Customer";
+}
+
+function renderFilteredUsers() {
+    const filteredUsers = filterUsers(allUsers);
+
+    renderUsersTable(
+        filteredUsers,
+        allUsers.length > 0
+            ? "Không tìm thấy user phù hợp bộ lọc."
+            : "Chưa có user nào."
+    );
+}
+
+function filterUsers(users) {
+    const searchText = (userSearchInput?.value || "").trim().toLowerCase();
+    const statusValue = userStatusFilter?.value || "";
+
+    return users.filter(user => {
+        const userId = String(user.user_id || "");
+        const fullName = user.full_name || "";
+        const email = user.email || "";
+        const phoneNumber = user.phone_number || "";
+        const address = user.default_shipping_address || "";
+        const status = user.status || "ACTIVE";
+
+        const matchesSearch = !searchText || [
+            userId,
+            fullName,
+            email,
+            phoneNumber,
+            address,
+            status
+        ].some(value => String(value).toLowerCase().includes(searchText));
+
+        const matchesStatus = !statusValue || status === statusValue;
+
+        return matchesSearch && matchesStatus;
+    });
+}
+
+function renderUsersTable(users, emptyMessage = "Chưa có user nào.") {
+    if (users.length === 0) {
+        userTableBody.innerHTML = `
+            <tr>
+                <td colspan="7">${escapeHtml(emptyMessage)}</td>
+            </tr>
+        `;
+        return;
+    }
+
+    userTableBody.innerHTML = users
+        .map(user => createUserRow(user))
+        .join("");
+
+    bindUserActionButtons();
 }

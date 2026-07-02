@@ -2,8 +2,35 @@ const ORDER_SERVICE_URL = window.APP_CONFIG?.ORDER_SERVICE_URL || "";
 
 const content = document.getElementById("admin-orders-content");
 const messageBox = document.getElementById("message");
+const orderSearchInput = document.getElementById("orderSearchInput");
+const orderStatusFilter = document.getElementById("orderStatusFilter");
+const paymentStatusFilter = document.getElementById("paymentStatusFilter");
+const resetOrderFiltersBtn = document.getElementById("resetOrderFiltersBtn");
 
 let orderDetailModal = null;
+let allOrders = [];
+
+if (orderSearchInput) {
+    orderSearchInput.addEventListener("input", renderFilteredOrders);
+}
+
+if (orderStatusFilter) {
+    orderStatusFilter.addEventListener("change", renderFilteredOrders);
+}
+
+if (paymentStatusFilter) {
+    paymentStatusFilter.addEventListener("change", renderFilteredOrders);
+}
+
+if (resetOrderFiltersBtn) {
+    resetOrderFiltersBtn.addEventListener("click", () => {
+        if (orderSearchInput) orderSearchInput.value = "";
+        if (orderStatusFilter) orderStatusFilter.value = "";
+        if (paymentStatusFilter) paymentStatusFilter.value = "";
+
+        renderFilteredOrders();
+    });
+}
 
 loadAdminOrders();
 
@@ -12,7 +39,7 @@ function getAccessToken() {
 }
 
 function redirectToLogin() {
-    window.location.href = "login.html";
+    window.location.href = "/login";
 }
 
 function escapeHtml(value) {
@@ -151,7 +178,8 @@ async function loadAdminOrders() {
             throw new Error(data.error || "Không thể tải danh sách đơn hàng.");
         }
 
-        renderOrders(data.orders || []);
+        allOrders = data.orders || [];
+        renderFilteredOrders();
 
     } catch (error) {
         console.error("Lỗi tải admin orders:", error);
@@ -161,10 +189,57 @@ async function loadAdminOrders() {
     }
 }
 
-function renderOrders(orders) {
+function renderFilteredOrders() {
+    const filteredOrders = filterOrders(allOrders);
+
+    renderOrders(
+        filteredOrders,
+        allOrders.length > 0
+            ? "Không tìm thấy đơn hàng phù hợp bộ lọc."
+            : "Chưa có đơn hàng nào."
+    );
+}
+
+function filterOrders(orders) {
+    const searchText = (orderSearchInput?.value || "").trim().toLowerCase();
+    const statusValue = orderStatusFilter?.value || "";
+    const paymentValue = paymentStatusFilter?.value || "";
+
+    return orders.filter(order => {
+        const orderId = String(order.orderId || order.order_id || "");
+        const orderStatus = order.orderStatus || order.order_status || "";
+        const paymentStatus = order.paymentStatus || order.payment_status || "";
+
+        const receiverName = order.receiverName || order.receiver_name || "";
+        const receiverPhone = order.receiverPhone || order.receiver_phone || "";
+        const shippingAddress = order.shippingAddress || order.shipping_address || "";
+        const sourceType = order.sourceType || order.source_type || "";
+        const paymentMethodType = order.paymentMethodType || order.payment_method_type || "";
+        const paymentMethodDisplayName = order.paymentMethodDisplayName || order.payment_method_display_name || "";
+
+        const matchesSearch = !searchText || [
+            orderId,
+            receiverName,
+            receiverPhone,
+            shippingAddress,
+            sourceType,
+            paymentMethodType,
+            paymentMethodDisplayName,
+            getOrderStatusText(orderStatus),
+            getPaymentStatusText(paymentStatus)
+        ].some(value => String(value).toLowerCase().includes(searchText));
+
+        const matchesOrderStatus = !statusValue || orderStatus === statusValue;
+        const matchesPaymentStatus = !paymentValue || paymentStatus === paymentValue;
+
+        return matchesSearch && matchesOrderStatus && matchesPaymentStatus;
+    });
+}
+
+function renderOrders(orders, emptyMessage = "Chưa có đơn hàng nào.") {
     if (!orders.length) {
         content.className = "empty-orders";
-        content.innerHTML = "Chưa có đơn hàng nào.";
+        content.innerHTML = emptyMessage;
         return;
     }
 

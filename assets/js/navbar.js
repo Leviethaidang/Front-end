@@ -6,7 +6,7 @@ async function loadNavbar() {
     }
 
     try {
-        const response = await fetch("navbar.html");
+        const response = await fetch("/navbar.html");
 
         if (!response.ok) {
             throw new Error("Không thể load navbar.html");
@@ -35,8 +35,8 @@ function renderNavbarAuthSection() {
 
     if (!accessToken) {
         authSection.innerHTML = `
-            <a class="cart-link" href="cart.html">🛒 Giỏ hàng</a>
-            <a href="login.html">Đăng nhập</a>
+            <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
+            <a href="/login">Đăng nhập</a>
         `;
         return;
     }
@@ -46,18 +46,18 @@ function renderNavbarAuthSection() {
     const isAdmin = groups.includes("Admin");
 
     authSection.innerHTML = `
-        <a class="cart-link" href="cart.html">🛒 Giỏ hàng</a>
+        <a class="cart-link" href="/cart">🛒 Giỏ hàng</a>
 
         <div class="dropdown" onclick="toggleNavbarDropdown(event)">
             <span>Xin chào, ${escapeHtml(fullName)} ▼</span>
 
             <div id="navbar-dropdown-menu" class="dropdown-content">
-                <a href="profile.html">Profile</a>
-                <a href="orders.html">Đơn của tôi</a>
-                ${isAdmin ? '<a href="admin-users.html">Quản lý users</a>' : ''}
-                ${isAdmin ? '<a href="admin-products.html">Quản lý sản phẩm</a>' : ''}
-                ${isAdmin ? '<a href="admin-categories.html">Quản lý danh mục</a>' : ''}
-                ${isAdmin ? '<a href="admin-orders.html">Quản lý đơn hàng</a>' : ''}
+                <a href="/profile">Profile</a>
+                <a href="/orders">Đơn của tôi</a>
+                ${isAdmin ? '<a href="/admin/users">Quản lý users</a>' : ''}
+                ${isAdmin ? '<a href="/admin/products">Quản lý sản phẩm</a>' : ''}
+                ${isAdmin ? '<a href="/admin/categories">Quản lý danh mục</a>' : ''}
+                ${isAdmin ? '<a href="/admin/orders">Quản lý đơn hàng</a>' : ''}
                 <a href="#" onclick="logout(event)">Đăng xuất</a>
             </div>
         </div>
@@ -99,7 +99,7 @@ function setupNavbarClickOutside() {
 function logout(event) {
     event.preventDefault();
     localStorage.clear();
-    window.location.href = "index.html";
+    window.location.href = "/";
 }
 
 function escapeHtml(value) {

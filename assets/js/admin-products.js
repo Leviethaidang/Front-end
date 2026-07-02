@@ -4,6 +4,10 @@ const accessToken = localStorage.getItem("accessToken");
 
 const message = document.getElementById("message");
 const productTableBody = document.getElementById("productTableBody");
+const productSearchInput = document.getElementById("productSearchInput");
+const productCategoryFilter = document.getElementById("productCategoryFilter");
+const productStockFilter = document.getElementById("productStockFilter");
+const resetProductFiltersBtn = document.getElementById("resetProductFiltersBtn");
 
 const createProductBtn = document.getElementById("createProductBtn");
 
@@ -24,6 +28,7 @@ const editVariantTableBody = document.getElementById("editVariantTableBody");
 let categories = [];
 let sizes = [];
 let colors = [];
+let allProducts = [];
 
 let editingProduct = null;
 let editingSubImageKeys = [];
@@ -37,6 +42,28 @@ addCreateVariantBtn.addEventListener("click", () => {
 addEditVariantBtn.addEventListener("click", () => {
     addVariantRow("editVariantTableBody");
 });
+
+if (productSearchInput) {
+    productSearchInput.addEventListener("input", renderFilteredProducts);
+}
+
+if (productCategoryFilter) {
+    productCategoryFilter.addEventListener("change", renderFilteredProducts);
+}
+
+if (productStockFilter) {
+    productStockFilter.addEventListener("change", renderFilteredProducts);
+}
+
+if (resetProductFiltersBtn) {
+    resetProductFiltersBtn.addEventListener("click", () => {
+        if (productSearchInput) productSearchInput.value = "";
+        if (productCategoryFilter) productCategoryFilter.value = "";
+        if (productStockFilter) productStockFilter.value = "all";
+
+        renderFilteredProducts();
+    });
+}
 
 closeEditModalBtn.addEventListener("click", closeEditModal);
 cancelEditProductBtn.addEventListener("click", closeEditModal);
@@ -143,7 +170,7 @@ async function fetchWithAuth(url, options = {}) {
         setMessage("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "danger");
 
         setTimeout(() => {
-            window.location.href = "login.html";
+            window.location.href = "/login";
         }, 1200);
     }
 
@@ -208,11 +235,8 @@ async function loadProducts() {
             };
         });
 
-        productTableBody.innerHTML = mergedProducts
-            .map(product => createProductRow(product))
-            .join("");
-
-        bindProductActionButtons();
+        allProducts = mergedProducts;
+        renderFilteredProducts();
 
     } catch (error) {
         console.error("Lỗi load products:", error);
@@ -699,6 +723,7 @@ async function loadCategoriesForProductForm() {
         categories = data.categories || [];
 
         renderCreateCategoryDropdown();
+        renderProductCategoryFilterDropdown();
 
     } catch (error) {
         console.error("Lỗi load categories:", error);
@@ -746,6 +771,25 @@ function renderCreateCategoryDropdown() {
             </option>
         `).join("")}
     `;
+}
+
+function renderProductCategoryFilterDropdown() {
+    if (!productCategoryFilter) {
+        return;
+    }
+
+    const currentValue = productCategoryFilter.value;
+
+    productCategoryFilter.innerHTML = `
+        <option value="">Tất cả danh mục</option>
+        ${categories.map(category => `
+            <option value="${escapeAttribute(category.category_id)}">
+                ${escapeHtml(category.category_name)}
+            </option>
+        `).join("")}
+    `;
+
+    productCategoryFilter.value = currentValue;
 }
 
 function renderEditCategoryDropdown(selectedCategoryId) {
@@ -994,4 +1038,64 @@ function mergeInventoryIntoProduct(product, inventoryMap) {
             };
         })
     };
+}
+
+function renderFilteredProducts() {
+    const filteredProducts = filterProducts(allProducts);
+
+    renderProductTable(
+        filteredProducts,
+        allProducts.length > 0
+            ? "Không tìm thấy sản phẩm phù hợp bộ lọc."
+            : "Chưa có sản phẩm nào."
+    );
+}
+
+function filterProducts(products) {
+    const searchText = (productSearchInput?.value || "").trim().toLowerCase();
+    const categoryValue = productCategoryFilter?.value || "";
+    const stockValue = productStockFilter?.value || "all";
+
+    return products.filter(product => {
+        const productName = product.product_name || "";
+        const description = product.description || "";
+        const categoryId = String(product.category_id || "");
+        const categoryName = product.category_name || "";
+        const availableQuantity = Number(product.quantity_available || 0);
+
+        const matchesSearch = !searchText || [
+            productName,
+            description,
+            categoryName
+        ].some(value => String(value).toLowerCase().includes(searchText));
+
+        const matchesCategory = !categoryValue || categoryId === String(categoryValue);
+
+        const matchesStock = (() => {
+            if (stockValue === "all") return true;
+            if (stockValue === "available") return availableQuantity > 0;
+            if (stockValue === "low") return availableQuantity > 0 && availableQuantity <= 5;
+            if (stockValue === "out") return availableQuantity === 0;
+            return true;
+        })();
+
+        return matchesSearch && matchesCategory && matchesStock;
+    });
+}
+
+function renderProductTable(products, emptyMessage = "Chưa có sản phẩm nào.") {
+    if (products.length === 0) {
+        productTableBody.innerHTML = `
+            <tr>
+                <td colspan="9">${escapeHtml(emptyMessage)}</td>
+            </tr>
+        `;
+        return;
+    }
+
+    productTableBody.innerHTML = products
+        .map(product => createProductRow(product))
+        .join("");
+
+    bindProductActionButtons();
 }

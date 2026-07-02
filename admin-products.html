@@ -2,189 +2,131 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Admin Products</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="assets/css/common.css">
-    <link rel="stylesheet" href="assets/css/navbar.css">
-    <link rel="stylesheet" href="assets/css/admin-products.css">
-    <link rel="stylesheet" href="assets/css/admin-common.css">
-    <link rel="stylesheet" href="assets/css/admin-layout.css">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/admin-common.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link rel="stylesheet" href="/assets/css/admin-products.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="admin-wrapper">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar" id="admin-sidebar">
-            <div class="admin-sidebar-header">
-                <h3>Chức năng</h3>
+    <div class="container">
+        <div class="page-header">
+            <h2>Admin - Quản lý sản phẩm</h2>
+            <p>Thêm, sửa, xóa sản phẩm và quản lý ảnh sản phẩm.</p>
+        </div>
+
+        <p id="message" class="message"></p>
+
+        <div class="box">
+            <h3>Thêm sản phẩm mới</h3>
+
+            <input id="newProductName" placeholder="Tên sản phẩm">
+
+            <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
+
+            <select id="newCategoryId">
+                <option value="">Chưa phân loại</option>
+            </select>
+
+            <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
+
+            <label class="form-label">Ảnh chính</label>
+            <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            <img id="productPreviewImage" class="preview-img" alt="Preview">
+            <label class="form-label">Ảnh phụ</label>
+            <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+
+            <div class="variant-section">
+                <div class="variant-header">
+                    <h4>Biến thể sản phẩm</h4>
+
+                    <button id="addCreateVariantBtn" type="button" class="btn btn-blue">
+                        Thêm biến thể
+                    </button>
+                </div>
+
+                <table class="variant-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Màu</th>
+                            <th>Số lượng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="createVariantTableBody">
+                    </tbody>
+                </table>
             </div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <button class="sidebar-menu-btn" data-target="section-create-product">
-                        <i class="bi bi-plus-circle"></i>
-                        Thêm sản phẩm
-                    </button>
-                </li>
-                <li class="sidebar-menu-item">
-                    <button class="sidebar-menu-btn" data-target="section-list-products">
-                        <i class="bi bi-list-ul"></i>
-                        Danh sách sản phẩm
-                    </button>
-                </li>
-                <li class="sidebar-menu-item">
-                    <button class="sidebar-menu-btn" data-target="section-filter-products">
-                        <i class="bi bi-funnel"></i>
-                        Bộ lọc
-                    </button>
-                </li>
-            </ul>
-        </aside>
 
-        <!-- Main Content -->
-        <main class="admin-content">
-            <div class="admin-page-header">
-                <h1>Quản lý sản phẩm</h1>
-                <p>Thêm, sửa, xóa sản phẩm và quản lý ảnh sản phẩm.</p>
+            <button id="createProductBtn" class="btn btn-green">
+                Tạo sản phẩm
+            </button>
+        </div>
+
+        <div class="table-section">
+            <h3>Danh sách sản phẩm</h3>
+
+            <div class="filter-bar section-filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Tìm kiếm</span>
+                    <input
+                        id="productSearchInput"
+                        class="filter-input"
+                        placeholder="Tên sản phẩm, mô tả..."
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Danh mục</span>
+                    <select id="productCategoryFilter" class="filter-select">
+                        <option value="">Tất cả danh mục</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Tồn kho</span>
+                    <select id="productStockFilter" class="filter-select">
+                        <option value="all">Tất cả</option>
+                        <option value="available">Còn hàng</option>
+                        <option value="low">Sắp hết</option>
+                        <option value="out">Hết hàng</option>
+                    </select>
+                </div>
+
+                <button id="resetProductFiltersBtn" type="button" class="filter-btn-reset">
+                    Xóa lọc
+                </button>
             </div>
 
-            <p id="message" class="message"></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Category</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Đã bán</th>
+                        <th>Mô tả</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
 
-            <!-- Section: Thêm sản phẩm -->
-            <section id="section-create-product" class="section-container active">
-                <div class="box">
-                    <h3>Thêm sản phẩm mới</h3>
-
-                    <input id="newProductName" placeholder="Tên sản phẩm">
-                    <textarea id="newProductDescription" placeholder="Mô tả sản phẩm"></textarea>
-
-                    <select id="newCategoryId">
-                        <option value="">Chưa phân loại</option>
-                    </select>
-
-                    <input id="newPrice" type="number" placeholder="Giá sản phẩm, ví dụ 250000">
-
-                    <label class="form-label">Ảnh chính</label>
-                    <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-                    <img id="productPreviewImage" class="preview-img" alt="Preview">
-                    
-                    <label class="form-label">Ảnh phụ</label>
-                    <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
-
-                    <div class="variant-section">
-                        <div class="variant-header">
-                            <h4>Biến thể sản phẩm</h4>
-                            <button id="addCreateVariantBtn" type="button" class="btn btn-blue">
-                                Thêm biến thể
-                            </button>
-                        </div>
-
-                        <table class="variant-table">
-                            <thead>
-                                <tr>
-                                    <th>Size</th>
-                                    <th>Màu</th>
-                                    <th>Số lượng</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="createVariantTableBody"></tbody>
-                        </table>
-                    </div>
-
-                    <button id="createProductBtn" class="btn btn-green">
-                        <i class="bi bi-check-circle me-2"></i>Tạo sản phẩm
-                    </button>
-                </div>
-            </section>
-
-            <!-- Section: Danh sách sản phẩm -->
-            <section id="section-list-products" class="section-container">
-                <div class="filter-bar">
-                    <div class="filter-group">
-                        <label class="filter-label">Tìm kiếm:</label>
-                        <input type="text" class="filter-input" id="filterSearchProducts" placeholder="Tên sản phẩm...">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Danh mục:</label>
-                        <select class="filter-select" id="filterCategoryProducts">
-                            <option value="">Tất cả danh mục</option>
-                        </select>
-                    </div>
-                    <button class="filter-btn" id="applyFilterProductsBtn">
-                        <i class="bi bi-search"></i> Tìm kiếm
-                    </button>
-                    <button class="filter-btn-reset" id="resetFilterProductsBtn">
-                        <i class="bi bi-arrow-clockwise"></i> Reset
-                    </button>
-                </div>
-
-                <div class="table-section">
-                    <h3>Danh sách sản phẩm</h3>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Ảnh</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Category</th>
-                                <th>Giá</th>
-                                <th>Tồn kho</th>
-                                <th>Đã bán</th>
-                                <th>Mô tả</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="productTableBody">
-                            <tr>
-                                <td colspan="9">Đang tải...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Section: Bộ lọc nâng cao -->
-            <section id="section-filter-products" class="section-container">
-                <div class="box">
-                    <h3>Bộ lọc nâng cao</h3>
-
-                    <label class="form-label">Tên sản phẩm:</label>
-                    <input type="text" id="advFilterProductName" placeholder="Nhập tên...">
-
-                    <label class="form-label">Danh mục:</label>
-                    <select id="advFilterCategory">
-                        <option value="">-- Tất cả --</option>
-                    </select>
-
-                    <label class="form-label">Giá từ:</label>
-                    <input type="number" id="advFilterPriceFrom" placeholder="Nhập giá thấp nhất...">
-
-                    <label class="form-label">Giá đến:</label>
-                    <input type="number" id="advFilterPriceTo" placeholder="Nhập giá cao nhất...">
-
-                    <label class="form-label">Tồn kho từ:</label>
-                    <input type="number" id="advFilterStockFrom" placeholder="Số lượng tối thiểu...">
-
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
-                        <button class="btn btn-green" id="advApplyFilterProductsBtn">
-                            <i class="bi bi-search"></i> Áp dụng bộ lọc
-                        </button>
-                        <button class="btn btn-blue" id="advResetFilterProductsBtn">
-                            <i class="bi bi-arrow-clockwise"></i> Đặt lại
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </main>
+                <tbody id="productTableBody">
+                    <tr>
+                        <td colspan="9">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Edit Modal - Outside wrapper -->
     <div id="editProductModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -259,9 +201,8 @@
         </div>
     </div>
     
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/navbar.js"></script>
-    <script src="assets/js/admin-sidebar.js"></script>
-    <script src="assets/js/admin-products.js"></script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/admin-products.js"></script>
 </body>
 </html>
