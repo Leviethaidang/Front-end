@@ -674,3 +674,144 @@ tbody tr:hover td {
         align-items: flex-start;
     }
 }
+
+/* Light admin theme aligned with Khang homepage */
+:root {
+    --primary-orange: #8b5e3c;
+    --primary-orange-light: #c4956c;
+    --dark-bg: #faf6f1;
+    --dark-card: #ffffff;
+    --dark-border: #e8ddd4;
+    --text-light: #2f2a26;
+    --text-muted: #6f6a66;
+}
+
+body {
+    background: #ffffff;
+    color: var(--text-light);
+}
+
+.admin-layout-container {
+    background: #ffffff;
+}
+
+.page-header h1,
+.page-header h2,
+.box h3,
+.table-section h3,
+.variant-header h4,
+.modal-header h3,
+.order-detail-modal-header h3,
+.modal-section-title,
+.modal-info-grid strong {
+    color: var(--text-light);
+}
+
+.page-header p,
+.small-text,
+.product-summary-desc,
+.admin-order-item-meta,
+.section-note,
+.footer-links a,
+.footer-copy,
+.user-id-cell {
+    color: var(--text-muted);
+}
+
+.box,
+.table-section,
+.loading,
+.error,
+.empty-orders,
+.modal-box,
+.order-detail-modal-box,
+.variant-section,
+.admin-order-item {
+    background: #ffffff;
+    border-color: var(--dark-border);
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
+}
+
+input,
+textarea,
+select,
+.status-select {
+    background: #ffffff;
+    color: var(--text-light);
+    border-color: var(--dark-border);
+}
+
+input::placeholder,
+textarea::placeholder,
+.filter-input::placeholder {
+    color: #a8a29e;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.status-select:focus {
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
+}
+
+th,
+td,
+.orders-table th,
+.orders-table td {
+    color: var(--text-light);
+    border-color: #f0e7df;
+}
+
+th,
+.orders-table th {
+    background: #faf6f1;
+}
+
+tbody tr:hover td {
+    background: #fffaf5;
+}
+
+.message.danger,
+.error {
+    color: #c2410c;
+}
+
+.message.success {
+    color: #15803d;
+}
+
+.status-default {
+    background: #f5efe8;
+    color: var(--text-light);
+}
+
+.status-pending {
+    background: #fff7ed;
+    color: #b45309;
+}
+
+.status-confirmed,
+.status-completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-shipping {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status-cancelled,
+.status-failed {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.modal-close-btn {
+    color: var(--text-light);
+}
+
+.footer-minimal {
+    border-top-color: var(--dark-border);
+}

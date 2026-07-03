@@ -224,6 +224,81 @@ th {
     padding: 8px;
 }
 
+/* Light admin page override */
+body {
+    background: #ffffff;
+    color: #2f2a26;
+}
+
+.page-header h1,
+.page-header h2,
+.box h3,
+.table-section h3,
+.variant-header h4,
+.modal-header h3,
+.modal-section-title,
+.modal-info-grid strong,
+th,
+td {
+    color: #2f2a26;
+}
+
+.page-header p,
+.small-text,
+.product-summary-desc,
+.section-note {
+    color: #6f6a66;
+}
+
+.box,
+.table-section,
+.variant-section,
+.modal-box {
+    background: #ffffff;
+    border-color: #e8ddd4;
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
+}
+
+input,
+textarea,
+select {
+    background: #ffffff;
+    border-color: #e8ddd4;
+    color: #2f2a26;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #a8a29e;
+}
+
+th {
+    background: #faf6f1;
+}
+
+th,
+td {
+    border-color: #f0e7df;
+}
+
+.product-img,
+.preview-img,
+.sub-image-thumb {
+    border-color: #e8ddd4;
+}
+
+.modal-close-btn {
+    color: #2f2a26;
+}
+
+.message.danger {
+    color: #c2410c;
+}
+
+.message.success {
+    color: #15803d;
+}
+
 .product-summary-name {
     font-weight: bold;
 }
@@ -331,4 +406,19 @@ th {
 .readonly-number {
     font-weight: bold;
     color: #ffffff;
+}
+
+/* Final light override for product admin modal/details */
+.modal-header h3,
+.readonly-number {
+    color: #2f2a26;
+}
+
+.modal-box {
+    background: #ffffff;
+    border-color: #e8ddd4;
+}
+
+.sub-image-item img {
+    border-color: #e8ddd4;
 }

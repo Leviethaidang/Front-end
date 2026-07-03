@@ -357,3 +357,107 @@
     font-weight: 700;
     z-index: 100;
 }
+
+/* Light admin shell */
+:root {
+    --primary-orange: #8b5e3c;
+    --primary-orange-light: #c4956c;
+    --dark-bg: #ffffff;
+    --dark-card: #ffffff;
+    --dark-border: #e8ddd4;
+    --text-light: #2f2a26;
+    --text-muted: #6f6a66;
+}
+
+.admin-wrapper {
+    background: #ffffff;
+}
+
+.admin-sidebar {
+    background: #faf6f1;
+    border-color: var(--dark-border);
+    box-shadow: 0 14px 34px rgba(139, 94, 60, 0.10);
+}
+
+.admin-sidebar-brand {
+    border-bottom-color: #eadfd5;
+}
+
+.admin-sidebar-mark,
+.sidebar-menu-btn.active .sidebar-menu-icon,
+.sidebar-toggle-btn {
+    background: linear-gradient(135deg, #8b5e3c 0%, #c4956c 100%);
+    color: #ffffff;
+    box-shadow: 0 10px 20px rgba(139, 94, 60, 0.18);
+}
+
+.admin-sidebar-header h3,
+.page-header h1,
+.page-header h2,
+.filter-label {
+    color: var(--text-light);
+}
+
+.admin-sidebar-header p,
+.admin-sidebar-section-label,
+.page-header p {
+    color: var(--text-muted);
+}
+
+.sidebar-menu-btn {
+    color: #5f5148;
+}
+
+.sidebar-menu-icon {
+    background: #ffffff;
+    color: var(--primary-orange);
+    border: 1px solid #eadfd5;
+}
+
+.sidebar-menu-btn:hover {
+    background: #ffffff;
+    color: var(--primary-orange);
+    transform: translateX(2px);
+}
+
+.sidebar-menu-btn.active {
+    background: #ffffff;
+    color: var(--primary-orange);
+    box-shadow: inset 0 0 0 1px #e8ddd4, 0 8px 20px rgba(139, 94, 60, 0.08);
+}
+
+.filter-bar {
+    background: #ffffff;
+    border-color: var(--dark-border);
+    box-shadow: 0 10px 26px rgba(139, 94, 60, 0.08);
+}
+
+.filter-input,
+.filter-select {
+    background: #ffffff;
+    color: var(--text-light);
+    border-color: var(--dark-border);
+}
+
+.filter-btn {
+    background: linear-gradient(135deg, #8b5e3c 0%, #c4956c 100%);
+    color: #ffffff;
+}
+
+.filter-btn-reset {
+    background: #ffffff;
+    color: var(--primary-orange);
+    border-color: var(--dark-border);
+}
+
+.filter-btn-reset:hover {
+    background: #faf6f1;
+    color: var(--primary-orange);
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        border-right-color: var(--dark-border);
+        border-bottom-color: var(--dark-border);
+    }
+}

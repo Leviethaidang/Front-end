@@ -241,3 +241,66 @@ th {
         max-width: none;
     }
 }
+
+/* Light admin page override */
+body {
+    background: #ffffff;
+    color: #2f2a26;
+}
+
+.page-header h1,
+.page-header h2,
+.box h3,
+.table-section h3,
+.section-head h3,
+th,
+td {
+    color: #2f2a26;
+}
+
+.page-header p,
+.section-note,
+.small-text {
+    color: #6f6a66;
+}
+
+.box,
+.table-section {
+    background: #ffffff;
+    border-color: #e8ddd4;
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
+}
+
+input,
+textarea,
+select {
+    background: #ffffff;
+    border-color: #e8ddd4;
+    color: #2f2a26;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #a8a29e;
+}
+
+th {
+    background: #faf6f1;
+}
+
+th,
+td {
+    border-color: #f0e7df;
+}
+
+.color-dot {
+    border-color: #cfc3b8;
+}
+
+.message.danger {
+    color: #c2410c;
+}
+
+.message.success {
+    color: #15803d;
+}
