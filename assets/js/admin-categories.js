@@ -7,6 +7,14 @@ const categoryTableBody = document.getElementById("categoryTableBody");
 const sizeTableBody = document.getElementById("sizeTableBody");
 const colorTableBody = document.getElementById("colorTableBody");
 
+const categorySearchInput = document.getElementById("categorySearchInput");
+const sizeSearchInput = document.getElementById("sizeSearchInput");
+const colorSearchInput = document.getElementById("colorSearchInput");
+
+const resetCategoryFiltersBtn = document.getElementById("resetCategoryFiltersBtn");
+const resetSizeFiltersBtn = document.getElementById("resetSizeFiltersBtn");
+const resetColorFiltersBtn = document.getElementById("resetColorFiltersBtn");
+
 const createCategoryBtn = document.getElementById("createCategoryBtn");
 const createSizeBtn = document.getElementById("createSizeBtn");
 const createColorBtn = document.getElementById("createColorBtn");
@@ -18,6 +26,43 @@ const newSizeDisplayOrderInput = document.getElementById("newSizeDisplayOrder");
 const newColorNameInput = document.getElementById("newColorName");
 const newColorCodeInput = document.getElementById("newColorCode");
 const newColorDisplayOrderInput = document.getElementById("newColorDisplayOrder");
+
+let allCategories = [];
+let allSizes = [];
+let allColors = [];
+
+if (categorySearchInput) {
+    categorySearchInput.addEventListener("input", renderFilteredCategories);
+}
+
+if (sizeSearchInput) {
+    sizeSearchInput.addEventListener("input", renderFilteredSizes);
+}
+
+if (colorSearchInput) {
+    colorSearchInput.addEventListener("input", renderFilteredColors);
+}
+
+if (resetCategoryFiltersBtn) {
+    resetCategoryFiltersBtn.addEventListener("click", () => {
+        if (categorySearchInput) categorySearchInput.value = "";
+        renderFilteredCategories();
+    });
+}
+
+if (resetSizeFiltersBtn) {
+    resetSizeFiltersBtn.addEventListener("click", () => {
+        if (sizeSearchInput) sizeSearchInput.value = "";
+        renderFilteredSizes();
+    });
+}
+
+if (resetColorFiltersBtn) {
+    resetColorFiltersBtn.addEventListener("click", () => {
+        if (colorSearchInput) colorSearchInput.value = "";
+        renderFilteredColors();
+    });
+}
 
 createCategoryBtn.addEventListener("click", createCategory);
 createSizeBtn.addEventListener("click", createSize);
@@ -191,22 +236,9 @@ async function loadCategories() {
             return;
         }
 
-        const categories = data.categories || [];
+        allCategories = data.categories || [];
 
-        if (categories.length === 0) {
-            categoryTableBody.innerHTML = `
-                <tr>
-                    <td colspan="4">Chưa có danh mục nào.</td>
-                </tr>
-            `;
-            return;
-        }
-
-        categoryTableBody.innerHTML = categories
-            .map(category => createCategoryRow(category))
-            .join("");
-
-        bindCategoryActionButtons();
+        renderFilteredCategories();
 
     } catch (error) {
         console.error("Lỗi load categories:", error);
@@ -407,22 +439,9 @@ async function loadSizes() {
             return;
         }
 
-        const sizes = data.sizes || [];
+        allSizes = data.sizes || [];
 
-        if (sizes.length === 0) {
-            sizeTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5">Chưa có size nào.</td>
-                </tr>
-            `;
-            return;
-        }
-
-        sizeTableBody.innerHTML = sizes
-            .map(size => createSizeRow(size))
-            .join("");
-
-        bindSizeActionButtons();
+        renderFilteredSizes();
 
     } catch (error) {
         console.error("Lỗi load sizes:", error);
@@ -656,22 +675,9 @@ async function loadColors() {
             return;
         }
 
-        const colors = data.colors || [];
+        allColors = data.colors || [];
 
-        if (colors.length === 0) {
-            colorTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6">Chưa có màu nào.</td>
-                </tr>
-            `;
-            return;
-        }
-
-        colorTableBody.innerHTML = colors
-            .map(color => createColorRow(color))
-            .join("");
-
-        bindColorActionButtons();
+        renderFilteredColors();
 
     } catch (error) {
         console.error("Lỗi load colors:", error);
@@ -916,4 +922,133 @@ async function deleteColor(colorId) {
         console.error("Lỗi delete color:", error);
         setMessage("Không thể xóa màu.", "danger");
     }
+}
+
+function renderFilteredCategories() {
+    const categories = filterCategories(allCategories);
+
+    renderCategoriesTable(
+        categories,
+        allCategories.length > 0
+            ? "Không tìm thấy danh mục phù hợp bộ lọc."
+            : "Chưa có danh mục nào."
+    );
+}
+
+function filterCategories(categories) {
+    const searchText = (categorySearchInput?.value || "").trim().toLowerCase();
+
+    return categories.filter(category => {
+        const values = [
+            category.category_id,
+            category.category_name,
+            category.created_at
+        ];
+
+        return !searchText || values.some(value => String(value).toLowerCase().includes(searchText));
+    });
+}
+
+function renderCategoriesTable(categories, emptyMessage = "Chưa có danh mục nào.") {
+    if (categories.length === 0) {
+        categoryTableBody.innerHTML = `
+            <tr>
+                <td colspan="4">${escapeHtml(emptyMessage)}</td>
+            </tr>
+        `;
+        return;
+    }
+
+    categoryTableBody.innerHTML = categories
+        .map(category => createCategoryRow(category))
+        .join("");
+
+    bindCategoryActionButtons();
+}
+
+function renderFilteredSizes() {
+    const sizes = filterSizes(allSizes);
+
+    renderSizesTable(
+        sizes,
+        allSizes.length > 0
+            ? "Không tìm thấy size phù hợp bộ lọc."
+            : "Chưa có size nào."
+    );
+}
+
+function filterSizes(sizes) {
+    const searchText = (sizeSearchInput?.value || "").trim().toLowerCase();
+
+    return sizes.filter(size => {
+        const values = [
+            size.size_id,
+            size.size_name,
+            size.display_order,
+            size.created_at
+        ];
+
+        return !searchText || values.some(value => String(value).toLowerCase().includes(searchText));
+    });
+}
+
+function renderSizesTable(sizes, emptyMessage = "Chưa có size nào.") {
+    if (sizes.length === 0) {
+        sizeTableBody.innerHTML = `
+            <tr>
+                <td colspan="5">${escapeHtml(emptyMessage)}</td>
+            </tr>
+        `;
+        return;
+    }
+
+    sizeTableBody.innerHTML = sizes
+        .map(size => createSizeRow(size))
+        .join("");
+
+    bindSizeActionButtons();
+}
+
+function renderFilteredColors() {
+    const colors = filterColors(allColors);
+
+    renderColorsTable(
+        colors,
+        allColors.length > 0
+            ? "Không tìm thấy màu phù hợp bộ lọc."
+            : "Chưa có màu nào."
+    );
+}
+
+function filterColors(colors) {
+    const searchText = (colorSearchInput?.value || "").trim().toLowerCase();
+
+    return colors.filter(color => {
+        const values = [
+            color.color_id,
+            color.color_name,
+            color.color_code,
+            color.display_order,
+            color.created_at
+        ];
+
+        return !searchText || values.some(value => String(value).toLowerCase().includes(searchText));
+    });
+}
+
+function renderColorsTable(colors, emptyMessage = "Chưa có màu nào.") {
+    if (colors.length === 0) {
+        colorTableBody.innerHTML = `
+            <tr>
+                <td colspan="6">${escapeHtml(emptyMessage)}</td>
+            </tr>
+        `;
+        return;
+    }
+
+    colorTableBody.innerHTML = colors
+        .map(color => createColorRow(color))
+        .join("");
+
+    bindColorActionButtons();
 }

@@ -1,12 +1,16 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background: #f5f5f5;
+    background:
+        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 179, 71, 0.08), transparent 24%),
+        #1a1a1a;
+    color: #ffffff;
 }
 
 .container {
     max-width: 1300px;
-    margin: 32px auto;
+    margin: 32px auto 56px;
     padding: 0 20px;
 }
 
@@ -19,18 +23,18 @@ body {
 }
 
 .page-header p {
-    color: #666;
+    color: #eeeeee;
     margin: 0;
 }
 
 .box {
-    border: 1px solid #ddd;
-    background: white;
+    border: 1px solid #555;
+    background: rgba(42, 42, 42, 0.96);
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 18px;
     margin-bottom: 24px;
     max-width: 700px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 input,
@@ -38,10 +42,25 @@ textarea,
 select {
     width: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    padding: 11px 12px;
     margin: 6px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #555;
+    border-radius: 12px;
+    background: rgba(18, 18, 18, 0.84);
+    color: #ffffff;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(238, 238, 238, 0.45);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #ff8c00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.18);
 }
 
 textarea {
@@ -50,11 +69,12 @@ textarea {
 }
 
 .table-section {
-    background: white;
-    border-radius: 8px;
+    background: rgba(42, 42, 42, 0.96);
+    border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
     overflow-x: auto;
+    border: 1px solid #555;
 }
 
 table {
@@ -66,14 +86,15 @@ table {
 
 th,
 td {
-    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 10px;
     text-align: left;
     vertical-align: top;
+    color: #ffffff;
 }
 
 th {
-    background: #f2f2f2;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .btn {
@@ -92,27 +113,27 @@ th {
 }
 
 .btn-blue {
-    background: #007bff;
+    background: linear-gradient(135deg, #2b6df6 0%, #5aa7ff 100%);
 }
 
 .btn-blue:hover {
-    background: #0069d9;
+    filter: brightness(1.05);
 }
 
 .btn-green {
-    background: #28a745;
+    background: linear-gradient(135deg, #0f9d58 0%, #34d399 100%);
 }
 
 .btn-green:hover {
-    background: #218838;
+    filter: brightness(1.05);
 }
 
 .btn-red {
-    background: #dc3545;
+    background: linear-gradient(135deg, #d7263d 0%, #ff6b81 100%);
 }
 
 .btn-red:hover {
-    background: #c82333;
+    filter: brightness(1.05);
 }
 
 .message {
@@ -121,34 +142,34 @@ th {
 }
 
 .message.danger {
-    color: #c0392b;
+    color: #ff9a9a;
 }
 
 .message.success {
-    color: #188038;
+    color: #a7f3d0;
 }
 
 .product-img {
     width: 90px;
     height: 90px;
     object-fit: cover;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #555;
+    border-radius: 10px;
 }
 
 .preview-img {
     width: 160px;
     height: 160px;
     object-fit: cover;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #555;
+    border-radius: 12px;
     display: none;
     margin-top: 10px;
 }
 
 .small-text {
     font-size: 12px;
-    color: #666;
+    color: #eeeeee;
     word-break: break-all;
 }
 
@@ -168,15 +189,15 @@ th {
     margin-top: 12px;
     margin-bottom: 4px;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
 }
 
 .variant-section {
     margin-top: 18px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid #555;
+    border-radius: 14px;
     padding: 14px;
-    background: #fafafa;
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .variant-header {
@@ -189,6 +210,7 @@ th {
 
 .variant-header h4 {
     margin: 0;
+    color: #ffffff;
 }
 
 .variant-table {
@@ -208,7 +230,7 @@ th {
 
 .product-summary-desc {
     max-width: 260px;
-    color: #555;
+    color: #eeeeee;
     line-height: 1.4;
 }
 
@@ -231,8 +253,9 @@ th {
 .modal-box {
     width: 100%;
     max-width: 900px;
-    background: white;
-    border-radius: 10px;
+    background: rgba(42, 42, 42, 0.98);
+    border: 1px solid #555;
+    border-radius: 18px;
     padding: 22px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.25);
 }
@@ -247,6 +270,7 @@ th {
 
 .modal-header h3 {
     margin: 0;
+    color: #ffffff;
 }
 
 .modal-close-btn {
@@ -255,6 +279,7 @@ th {
     font-size: 30px;
     cursor: pointer;
     line-height: 1;
+    color: #ffffff;
 }
 
 .modal-preview-img {
@@ -278,8 +303,8 @@ th {
     width: 90px;
     height: 90px;
     object-fit: cover;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #555;
+    border-radius: 10px;
 }
 
 .remove-sub-image-btn {
@@ -287,7 +312,7 @@ th {
     top: -7px;
     right: -7px;
     border: none;
-    background: #dc3545;
+    background: #d7263d;
     color: white;
     border-radius: 50%;
     width: 22px;
@@ -305,5 +330,5 @@ th {
 
 .readonly-number {
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
 }
