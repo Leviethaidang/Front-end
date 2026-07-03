@@ -1,6 +1,6 @@
 :root {
-    --primary-orange: #8B5E3C;
-    --primary-orange-light: #C4956C;
+    --primary-orange: #ff8c00;
+    --primary-orange-light: #ffb347;
     --dark-bg: #1a1a1a;
     --dark-card: #2a2a2a;
     --dark-border: #555;
@@ -51,7 +51,7 @@ body {
 }
 
 .profile-header-card {
-    background: linear-gradient(135deg, rgba(160,103,75,0.2) 0%, rgba(196,149,108,0.1) 100%);
+    background: linear-gradient(135deg, rgba(255,140,0,0.2) 0%, rgba(255,179,71,0.1) 100%);
     padding: 2rem;
     text-align: center;
 }
@@ -79,7 +79,7 @@ body {
 }
 
 .list-group-item:hover, .list-group-item.active {
-    background: linear-gradient(135deg, rgba(160,103,75,0.2) 0%, rgba(196,149,108,0.1) 100%);
+    background: linear-gradient(135deg, rgba(255,140,0,0.2) 0%, rgba(255,179,71,0.1) 100%);
     color: var(--primary-orange);
     border-color: var(--dark-border);
 }
@@ -126,7 +126,7 @@ body {
 
 .btn-primary-gradient:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(160,103,75,0.4);
+    box-shadow: 0 8px 25px rgba(255,140,0,0.4);
     color: #000000;
 }
 

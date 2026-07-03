@@ -62,7 +62,7 @@ async function login(event) {
         const data = await response.json();
 
         if (!response.ok) {
-            setMessage(data.error || data.message || "Đăng nhập thất bại.");
+            setMessage(data.error || "Đăng nhập thất bại.");
             return;
         }
 

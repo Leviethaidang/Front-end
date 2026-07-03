@@ -204,65 +204,41 @@ async function loadAndRenderCategories() {
     const container = document.getElementById('dynamic-category-menu');
     if (!container) return;
 
-    try {
-        const response = await fetch(`${APP_CONFIG.PRODUCT_SERVICE_URL}/api/categories`);
-        const data = await response.json();
-        
-        let categories = [];
-        if (response.ok && data.categories) {
-            categories = data.categories;
-        }
-
-        if(categories.length === 0) return;
-
-        // Lọc ra các danh mục gốc (không có parent)
-        const rootCategories = categories.filter(c => c.parent_category_id === null || c.parent_category_id === undefined);
-        let html = '';
-
-        rootCategories.forEach((root, index) => {
-            const children = categories.filter(c => c.parent_category_id == root.category_id);
-            
-            // Hiển thị dạng Mega Menu cho tất cả các danh mục gốc có con
-            if (children.length > 0) {
-                html += `
-                    <li class="nav-item category-item w-100 w-lg-auto me-3">
-                        <a class="nav-link category-link d-flex align-items-center" href="/index.html?categoryId=${root.category_id}">
-                            <i class="bi bi-grid me-1"></i> ${escapeHtml(root.category_name)}
-                            <i class="bi bi-chevron-down arrow-icon ms-1" style="font-size: 0.8em;"></i>
-                        </a>
-                        <div class="mega-menu-phukien" style="min-width: 300px; width: max-content; padding: 20px;">
-                            <h6 class="mega-group-title mb-3">Khám phá ${escapeHtml(root.category_name)}</h6>
-                            <div class="d-flex flex-wrap gap-3">
-                                ${children.map(c => `
-                                    <div class="mega-item">
-                                        <a href="/index.html?categoryId=${c.category_id}">
-                                            <div class="mega-icon-box"><i class="bi bi-tag"></i></div>
-                                            <span class="mega-item-text">${escapeHtml(c.category_name)}</span>
-                                        </a>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </li>
-                `;
+    if (!document.getElementById('navbar-custom-css')) {
+        const style = document.createElement('style');
+        style.id = 'navbar-custom-css';
+        style.innerHTML = `
+            .category-item .category-link:hover {
+                background-color: #FAF6F1 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(139, 94, 60, 0.08);
+                color: #8B5E3C !important;
             }
-            // Không có con thì chỉ là link bình thường
-            else {
-                html += `
-                    <li class="nav-item category-item w-100 w-lg-auto me-3">
-                        <a class="nav-link category-link d-flex align-items-center" href="/index.html?categoryId=${root.category_id}">
-                            ${escapeHtml(root.category_name)}
-                        </a>
-                    </li>
-                `;
-            }
-        });
-
-        container.innerHTML = html;
-
-    } catch (error) {
-        console.error("Lỗi load categories:", error);
+        `;
+        document.head.appendChild(style);
     }
+
+    const fixedGroups = [
+        { name: "Áo", icon: "bi-stars text-warning", group: "áo" },
+        { name: "Quần", icon: "bi-layers text-primary", group: "quần" },
+        { name: "Giày dép", icon: "bi-bag text-info", group: "giày" },
+        { name: "Phụ kiện", icon: "bi-smartwatch text-dark", group: "phụ kiện" }
+    ];
+
+    let html = '';
+
+    fixedGroups.forEach((cat) => {
+        html += `
+            <li class="nav-item category-item w-100 w-lg-auto me-3">
+                <a class="nav-link category-link d-flex align-items-center fw-medium" href="/index.html?group=${encodeURIComponent(cat.group)}" style="transition: 0.3s; padding: 10px 15px; border-radius: 8px;">
+                    <i class="bi ${cat.icon} me-2" style="font-size: 1.1rem;"></i> 
+                    ${escapeHtml(cat.name)}
+                </a>
+            </li>
+        `;
+    });
+
+    container.innerHTML = html;
 }
 
 // ==========================

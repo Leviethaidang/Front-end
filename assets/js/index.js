@@ -6,11 +6,11 @@ const productsContainer = document.getElementById("products-container");
 let allProducts = [];
 let allCategories = [];
 let currentCategory = "all";
-let currentGender = "all";
 let currentPriceRange = "all";
 let currentStockStatus = "all";
 let currentSort = "default";
 let currentSearch = "";
+let currentGroup = "";
 let currentPage = 1;
 const itemsPerPage = 20;
 
@@ -31,14 +31,9 @@ function setupBannerClicks() {
                 return;
             }
 
-            // Gender banners: filter by gender
-            currentGender = filter;
-            currentCategory = "all";
+            // Just scroll, or navigate? Let's just scroll since we removed the filters
             currentPage = 1;
-
-            // Update gender select if exists
-            const genderSelect = document.getElementById('gender-select');
-            if (genderSelect) genderSelect.value = filter;
+            currentCategory = "all";
 
             applyFiltersAndRender();
 
@@ -99,10 +94,11 @@ async function loadProducts() {
         
         const urlParams = new URLSearchParams(window.location.search);
         const searchParam = urlParams.get('search');
+        const groupParam = urlParams.get('group');
+        
         if (searchParam) {
             currentSearch = searchParam.trim().toLowerCase();
             
-            // Allow time for navbar to load
             setTimeout(() => {
                 const searchInput = document.getElementById('searchInput');
                 if (searchInput) searchInput.value = searchParam;
@@ -111,6 +107,10 @@ async function loadProducts() {
                 if (searchInputMobile) searchInputMobile.value = searchParam;
             }, 500);
             
+            const productSection = document.querySelector('.product');
+            if(productSection) productSection.scrollIntoView({ behavior: 'smooth' });
+        } else if (groupParam) {
+            currentGroup = groupParam.trim().toLowerCase();
             const productSection = document.querySelector('.product');
             if(productSection) productSection.scrollIntoView({ behavior: 'smooth' });
         }
@@ -210,16 +210,17 @@ function setupFilters(products) {
     if (btnResetFilters) {
         btnResetFilters.addEventListener("click", () => {
             currentCategory = "all";
-            currentGender = "all";
-            currentPriceRange = "all";
+                        currentPriceRange = "all";
             currentStockStatus = "all";
             currentSort = "default";
             currentSearch = "";
+            currentGroup = "";
             currentPage = 1;
             
             const url = new URL(window.location);
             url.searchParams.delete('categoryId');
             url.searchParams.delete('search');
+            url.searchParams.delete('group');
             window.history.pushState({}, '', url);
 
             const searchInput = document.getElementById('searchInput');
@@ -227,7 +228,7 @@ function setupFilters(products) {
             const searchInputMobile = document.getElementById('searchInputMobile');
             if (searchInputMobile) searchInputMobile.value = "";
 
-            const selects = ["gender-select", "price-select", "stock-select", "category-filter-select", "sort-select"];
+            const selects = ["price-select", "stock-select", "category-filter-select", "sort-select"];
             selects.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -246,13 +247,11 @@ function setupFilters(products) {
     const btnApplyFilter = document.getElementById("btn-apply-filter");
     if (btnApplyFilter) {
         btnApplyFilter.addEventListener("click", () => {
-            const genderSelect = document.getElementById("gender-select");
             const priceSelect = document.getElementById("price-select");
             const stockSelect = document.getElementById("stock-select");
             const categorySelect = document.getElementById("category-filter-select");
             
-            if (genderSelect && priceSelect) {
-                currentGender = genderSelect.value;
+            if (priceSelect) {
                 currentPriceRange = priceSelect.value;
                 if (stockSelect) currentStockStatus = stockSelect.value;
                 
@@ -310,7 +309,6 @@ function setupFilters(products) {
 
 function applyFiltersAndRender() {
     const filterControls = document.getElementById("filter-controls-container");
-    const genderFilterSection = document.getElementById("gender-filter-section");
     const mainTitle = document.getElementById("main-title");
     const clearFilterContainer = document.getElementById("clear-filter-container");
     const sortContainer = document.getElementById("sort-container");
@@ -318,8 +316,7 @@ function applyFiltersAndRender() {
 
     if (currentCategory === "all") {
         // --- Grouped Home View (Canifa Style) ---
-        if (genderFilterSection) genderFilterSection.style.setProperty("display", "none", "important");
-        if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
+                if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "none", "important");
         
         // Ensure category select says "all"
@@ -337,46 +334,18 @@ function applyFiltersAndRender() {
         productsToShow = applyPriceFilter(productsToShow, currentPriceRange);
         productsToShow = applyOtherFilters(productsToShow);
 
-        // Apply gender filter from banner clicks
-        if (currentGender !== "all") {
-            productsToShow = productsToShow.filter(p => {
-                const gender = p.gender || "Unisex";
-                return gender === currentGender;
-            });
-            
-            if (mainTitle) {
+        if (mainTitle) {
+            if (currentSearch) {
                 mainTitle.style.display = "block";
-                let titleText = `SẢN PHẨM ${currentGender.toUpperCase()}`;
-                if (currentSearch) titleText += ` - KẾT QUẢ TÌM KIẾM CHO "${escapeHtml(currentSearch)}"`;
-                mainTitle.innerHTML = titleText;
+                mainTitle.innerHTML = `KẾT QUẢ TÌM KIẾM CHO "${escapeHtml(currentSearch)}"`;
+            } else if (currentGroup) {
+                mainTitle.style.display = "block";
+                mainTitle.innerHTML = `DANH MỤC: ${escapeHtml(currentGroup).toUpperCase()}`;
+            } else {
+                mainTitle.style.display = "none";
             }
-            if (clearFilterContainer) {
-                clearFilterContainer.innerHTML = `<button id="btn-clear-gender" class="btn btn-sm w-100 mb-3 fw-bold shadow-sm" style="background: #fff; border: 1px solid #E8DDD4; color: #d70018; border-radius: 6px; transition: 0.2s;">✕ Bỏ lọc ${currentGender}</button>`;
-                
-                setTimeout(() => {
-                    const clearBtn = document.getElementById('btn-clear-gender');
-                    if (clearBtn) {
-                        clearBtn.addEventListener('click', () => {
-                            currentGender = "all";
-                            currentPage = 1;
-                            const genderSelect = document.getElementById('gender-select');
-                            if (genderSelect) genderSelect.value = "all";
-                            applyFiltersAndRender();
-                        });
-                    }
-                }, 0);
-            }
-        } else {
-            if (mainTitle) {
-                if (currentSearch) {
-                    mainTitle.style.display = "block";
-                    mainTitle.innerHTML = `KẾT QUẢ TÌM KIẾM CHO "${escapeHtml(currentSearch)}"`;
-                } else {
-                    mainTitle.style.display = "none";
-                }
-            }
-            if (clearFilterContainer) clearFilterContainer.innerHTML = "";
         }
+        if (clearFilterContainer) clearFilterContainer.innerHTML = "";
 
         // Group products by category
         const groups = new Map();
@@ -392,8 +361,7 @@ function applyFiltersAndRender() {
         renderGroupedProducts(Array.from(groups.values()));
     } else {
         // --- Single Category List View ---
-        if (genderFilterSection) genderFilterSection.style.setProperty("display", "block", "important");
-        if (clearFilterContainer) clearFilterContainer.innerHTML = "";
+                if (clearFilterContainer) clearFilterContainer.innerHTML = "";
         if (mainTitle) mainTitle.style.display = "block";
         if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "block", "important");
@@ -414,10 +382,7 @@ function applyFiltersAndRender() {
             const targetCategoryIds = [String(currentCategory)];
             
             // Include child categories if it's a parent category
-            if (allCategories && allCategories.length > 0) {
-                const children = allCategories.filter(c => String(c.parent_category_id) === String(currentCategory));
-                children.forEach(c => targetCategoryIds.push(String(c.category_id)));
-            }
+            
 
             filtered = filtered.filter(p => {
                 const catId = p.category_id ?? p.categoryId;
@@ -446,14 +411,6 @@ function applyFiltersAndRender() {
             mainTitle.style.display = "block";
         }
         
-        // Gender filter
-        if (currentGender !== "all") {
-            filtered = filtered.filter(p => {
-                const gender = p.gender || "Unisex";
-                return gender === currentGender;
-            });
-        }
-
         // Sort
         switch (currentSort) {
             case "price-asc":
@@ -471,7 +428,7 @@ function applyFiltersAndRender() {
         }
 
         // Check if current category is a parent category
-        const isParentCategory = allCategories.some(c => String(c.parent_category_id) === String(currentCategory));
+        const isParentCategory = false;
 
         if (isParentCategory && !currentSearch && currentGender === "all") {
             // Render as grouped cards
@@ -619,10 +576,8 @@ function renderGroupedProducts(groups) {
         btn.addEventListener("click", () => {
             currentCategory = btn.dataset.category;
             // Reset filters when entering category
-            currentGender = "all";
-            currentSort = "default";
+                        currentSort = "default";
             currentPage = 1;
-            const genderSelect = document.getElementById("gender-select");
             const sortSelect = document.getElementById("sort-select");
             if (genderSelect) genderSelect.value = "all";
             if (sortSelect) sortSelect.value = "default";
@@ -720,6 +675,16 @@ function applyOtherFilters(products) {
             if (!name.includes(currentSearch)) return false;
         }
         
+        // Group filter
+        if (currentGroup) {
+            const catName = (p.category_name || p.categoryName || "").toLowerCase();
+            if (currentGroup === "phụ kiện") {
+                if (catName.includes("áo") || catName.includes("quần") || catName.includes("giày") || catName.includes("dép")) return false;
+            } else {
+                if (!catName.includes(currentGroup)) return false;
+            }
+        }
+        
         // Stock status
         if (currentStockStatus === "in-stock" && availableQty <= 0) return false;
         if (currentStockStatus === "out-of-stock" && availableQty > 0) return false;
@@ -731,7 +696,6 @@ function applyOtherFilters(products) {
 function createProductCard(product) {
     const productName = product.product_name || product.productName || "Không có tên";
     const categoryName = product.category_name || product.categoryName || "";
-    const gender = product.gender || "Unisex";
     const price = formatPrice(product.price);
     const soldQuantity = product.quantity_sold ?? product.quantitySold ?? 0;
     const availableQuantity = product.quantity_available ?? product.quantityAvailable ?? 0;
@@ -759,7 +723,7 @@ function createProductCard(product) {
                     </a>
                 </div>
                 <div class="card-body p-0 pt-2">
-                    <div class="text-muted small mb-1 fw-medium">${escapeHtml(categoryName)} &bull; ${escapeHtml(gender)}</div>
+                    <div class="text-muted small mb-1 fw-medium">${escapeHtml(categoryName)} </div>
                     <h5 class="card-title mb-2">
                         <a href="/products/${escapeAttribute(product.product_id)}" class="text-decoration-none">
                             ${escapeHtml(productName)}
