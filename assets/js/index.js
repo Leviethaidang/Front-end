@@ -210,7 +210,7 @@ function setupFilters(products) {
     if (btnResetFilters) {
         btnResetFilters.addEventListener("click", () => {
             currentCategory = "all";
-                        currentPriceRange = "all";
+            currentPriceRange = "all";
             currentStockStatus = "all";
             currentSort = "default";
             currentSearch = "";
@@ -308,7 +308,6 @@ function setupFilters(products) {
 }
 
 function applyFiltersAndRender() {
-    const filterControls = document.getElementById("filter-controls-container");
     const mainTitle = document.getElementById("main-title");
     const clearFilterContainer = document.getElementById("clear-filter-container");
     const sortContainer = document.getElementById("sort-container");
@@ -316,7 +315,7 @@ function applyFiltersAndRender() {
 
     if (currentCategory === "all") {
         // --- Grouped Home View (Canifa Style) ---
-                if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
+        if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "none", "important");
         
         // Ensure category select says "all"
@@ -361,7 +360,7 @@ function applyFiltersAndRender() {
         renderGroupedProducts(Array.from(groups.values()));
     } else {
         // --- Single Category List View ---
-                if (clearFilterContainer) clearFilterContainer.innerHTML = "";
+        if (clearFilterContainer) clearFilterContainer.innerHTML = "";
         if (mainTitle) mainTitle.style.display = "block";
         if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "block", "important");
@@ -380,9 +379,6 @@ function applyFiltersAndRender() {
         // Category filter
         if (currentCategory !== "all") {
             const targetCategoryIds = [String(currentCategory)];
-            
-            // Include child categories if it's a parent category
-            
 
             filtered = filtered.filter(p => {
                 const catId = p.category_id ?? p.categoryId;
@@ -427,13 +423,15 @@ function applyFiltersAndRender() {
                 break;
         }
 
+        // Render as flat list
         if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "inline-block", "important");
 
+        // Pagination logic
         const totalItems = filtered.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
-
+        
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const paginatedItems = filtered.slice(startIndex, endIndex);
@@ -489,7 +487,7 @@ function renderGroupedProducts(groups) {
                         <h2 class="fw-bold m-0" style="color: #8B5E3C; letter-spacing: 2px; font-size: 1.5rem;">${escapeHtml(group.name).toUpperCase()}</h2>
                         <p class="text-muted small mt-2 mb-0">${escapeHtml(subtitle)}</p>
                     </div>
-                    <a href="/index.html?categoryId=${escapeAttribute(group.id)}" class="btn btn-sm d-none d-md-inline-block text-nowrap px-4 ms-3 fw-bold shadow-sm" style="background: #8B5E3C; color: #fff; border-radius: 20px; transition: 0.3s; opacity: 0.9;">
+                    <a href="/?categoryId=${escapeAttribute(group.id)}" class="btn btn-sm d-none d-md-inline-block text-nowrap px-4 ms-3 fw-bold shadow-sm" style="background: #8B5E3C; color: #fff; border-radius: 20px; transition: 0.3s; opacity: 0.9;">
                         Xem tất cả <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
@@ -497,7 +495,7 @@ function renderGroupedProducts(groups) {
                     ${topProducts.map(p => createProductCard(p)).join("")}
                 </div>
                 <div class="text-center mt-4 d-md-none">
-                     <a href="/index.html?categoryId=${escapeAttribute(group.id)}" class="btn w-100 fw-bold shadow-sm" style="background: #8B5E3C; color: #fff; border-radius: 20px;">
+                     <a href="/?categoryId=${escapeAttribute(group.id)}" class="btn w-100 fw-bold shadow-sm" style="background: #8B5E3C; color: #fff; border-radius: 20px;">
                         Xem tất cả
                      </a>
                 </div>
@@ -546,20 +544,6 @@ function renderGroupedProducts(groups) {
             observer.observe(el);
         });
     }, 100);
-    // Attach click events to "View All" buttons
-    productsContainer.querySelectorAll(".btn-view-all").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentCategory = btn.dataset.category;
-            // Reset filters when entering category
-            currentSort = "default";
-            currentPage = 1;
-            const sortSelect = document.getElementById("sort-select");
-            if (sortSelect) sortSelect.value = "default";
-            
-            applyFiltersAndRender();
-            window.scrollTo({ top: document.querySelector('.product').offsetTop - 50, behavior: 'smooth' });
-        });
-    });
 }
 
 function renderProductsList(products, totalPages = 1, current = 1) {

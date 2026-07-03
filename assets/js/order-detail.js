@@ -103,37 +103,37 @@ function getOrderStatusText(status) {
 
 function getPaymentStatusText(status) {
     const map = {
-        PENDING: "Chờ xử lý",
+        PENDING: "Chờ thanh toán",
         PAID: "Đã thanh toán",
-        FAILED: "Thất bại",
+        FAILED: "Thanh toán thất bại",
         UNPAID: "Chưa thanh toán"
     };
 
     return map[status] || status || "Không rõ";
 }
 
-function getStatusClass(status) {
-    if (status === "PENDING_PAYMENT" || status === "PENDING") {
-        return "status-pending";
-    }
+function getOrderStatusClass(status) {
+    if (status === "PENDING_PAYMENT") return "pending";
+    if (status === "CONFIRMED") return "processing";
+    if (status === "SHIPPING") return "shipped";
+    if (status === "COMPLETED") return "delivered";
+    if (status === "CANCELLED" || status === "PAYMENT_FAILED") return "cancelled";
+    return "pending";
+}
 
-    if (status === "CONFIRMED" || status === "PAID") {
-        return "status-confirmed";
-    }
+function getPaymentStatusClass(status) {
+    if (status === "PAID") return "payment-paid";
+    if (status === "FAILED") return "payment-failed";
+    return "payment-pending";
+}
 
-    if (status === "SHIPPING") {
-        return "status-shipping";
-    }
-
-    if (status === "COMPLETED") {
-        return "status-completed";
-    }
-
-    if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") {
-        return "status-failed";
-    }
-
-    return "status-default";
+function getPaymentMethodTypeLabel(type) {
+    const map = {
+        COD: "💵 COD (Thanh toán khi nhận hàng)",
+        MOMO: "📱 Ví MoMo",
+        BANK: "🏦 Chuyển khoản ngân hàng"
+    };
+    return map[(type || "").toUpperCase()] || type || "Không rõ";
 }
 
 async function fetchWithAuth(url, options = {}) {
@@ -206,110 +206,197 @@ function renderOrderDetail(order) {
     const orderId = order.orderId || order.order_id;
     const orderStatus = order.orderStatus || order.order_status;
     const paymentStatus = order.paymentStatus || order.payment_status;
+    const paymentMethodType = order.paymentMethodType || order.payment_method_type;
+    const paymentMethodDisplay = order.paymentMethodDisplayName || order.payment_method_display_name || "";
+    const receiverName = order.receiverName || order.receiver_name || "";
+    const receiverPhone = order.receiverPhone || order.receiver_phone || "";
+    const shippingAddress = order.shippingAddress || order.shipping_address || "";
+    const customerEmail = order.customerEmail || order.customer_email || "";
+    const paidAt = order.paidAt || order.paid_at;
+    const paymentError = order.paymentError || order.payment_error || "";
+    const sourceType = order.sourceType || order.source_type || "";
     const items = order.items || [];
 
     currentOrderId = orderId;
-    currentOrderIsPaymentFailed =
-        orderStatus === "PAYMENT_FAILED" || paymentStatus === "FAILED";
+    currentOrderIsPaymentFailed = orderStatus === "PAYMENT_FAILED";
 
-    const itemsHtml = items
-        .map(item => renderOrderItem(item))
-        .join("");
+    const orderStatusClass = getOrderStatusClass(orderStatus);
+    const paymentStatusClass = getPaymentStatusClass(paymentStatus);
 
-    detailContent.className = "detail-layout";
-    detailContent.innerHTML = `
-        <div class="detail-main">
-            <div class="section">
-                <div class="section-title">Thông tin đơn hàng</div>
+    const itemsHtml = items.map(item => renderOrderItem(item)).join("");
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Mã đơn hàng</strong>
-                        #${escapeHtml(orderId)}
-                    </div>
+    const canCancel = !["SHIPPING", "COMPLETED", "CANCELLED", "PAYMENT_FAILED"].includes(orderStatus);
+    const canConfirmReceived = orderStatus === "SHIPPING";
 
-                    <div class="info-item">
-                        <strong>Ngày đặt</strong>
-                        ${escapeHtml(formatDate(order.createdAt || order.created_at))}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Trạng thái đơn hàng</strong>
-                        <span class="status-badge ${getStatusClass(orderStatus)}">
-                            ${escapeHtml(getOrderStatusText(orderStatus))}
-                        </span>
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Trạng thái thanh toán</strong>
-                        <span class="status-badge ${getStatusClass(paymentStatus)}">
-                            ${escapeHtml(getPaymentStatusText(paymentStatus))}
-                        </span>
-                    </div>
-                </div>
+    const actionButtonsHtml = (canCancel || canConfirmReceived) ? `
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">⚙️ Thao tác</h5>
             </div>
-
-            <div class="section">
-                <div class="section-title">Thông tin nhận hàng</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Người nhận</strong>
-                        ${escapeHtml(order.receiverName || order.receiver_name)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Số điện thoại</strong>
-                        ${escapeHtml(order.receiverPhone || order.receiver_phone)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Địa chỉ giao hàng</strong>
-                        ${escapeHtml(order.shippingAddress || order.shipping_address)}
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Phương thức thanh toán</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Loại thanh toán</strong>
-                        ${escapeHtml(order.paymentMethodType || order.payment_method_type)}
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Phương thức</strong>
-                        ${escapeHtml(order.paymentMethodDisplayName || order.payment_method_display_name)}
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Sản phẩm</div>
-                ${itemsHtml}
+            <div class="card-body">
+                ${canConfirmReceived ? `
+                    <button class="btn btn-success w-100 mb-2" id="received-order-btn">
+                        ✅ Tôi đã nhận hàng
+                    </button>
+                ` : ""}
+                ${canCancel ? `
+                    <button class="btn btn-outline-danger w-100" id="cancel-order-btn">
+                        ✖ Hủy đơn hàng
+                    </button>
+                ` : ""}
             </div>
         </div>
+    ` : "";
 
-        <div class="detail-summary">
-            <div class="summary-title">Tóm tắt đơn hàng</div>
+    const sourceLabel = sourceType === "CART" ? "Từ giỏ hàng" : sourceType === "BUY_NOW" ? "Mua ngay" : sourceType;
 
-            <div class="summary-row">
-                <span>Tổng số lượng</span>
-                <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
+    detailContent.className = "";
+    detailContent.innerHTML = `
+        <div class="row">
+            <!-- Main Column -->
+            <div class="col-lg-8">
+                <!-- Header Card -->
+                <div class="modern-card mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h5 class="mb-1 fw-bold">Đơn hàng #${escapeHtml(orderId)}</h5>
+                                <div class="text-muted small">
+                                    <i class="bi bi-clock"></i> ${escapeHtml(formatDate(order.createdAt || order.created_at))}
+                                </div>
+                            </div>
+                            <div class="mt-2 mt-md-0">
+                                <span class="badge ${orderStatusClass === 'pending' ? 'bg-warning text-dark' : orderStatusClass === 'processing' ? 'bg-info text-dark' : orderStatusClass === 'shipped' ? 'bg-primary' : orderStatusClass === 'delivered' ? 'bg-success' : 'bg-danger'}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
+                                <span class="badge bg-secondary ms-1">💳 ${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Card -->
+                <div class="modern-card mb-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">🛍️ Sản phẩm đặt hàng</h5>
+                        <span class="text-muted small">${items.length} sản phẩm</span>
+                    </div>
+                    <div class="card-body p-0">
+                        ${itemsHtml}
+                    </div>
+                </div>
+
+                <!-- Receiver Info Card -->
+                <div class="modern-card mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">📦 Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        ${receiverName ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Người nhận</div>
+                                <div class="col-sm-8">${escapeHtml(receiverName)}</div>
+                            </div>
+                        ` : ""}
+                        ${receiverPhone ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Điện thoại</div>
+                                <div class="col-sm-8">${escapeHtml(receiverPhone)}</div>
+                            </div>
+                        ` : ""}
+                        ${customerEmail ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Email</div>
+                                <div class="col-sm-8">${escapeHtml(customerEmail)}</div>
+                            </div>
+                        ` : ""}
+                        ${shippingAddress ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Địa chỉ</div>
+                                <div class="col-sm-8">${escapeHtml(shippingAddress)}</div>
+                            </div>
+                        ` : ""}
+                        ${!receiverName && !receiverPhone && !shippingAddress ? `
+                            <div class="text-muted small">Không có thông tin giao hàng.</div>
+                        ` : ""}
+                    </div>
+                </div>
+
+                <!-- Payment Info Card -->
+                <div class="modern-card mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">💳 Thông tin thanh toán</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted fw-bold">Phương thức</div>
+                            <div class="col-sm-8">${escapeHtml(getPaymentMethodTypeLabel(paymentMethodType))}</div>
+                        </div>
+                        ${paymentMethodDisplay ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Tên/Số TK</div>
+                                <div class="col-sm-8">${escapeHtml(paymentMethodDisplay)}</div>
+                            </div>
+                        ` : ""}
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted fw-bold">Trạng thái TT</div>
+                            <div class="col-sm-8">
+                                <span class="badge ${paymentStatusClass === 'payment-paid' ? 'bg-success' : paymentStatusClass === 'payment-failed' ? 'bg-danger' : 'bg-warning text-dark'}">
+                                    ${escapeHtml(getPaymentStatusText(paymentStatus))}
+                                </span>
+                            </div>
+                        </div>
+                        ${paidAt ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Thanh toán lúc</div>
+                                <div class="col-sm-8">${escapeHtml(formatDate(paidAt))}</div>
+                            </div>
+                        ` : ""}
+                        ${paymentError ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Lỗi TT</div>
+                                <div class="col-sm-8 text-danger">${escapeHtml(paymentError)}</div>
+                            </div>
+                        ` : ""}
+                        ${sourceLabel ? `
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted fw-bold">Loại đơn</div>
+                                <div class="col-sm-8">${escapeHtml(sourceLabel)}</div>
+                            </div>
+                        ` : ""}
+                    </div>
+                </div>
+
             </div>
 
-            <div class="summary-row summary-total">
-                <span>Tổng tiền</span>
-                <span>${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
+            <!-- Side Column -->
+            <div class="col-lg-4">
+
+                <!-- Summary Card -->
+                <div class="modern-card mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">🧾 Tóm tắt đơn hàng</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Số lượng sản phẩm</span>
+                            <strong>${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fs-5 fw-bold">Tổng tiền</span>
+                            <span class="fs-5 fw-bold text-success">${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                ${actionButtonsHtml}
+
+                <!-- Back Link -->
+                <a class="text-center d-block text-decoration-none mt-3" href="/orders">
+                    ← Quay lại danh sách đơn hàng
+                </a>
+
             </div>
-
-            ${renderActionButtons(order)}
-
-            <a class="back-link" href="/orders">
-                ← Quay lại danh sách đơn hàng
-            </a>
         </div>
     `;
 
@@ -319,104 +406,53 @@ function renderOrderDetail(order) {
 
 function renderOrderItem(item) {
     const productName = item.productName || item.product_name;
-    const categoryName = item.categoryName || item.category_name || "Chưa phân loại";
-
     const sizeName = item.sizeName || item.size_name || "";
     const colorName = item.colorName || item.color_name || "";
     const colorCode = item.colorCode || item.color_code || "";
-
     const imageUrl = item.imageUrl || item.image_url;
     const unitPrice = item.unitPrice || item.unit_price || 0;
     const quantity = item.quantity || 0;
     const subtotal = item.subtotal || 0;
+    const categoryName = item.categoryName || item.category_name || "";
 
     const imageHtml = imageUrl
-        ? `<img class="order-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
-        : "Không có ảnh";
+        ? `<img style="width:60px; height:60px; object-fit:cover;" class="rounded" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
+        : `<div class="d-flex align-items-center justify-content-center bg-light text-muted rounded" style="width:60px; height:60px; font-size:24px;">📦</div>`;
 
     const colorDotHtml = colorCode
-        ? `<span class="order-color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
+        ? `<span style="display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; border:1px solid #ddd; background: ${escapeAttribute(colorCode)};"></span>`
         : "";
 
     const variantHtml = (sizeName || colorName)
         ? `
-            <div class="order-variant-info">
-                <span class="order-variant-badge">
-                    Size: ${escapeHtml(sizeName || "Không rõ")}
-                </span>
-
-                <span class="order-variant-badge">
-                    ${colorDotHtml}
-                    Màu: ${escapeHtml(colorName || "Không rõ")}
-                </span>
+            <div class="small mb-1">
+                ${sizeName ? `<span class="badge bg-secondary me-1">Size: ${escapeHtml(sizeName)}</span>` : ""}
+                ${colorName ? `<span class="badge bg-secondary">${colorDotHtml} ${escapeHtml(colorName)}</span>` : ""}
             </div>
         `
         : "";
 
     return `
-        <div class="order-item">
-            <div class="order-image-wrap">
+        <div class="d-flex align-items-center p-3 border-bottom">
+            <div class="me-3">
                 ${imageHtml}
             </div>
 
-            <div>
-                <div class="order-product-name">
-                    ${escapeHtml(productName)}
-                </div>
-
-                <div class="order-product-meta">
-                    ${escapeHtml(categoryName)}
-                </div>
-
+            <div class="flex-grow-1">
+                <div class="fw-bold">${escapeHtml(productName)}</div>
+                ${categoryName ? `<div class="small text-muted mb-1">${escapeHtml(categoryName)}</div>` : ""}
                 ${variantHtml}
-
-                <div class="order-product-meta">
-                    Số lượng: ${escapeHtml(quantity)}
-                </div>
-
-                <div class="order-product-price">
-                    ${formatPrice(unitPrice)}
-                </div>
-
-                <div class="order-product-meta">
-                    Tạm tính: ${formatPrice(subtotal)}
+                
+                <div class="d-flex align-items-center mt-2">
+                    <span class="px-3 fw-bold text-muted border-end">SL: ${escapeHtml(quantity)}</span>
+                    <div class="ms-3">
+                        <div class="text-muted small text-decoration-line-through">${formatPrice(unitPrice)}</div>
+                        <div class="fw-bold">${formatPrice(subtotal)}</div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
-}
-
-function renderActionButtons(order) {
-    const orderStatus = order.orderStatus || order.order_status;
-
-    const canCancel = ![
-        "SHIPPING",
-        "COMPLETED",
-        "CANCELLED",
-        "PAYMENT_FAILED"
-    ].includes(orderStatus);
-
-    const canConfirmReceived = orderStatus === "SHIPPING";
-
-    let html = "";
-
-    if (canCancel) {
-        html += `
-            <button class="action-btn cancel-btn" id="cancel-order-btn">
-                Hủy đơn hàng
-            </button>
-        `;
-    }
-
-    if (canConfirmReceived) {
-        html += `
-            <button class="action-btn received-btn" id="received-order-btn">
-                Tôi đã nhận hàng
-            </button>
-        `;
-    }
-
-    return html;
 }
 
 function bindActionButtons(order) {
@@ -457,7 +493,7 @@ async function cancelOrder(orderId) {
         }
 
         showMessage("Hủy đơn hàng thành công.", "success");
-        renderOrderDetail(data.order);
+        loadOrderDetail();
 
     } catch (error) {
         console.error("Lỗi hủy đơn hàng:", error);
@@ -484,7 +520,7 @@ async function confirmReceived(orderId) {
         }
 
         showMessage("Xác nhận đã nhận hàng thành công.", "success");
-        renderOrderDetail(data.order);
+        loadOrderDetail();
 
     } catch (error) {
         console.error("Lỗi xác nhận đã nhận hàng:", error);
@@ -520,6 +556,7 @@ function setupPaymentStatusPolling(order) {
         loadOrderDetail();
     }, 2000);
 }
+
 async function cleanupFailedOrderBeforeLeave() {
     if (!currentOrderId || !currentOrderIsPaymentFailed || cleanupStarted) {
         return;

@@ -233,20 +233,20 @@ async function loadCartCheckoutItems() {
     }
 
     const invalidItem = cart.items.find(item => {
-        if (item.productDeleted || !item.product) {
+        if (item.productDeleted || item.product_deleted || !item.product) {
             return true;
         }
 
-        if (item.variantDeleted || !item.variant) {
+        if (item.variantDeleted || item.variant_deleted || !item.variant) {
             return true;
         }
 
-        if (item.inventoryMissing) {
+        if (item.inventoryMissing || item.inventory_missing) {
             return true;
         }
 
         const quantity = Number(item.quantity || 0);
-        const availableQuantity = Number(item.variant.quantityAvailable || 0);
+        const availableQuantity = Number(item.variant.quantityAvailable || item.variant.quantity_available || 0);
 
         return availableQuantity <= 0 || quantity > availableQuantity;
     });
@@ -260,25 +260,25 @@ async function loadCartCheckoutItems() {
         const variant = item.variant;
 
         return {
-            productId: item.productId,
-            variantId: item.variantId,
+            productId: item.productId || item.product_id,
+            variantId: item.variantId || item.variant_id,
 
-            productName: product.productName,
-            categoryName: product.categoryName || "Chưa phân loại",
+            productName: product.productName || product.product_name,
+            categoryName: product.categoryName || product.category_name || "Chưa phân loại",
 
-            sizeName: variant.sizeName || "",
-            colorName: variant.colorName || "",
-            colorCode: variant.colorCode || "",
+            sizeName: variant.sizeName || variant.size_name || "",
+            colorName: variant.colorName || variant.color_name || "",
+            colorCode: variant.colorCode || variant.color_code || "",
 
-            imageUrl: product.imageUrl || "",
-            unitPrice: Number(product.price),
+            imageUrl: product.imageUrl || product.image_url || "",
+            price: Number(product.price),
             quantity: Number(item.quantity),
             subtotal: Number(item.subtotal)
         };
     });
 
-    state.totalQuantity = Number(cart.totalQuantity || 0);
-    state.totalAmount = Number(cart.totalAmount || 0);
+    state.totalQuantity = Number(cart.totalQuantity || cart.total_quantity || 0);
+    state.totalAmount = Number(cart.totalAmount || cart.total_amount || 0);
 }
 
 async function loadBuyNowCheckoutItems() {
@@ -334,7 +334,7 @@ async function loadBuyNowCheckoutItems() {
             colorCode: variant.color_code || "",
 
             imageUrl: product.imageUrl || "",
-            unitPrice,
+            price: unitPrice,
             quantity: state.quantity,
             subtotal
         }
@@ -345,10 +345,42 @@ async function loadBuyNowCheckoutItems() {
 }
 
 function getSupportedPaymentMethods() {
-    return state.paymentMethods.filter(method => {
+    const supported = state.paymentMethods.filter(method => {
         const methodType = normalizeMethodType(method.method_type);
         return methodType === "MOMO" || methodType === "BANK" || methodType === "COD";
     });
+
+    // Check COD
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "COD")) {
+        supported.push({
+            payment_method_id: 0,
+            method_type: "COD",
+            display_name: "Thanh toán khi nhận hàng (COD)",
+            is_default: supported.length === 0 ? 1 : 0
+        });
+    }
+
+    // Check MOMO
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "MOMO")) {
+        supported.push({
+            payment_method_id: -1,
+            method_type: "MOMO",
+            display_name: "Ví MoMo",
+            is_default: 0
+        });
+    }
+
+    // Check BANK
+    if (!supported.some(m => normalizeMethodType(m.method_type) === "BANK")) {
+        supported.push({
+            payment_method_id: -2,
+            method_type: "BANK",
+            display_name: "Chuyển khoản Ngân hàng",
+            is_default: 0
+        });
+    }
+
+    return supported;
 }
 
 function getDefaultSupportedPaymentMethodId(methods) {
@@ -376,98 +408,113 @@ function renderConfirmOrderPage() {
             .join("")
         : `
             <div class="no-payment-method">
-                Hiện checkout hỗ trợ COD, MoMo hoặc Bank.
-                Bạn chưa có phương thức MoMo/Bank nào, vui lòng thêm phương thức thanh toán trước.
+                💳 Checkout hỗ trợ COD, MoMo hoặc Chuyển khoản.<br>
+                Bạn chưa có phương thức thanh toán nào, vui lòng thêm trong trang hồ sơ.
             </div>
         `;
 
-    content.className = "confirm-layout";
+    const modeLabel = state.mode === "CART" ? "🛒 Giỏ hàng" : "⚡ Mua ngay";
+
+    content.className = "row";
     content.innerHTML = `
-        <div class="confirm-main">
-            <div class="section">
-                <div class="section-title">Thông tin nhận hàng</div>
-
-                <div class="form-group">
-                    <label for="receiver-name">Họ và tên người nhận</label>
-                    <input
-                        id="receiver-name"
-                        type="text"
-                        value="${escapeAttribute(profile.full_name || "")}"
-                        placeholder="Nhập họ và tên người nhận"
-                    >
+        <div class="col-lg-8">
+            <!-- Receiver Info Section -->
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
+                    <h5 class="mb-0">📦 Thông tin nhận hàng</h5>
                 </div>
-
-                <div class="form-group">
-                    <label for="receiver-phone">Số điện thoại</label>
-                    <input
-                        id="receiver-phone"
-                        type="text"
-                        value="${escapeAttribute(profile.phone_number || "")}"
-                        placeholder="Ví dụ: +84901234567"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="customer-email">Email nhận thông báo</label>
-                    <input
-                        id="customer-email"
-                        type="email"
-                        value="${escapeAttribute(profile.email || "")}"
-                        placeholder="Nhập email nhận thông báo đơn hàng"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="shipping-address">Địa chỉ giao hàng</label>
-                    <textarea
-                        id="shipping-address"
-                        placeholder="Nhập địa chỉ giao hàng"
-                    >${escapeHtml(profile.default_shipping_address || "")}</textarea>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="receiver-name" class="form-label fw-bold">Họ và tên người nhận <span class="text-danger">*</span></label>
+                            <input id="receiver-name" class="form-control" type="text" value="${escapeAttribute(profile.full_name || "")}" placeholder="Nguyễn Văn A">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="receiver-phone" class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input id="receiver-phone" class="form-control" type="text" value="${escapeAttribute(profile.phone_number || "")}" placeholder="+84901234567">
+                        </div>
+                        <div class="col-12">
+                            <label for="customer-email" class="form-label fw-bold">Email nhận thông báo <span class="text-danger">*</span></label>
+                            <input id="customer-email" class="form-control" type="email" value="${escapeAttribute(profile.email || "")}" placeholder="email@example.com">
+                        </div>
+                        <div class="col-12">
+                            <label for="shipping-address" class="form-label fw-bold">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                            <textarea id="shipping-address" class="form-control" rows="3" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố">${escapeHtml(profile.default_shipping_address || "")}</textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">Sản phẩm</div>
-                ${itemsHtml}
+            <!-- Products Section -->
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">🛒 Sản phẩm đặt hàng</h5>
+                    <span class="badge bg-secondary">${state.items.length} sản phẩm</span>
+                </div>
+                <div class="card-body p-0">
+                    ${itemsHtml}
+                </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">Phương thức thanh toán</div>
-                <div class="payment-method-list">
+            <!-- Payment Methods Section -->
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
+                    <h5 class="mb-0">💳 Phương thức thanh toán</h5>
+                </div>
+                <div class="card-body p-4">
                     ${paymentMethodsHtml}
                 </div>
             </div>
         </div>
 
-        <div class="confirm-summary">
-            <div class="summary-title">Tóm tắt đơn hàng</div>
+        <!-- Summary Panel -->
+        <div class="col-lg-4">
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
+                    <h5 class="mb-0">🧭 Tóm tắt đơn hàng</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Loại đơn</span>
+                        <strong>${modeLabel}</strong>
+                    </div>
 
-            <div class="summary-row">
-                <span>Loại đơn</span>
-                <strong>${state.mode === "CART" ? "Giỏ hàng" : "Mua ngay"}</strong>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Số lượng sản phẩm</span>
+                        <strong>${escapeHtml(state.items.length)}</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Tổng số lượng</span>
+                        <strong>${escapeHtml(state.totalQuantity)}</strong>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between mb-4 align-items-center">
+                        <span class="fs-5 fw-bold">Tổng tiền</span>
+                        <span class="fs-4 fw-bold text-success">${formatPrice(state.totalAmount)}</span>
+                    </div>
+
+                    <button
+                        class="btn btn-brand-gradient hover-lift w-100 py-3 mb-3 fw-bold fs-6"
+                        id="place-order-btn"
+                        ${supportedPaymentMethods.length === 0 ? "disabled" : ""}
+                    >
+                        🛂 Đặt hàng và thanh toán
+                    </button>
+
+                    <div class="text-center text-muted small mb-3">
+                        <i class="bi bi-shield-lock"></i> Giao dịch được bảo mật
+                    </div>
+
+                    <div class="text-center">
+                        <a class="text-decoration-none" href="${state.mode === "CART" ? "/cart" : `/products/${state.productId}`}">
+                            ← Quay lại
+                        </a>
+                    </div>
+                </div>
             </div>
-
-            <div class="summary-row">
-                <span>Tổng số lượng</span>
-                <strong>${escapeHtml(state.totalQuantity)}</strong>
-            </div>
-
-            <div class="summary-row summary-total">
-                <span>Tổng tiền</span>
-                <span>${formatPrice(state.totalAmount)}</span>
-            </div>
-
-            <button
-                class="place-order-btn"
-                id="place-order-btn"
-                ${supportedPaymentMethods.length === 0 ? "disabled" : ""}
-            >
-                Đặt hàng / Thanh toán
-            </button>
-
-            <a class="back-link" href="${state.mode === "CART" ? "/cart" : `/products/${state.productId}`}">
-                Quay lại
-            </a>
         </div>
     `;
 
@@ -476,49 +523,35 @@ function renderConfirmOrderPage() {
 
 function renderOrderItem(item) {
     const imageHtml = item.imageUrl
-        ? `<img class="order-image" src="${escapeAttribute(item.imageUrl)}" alt="${escapeAttribute(item.productName)}">`
-        : "Không có ảnh";
+        ? `<img src="${escapeAttribute(item.imageUrl)}" alt="${escapeAttribute(item.productName)}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">`
+        : `<div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 80px; height: 80px; font-size: 24px;">📦</div>`;
 
     const colorDotHtml = item.colorCode
-        ? `<span class="order-color-dot" style="background: ${escapeAttribute(item.colorCode)};"></span>`
+        ? `<span class="d-inline-block rounded-circle align-middle" style="width: 12px; height: 12px; background: ${escapeAttribute(item.colorCode)}; border: 1px solid #ddd; margin-right: 4px;"></span>`
         : "";
 
     return `
-        <div class="order-item">
-            <div class="order-image-wrap">
+        <div class="d-flex p-3 border-bottom">
+            <div class="me-3 flex-shrink-0">
                 ${imageHtml}
             </div>
 
-            <div>
-                <div class="order-product-name">
-                    ${escapeHtml(item.productName)}
+            <div class="flex-grow-1">
+                <div class="fw-bold mb-1">${escapeHtml(item.productName)}</div>
+
+                ${item.categoryName ? `<div class="small text-muted mb-2">${escapeHtml(item.categoryName)}</div>` : ""}
+
+                <div class="mb-2">
+                    ${item.sizeName ? `<span class="badge bg-light text-dark border me-1">📏 ${escapeHtml(item.sizeName)}</span>` : ""}
+                    ${item.colorName ? `<span class="badge bg-light text-dark border">${colorDotHtml} ${escapeHtml(item.colorName)}</span>` : ""}
                 </div>
 
-                <div class="order-product-meta">
-                    ${escapeHtml(item.categoryName)}
-                </div>
-
-                <div class="order-variant-info">
-                    <span class="order-variant-badge">
-                        Size: ${escapeHtml(item.sizeName || "Không rõ")}
-                    </span>
-
-                    <span class="order-variant-badge">
-                        ${colorDotHtml}
-                        Màu: ${escapeHtml(item.colorName || "Không rõ")}
-                    </span>
-                </div>
-
-                <div class="order-product-meta">
-                    Số lượng: ${escapeHtml(item.quantity)}
-                </div>
-
-                <div class="order-product-price">
-                    ${formatPrice(item.unitPrice)}
-                </div>
-
-                <div class="order-product-meta">
-                    Tạm tính: ${formatPrice(item.subtotal)}
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="text-muted small">SL: <strong>${escapeHtml(item.quantity)}</strong></span>
+                    <div class="text-end">
+                        <div class="fw-bold">${formatPrice(item.price)}</div>
+                        <div class="small text-muted">Tạm tính: ${formatPrice(item.subtotal)}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -530,24 +563,31 @@ function renderPaymentMethod(method, defaultPaymentMethodId) {
     const checked = paymentMethodId === defaultPaymentMethodId ? "checked" : "";
     const methodType = normalizeMethodType(method.method_type);
 
+    const iconMap = { COD: "💵", MOMO: "📱", BANK: "🏦" };
+    const icon = iconMap[methodType] || "💳";
+
+    let subLabel = methodType;
+    if (methodType === "COD") subLabel = "Thanh toán khi nhận hàng";
+    else if (methodType === "MOMO") subLabel = `Ví MoMo${method.momo_phone_number ? ": " + method.momo_phone_number : ""}`;
+    else if (methodType === "BANK") subLabel = `${method.bank_name || "Ngân hàng"}${method.bank_account_number ? ": " + method.bank_account_number : ""}`;
+
     return `
-        <label class="payment-method-card">
+        <label class="d-flex align-items-center p-3 border rounded mb-3" style="cursor: pointer;" onclick="document.querySelectorAll('.payment-method-card').forEach(el=>el.classList.remove('border-success', 'bg-light')); this.classList.add('border-success', 'bg-light');" id="pm-${escapeAttribute(paymentMethodId)}">
             <input
+                class="form-check-input me-3 mt-0"
                 type="radio"
                 name="payment-method"
                 value="${escapeAttribute(paymentMethodId)}"
                 ${checked}
+                style="cursor: pointer;"
             >
 
-            <div>
-                <div class="payment-method-name">
-                    ${escapeHtml(method.display_name || "Phương thức thanh toán")}
-                </div>
+            <div class="fs-2 me-3">${icon}</div>
 
-                <div class="payment-method-type">
-                    ${escapeHtml(methodType)}
-                    ${method.is_default ? " • Mặc định" : ""}
-                </div>
+            <div>
+                <div class="fw-bold mb-1">${escapeHtml(method.display_name || "Phương thức thanh toán")}</div>
+                <div class="small text-muted mb-1">${escapeHtml(subLabel)}</div>
+                ${method.is_default ? `<span class="badge bg-info mt-1">★ Mặc định</span>` : ""}
             </div>
         </label>
     `;
@@ -575,6 +615,14 @@ async function submitOrder() {
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
 
+    if (paymentMethodId === "-1" || paymentMethodId === "-2") {
+        showMessage("Bạn chưa liên kết phương thức thanh toán này. Vui lòng cập nhật trong trang Hồ sơ trước khi sử dụng.", "error");
+        setTimeout(() => {
+            window.location.href = "/profile";
+        }, 3000);
+        return;
+    }
+
     if (!receiverName) {
         showMessage("Vui lòng nhập họ tên người nhận.", "error");
         return;
@@ -600,13 +648,21 @@ async function submitOrder() {
         return;
     }
 
+    const supportedPaymentMethods = getSupportedPaymentMethods();
+    const selectedMethod = supportedPaymentMethods.find(m => String(m.payment_method_id) === paymentMethodId);
+
     const payload = {
         sourceType: state.mode,
         receiverName,
         receiverPhone,
         customerEmail,
         shippingAddress,
-        paymentMethodId
+        paymentMethodId,
+        paymentMethodType: selectedMethod ? selectedMethod.method_type : "",
+        paymentMethodDisplayName: selectedMethod ? selectedMethod.display_name : "",
+        items: state.items,
+        totalQuantity: state.totalQuantity,
+        totalAmount: state.totalAmount
     };
 
     if (state.mode === "BUY_NOW") {
@@ -626,7 +682,7 @@ async function submitOrder() {
 
         if (!response) {
             button.disabled = false;
-            button.textContent = "Đặt hàng / Thanh toán";
+            button.textContent = "🛂 Đặt hàng và thanh toán";
             return;
         }
 
@@ -682,6 +738,6 @@ async function submitOrder() {
         showMessage(error.message || "Không thể tạo đơn hàng.", "error");
 
         button.disabled = false;
-        button.textContent = "Đặt hàng / Thanh toán";
+        button.textContent = "🛂 Đặt hàng và thanh toán";
     }
 }

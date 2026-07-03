@@ -11,6 +11,7 @@ let selectedVariant = null;
 
 let galleryImages = [];
 let currentGalleryIndex = 0;
+let imageAutoPlayInterval = null;
 
 loadProductDetail();
 
@@ -67,6 +68,15 @@ function showCartMessage(message, type = "success") {
 
     messageElement.className = `cart-message ${type}`;
     messageElement.textContent = message;
+    messageElement.style.display = "block";
+
+    if (type === "success") {
+        setTimeout(() => {
+            messageElement.style.display = "";
+            messageElement.className = "cart-message";
+            messageElement.textContent = "";
+        }, 3000);
+    }
 }
 
 async function loadProductDetail() {
@@ -242,93 +252,128 @@ function renderProductDetail(product) {
     const activeVariants = getActiveVariants(product);
     const isOutOfStock = activeVariants.length === 0;
 
-    galleryImages = product.images || [];
+    // Handle both images (product_images array) and single imageUrl/image_key
+    const productImages = product.images || product.product_images || [];
+    galleryImages = productImages;
 
-    const imageHtml = product.imageUrl
-        ? `<img class="product-image" src="${escapeAttribute(product.imageUrl)}" alt="${escapeAttribute(product.product_name)}">`
-        : `<span class="no-image">Không có ảnh</span>`;
+    // Get main image: first product image or single imageUrl/image_key
+    let mainImageUrl = null;
+    if (productImages.length > 0) {
+        mainImageUrl = productImages[0].imageUrl || productImages[0].image_url || productImages[0].image_key;
+    } else {
+        mainImageUrl = product.imageUrl || product.image_url || product.image_key;
+    }
+
+    const productName = product.product_name || product.productName || "Sản phẩm";
+    const categoryName = product.category_name || product.categoryName || "Chưa phân loại";
+    const soldQty = product.inventorySummary?.quantity_sold ?? 0;
+    const availableQty = product.inventorySummary?.quantity_available ?? 0;
+
+    const mainImageHtml = mainImageUrl
+        ? `<img class="product-image" id="main-product-image" src="${escapeAttribute(mainImageUrl)}" alt="${escapeHtml(productName)}"
+               style="cursor:pointer; width: 100%; height: 400px; object-fit: contain;" onclick="openImageModal(0)">`
+        : `<span class="no-image">📦 Chưa có ảnh</span>`;
+
+    const stockStatusHtml = isOutOfStock
+        ? `<span class="product-stock-status out-of-stock">Hết hàng</span>`
+        : `<span class="product-stock-status in-stock">✓ Còn hàng</span>`;
 
     detailContainer.className = "detail-card";
 
     detailContainer.innerHTML = `
-        <div class="product-image-wrap">
-            ${imageHtml}
+        <div class="mb-3 text-start">
+            <button onclick="window.history.back()" class="btn btn-outline-secondary btn-sm px-3">
+                &#8592; Quay lại
+            </button>
         </div>
-
-        <div>
-            <div class="product-name">
-                ${escapeHtml(product.product_name)}
+        <div class="row">
+            <!-- Image Column -->
+            <div class="col-md-6">
+                <div class="product-image-main" id="product-image-main" style="border: 1px solid #eee; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                    ${mainImageHtml}
+                </div>
+                ${renderSubImageGallery(product)}
             </div>
 
-            <div class="product-category">
-                ${escapeHtml(product.category_name || "Chưa phân loại")}
-            </div>
-
-            <div class="product-description">
-                ${escapeHtml(product.description || "Chưa có mô tả cho sản phẩm này.")}
-            </div>
-
-            <div class="product-price">
-                ${formatPrice(product.price)}
-            </div>
-
-            <div class="product-meta">
-                <strong>Đã bán:</strong>
-                ${escapeHtml(product.inventorySummary?.quantity_sold ?? 0)}
-            </div>
-
-            <div class="product-meta">
-                <strong>Tổng còn lại:</strong>
-                ${escapeHtml(product.inventorySummary?.quantity_available ?? 0)}
-            </div>
-
-            ${renderVariantSelector(product)}
-
-            <div class="action-area">
-                <div class="quantity-row">
-                    <label for="cart-quantity">Số lượng:</label>
-
-                    <input
-                        id="cart-quantity"
-                        class="quantity-input"
-                        type="number"
-                        min="1"
-                        max="1"
-                        value="${isOutOfStock ? 0 : 1}"
-                        disabled
-                    >
+            <!-- Info Column -->
+            <div class="col-md-6">
+                <div class="mb-2">
+                    <span class="badge bg-secondary me-2">${escapeHtml(categoryName)}</span>
+                    ${stockStatusHtml}
                 </div>
 
-                <div class="product-action-buttons">
+                <h1 class="mb-1">${escapeHtml(productName)}</h1>
+
+                <div class="mb-3 d-flex align-items-center">
+                    <small class="text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </small>
+                    <a href="#" class="ms-2 text-muted">Đã bán: ${escapeHtml(soldQty)}</a>
+                    <a href="#" class="ms-3 text-muted">Còn lại: ${escapeHtml(availableQty)}</a>
+                </div>
+
+                <div class="fs-3 mb-4">
+                    <span class="fw-bold text-success">${formatPrice(product.price)}</span>
+                </div>
+
+                <div class="mb-4">
+                    ${escapeHtml(product.description || "Chưa có mô tả cho sản phẩm này.")}
+                </div>
+
+                <hr class="my-4">
+
+                ${renderVariantSelector(product)}
+
+                <div class="mt-4 row align-items-center">
+                    <div class="col-auto">
+                        <label class="form-label" for="cart-quantity">Số lượng:</label>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-secondary" id="qty-decrease" disabled>−</button>
+                            <div class="form-control text-center d-flex align-items-center justify-content-center" id="qty-display" style="width: 50px;">${isOutOfStock ? 0 : 1}</div>
+                            <button type="button" class="btn btn-outline-secondary" id="qty-increase" disabled>+</button>
+                        </div>
+                        <input
+                            id="cart-quantity"
+                            type="number"
+                            min="1"
+                            max="1"
+                            value="${isOutOfStock ? 0 : 1}"
+                            disabled
+                            style="display:none"
+                        >
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-3">
                     <button
                         id="add-to-cart-btn"
-                        class="add-to-cart-btn"
+                        class="btn btn-primary bg-gradient px-4 py-2"
                         disabled
                     >
-                        ${isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
+                        <i class="bi bi-cart-plus me-2"></i> ${isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
                     </button>
 
                     <button
                         id="buy-now-btn"
-                        class="buy-now-btn"
+                        class="btn btn-outline-primary px-4 py-2"
                         disabled
                     >
-                        Mua ngay
+                        ⚡ Mua ngay
                     </button>
                 </div>
 
-                ${renderSubImageGallery(product)}
-
-                <div id="cart-message" class="cart-message"></div>
+                <div id="cart-message" class="mt-3"></div>
             </div>
-
-            ${renderImageModal()}
         </div>
+        ${renderImageModal()}
     `;
 
     bindVariantButtons(product);
     bindActionButtons(product);
     bindGalleryButtons();
+    bindQtyControls();
 
     if (isOutOfStock) {
         showCartMessage("Sản phẩm hiện đã hết hàng.", "error");
@@ -340,22 +385,22 @@ function renderVariantSelector(product) {
 
     if (sizes.length === 0) {
         return `
-            <div class="variant-selector">
+            <div class="variant-selector mb-3">
                 <strong>Sản phẩm hiện không có biến thể còn hàng.</strong>
             </div>
         `;
     }
 
     return `
-        <div class="variant-selector">
-            <div class="variant-row">
-                <span class="variant-label">Chọn size</span>
+        <div class="variant-selector mb-3">
+            <div class="variant-row mb-3">
+                <span class="variant-label fw-bold d-block mb-2">Chọn size:</span>
 
-                <div id="size-option-list" class="option-list">
+                <div id="size-option-list" class="d-flex flex-wrap gap-2">
                     ${sizes.map(size => `
                         <button
                             type="button"
-                            class="option-btn size-option-btn"
+                            class="btn btn-outline-secondary size-option-btn"
                             data-size-id="${escapeAttribute(size.sizeId)}"
                         >
                             ${escapeHtml(size.sizeName)}
@@ -363,18 +408,13 @@ function renderVariantSelector(product) {
                     `).join("")}
                 </div>
             </div>
-
-            <div class="variant-row">
-                <span class="variant-label">Chọn màu</span>
-
-                <div id="color-option-list" class="option-list">
-                    <span class="selected-variant-info">
-                        Vui lòng chọn size trước.
-                    </span>
+            <div class="variant-row mb-3" id="color-selector-row" style="display:none">
+                <span class="variant-label fw-bold d-block mb-2">Chọn màu:</span>
+                <div id="color-option-list" class="d-flex flex-wrap gap-2">
                 </div>
             </div>
 
-            <div id="selected-variant-info" class="selected-variant-info">
+            <div id="selected-variant-info" class="text-primary mt-2 small fw-bold">
                 Chưa chọn biến thể.
             </div>
         </div>
@@ -395,7 +435,7 @@ function renderColorOptions(product, sizeId) {
     return colors.map(color => `
         <button
             type="button"
-            class="option-btn color-option-btn"
+            class="btn btn-outline-secondary color-option-btn"
             data-color-id="${escapeAttribute(color.colorId)}"
             title="${escapeAttribute(color.colorCode || "")}"
         >
@@ -414,13 +454,16 @@ function bindVariantButtons(product) {
             selectedVariant = null;
 
             document.querySelectorAll(".size-option-btn").forEach(btn => {
-                btn.classList.remove("active");
+                btn.classList.remove("btn-success", "text-white");
+                btn.classList.add("btn-outline-secondary");
             });
 
-            button.classList.add("active");
+            button.classList.remove("btn-outline-secondary");
+            button.classList.add("btn-success", "text-white");
 
             const colorList = document.getElementById("color-option-list");
             colorList.innerHTML = renderColorOptions(product, selectedSizeId);
+            document.getElementById("color-selector-row").style.display = "block";
 
             bindColorButtons(product);
             updateSelectedVariantUI(product);
@@ -436,10 +479,12 @@ function bindColorButtons(product) {
             selectedColorId = Number(button.dataset.colorId);
 
             document.querySelectorAll(".color-option-btn").forEach(btn => {
-                btn.classList.remove("active");
+                btn.classList.remove("btn-success", "text-white");
+                btn.classList.add("btn-outline-secondary");
             });
 
-            button.classList.add("active");
+            button.classList.remove("btn-outline-secondary");
+            button.classList.add("btn-success", "text-white");
 
             selectedVariant = findVariant(product, selectedSizeId, selectedColorId);
 
@@ -495,13 +540,21 @@ function updateSelectedVariantUI(product) {
     quantityInput.value = availableQuantity > 0 ? 1 : 0;
     quantityInput.disabled = availableQuantity <= 0;
 
+    // Sync qty display controls
+    const qtyDisplay = document.getElementById("qty-display");
+    const qtyDecrease = document.getElementById("qty-decrease");
+    const qtyIncrease = document.getElementById("qty-increase");
+    if (qtyDisplay) qtyDisplay.textContent = availableQuantity > 0 ? 1 : 0;
+    if (qtyDecrease) qtyDecrease.disabled = availableQuantity <= 0;
+    if (qtyIncrease) qtyIncrease.disabled = availableQuantity <= 1;
+
     addButton.disabled = availableQuantity <= 0;
     buyNowButton.disabled = availableQuantity <= 0;
 
     if (availableQuantity <= 0) {
         addButton.textContent = "Hết hàng";
     } else {
-        addButton.textContent = "Thêm vào giỏ hàng";
+        addButton.textContent = "🛒 Thêm vào giỏ hàng";
     }
 }
 
@@ -523,100 +576,174 @@ function bindActionButtons(product) {
 }
 
 function renderSubImageGallery(product) {
-    const images = product.images || [];
+    const images = product.images || product.product_images || [];
 
     if (images.length === 0) {
         return "";
     }
 
-    const visibleImages = images.slice(0, 3);
-
     return `
-        <div class="sub-image-gallery">
-            <div class="sub-image-title">
-                Ảnh phụ
-            </div>
-
-            <div class="sub-image-list">
-                ${visibleImages.map((image, index) => `
-                    <div
-                        class="sub-image-thumb"
-                        data-image-index="${escapeAttribute(index)}"
-                    >
-                        <img
-                            src="${escapeAttribute(image.imageUrl)}"
-                            alt="Ảnh phụ ${escapeAttribute(index + 1)}"
-                        >
-                    </div>
-                `).join("")}
-            </div>
-
-            ${images.length > 3 ? `
-                <div class="selected-variant-info">
-                    Có ${escapeHtml(images.length)} ảnh phụ. Bấm vào ảnh để xem toàn bộ.
+        <div class="sub-image-gallery mt-3 position-relative">
+            <div class="d-flex align-items-center justify-content-center">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="gallery-prev-btn" style="border: none; background: transparent; font-size: 1.5rem;"><i class="bi bi-chevron-left"></i></button>
+                <div class="sub-image-list d-flex overflow-hidden mx-2 py-1" id="gallery-scroll-container" style="max-width: 320px; gap: 10px; scroll-behavior: smooth;">
+                    ${images.map((image, index) => {
+                        const imgUrl = image.imageUrl || image.image_url || image.image_key;
+                        const isActive = index === 0;
+                        return `
+                            <div
+                                class="sub-image-thumb${isActive ? ' active' : ''}"
+                                data-image-index="${escapeAttribute(index)}"
+                                data-image-url="${escapeAttribute(imgUrl)}"
+                                style="flex: 0 0 70px; height: 70px; border: ${isActive ? '2px solid #0d6efd' : '1px solid #ddd'}; border-radius: 4px; overflow: hidden; cursor: pointer; opacity: ${isActive ? '1' : '0.5'}; transition: all 0.3s ease; position: relative;"
+                            >
+                                <img
+                                    src="${escapeAttribute(imgUrl)}"
+                                    alt="Ảnh ${escapeAttribute(index + 1)}"
+                                    style="width: 100%; height: 100%; object-fit: cover;"
+                                >
+                            </div>
+                        `;
+                    }).join("")}
                 </div>
-            ` : ""}
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="gallery-next-btn" style="border: none; background: transparent; font-size: 1.5rem;"><i class="bi bi-chevron-right"></i></button>
+            </div>
         </div>
     `;
 }
 
 function renderImageModal() {
     return `
-        <div id="image-modal" class="image-modal-overlay">
-            <div class="image-modal-box">
-                <button id="image-modal-close" class="image-modal-close" type="button">
-                    ×
-                </button>
+        <div class="modal fade" id="image-modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content bg-transparent border-0">
+                    <div class="modal-header border-0 pb-0 justify-content-end">
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
+                    </div>
+                    <div class="modal-body text-center position-relative">
+                        <button id="image-modal-prev" class="btn btn-dark rounded-circle position-absolute top-50 start-0 translate-middle-y ms-2" type="button" style="z-index: 1055; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
 
-                <button id="image-modal-prev" class="image-nav-btn image-nav-prev" type="button">
-                    ‹
-                </button>
+                        <img id="image-modal-main" class="img-fluid rounded shadow" src="" alt="Ảnh sản phẩm" style="max-height: 80vh; object-fit: contain;">
 
-                <img id="image-modal-main" class="image-modal-main" src="" alt="Ảnh sản phẩm">
-
-                <button id="image-modal-next" class="image-nav-btn image-nav-next" type="button">
-                    ›
-                </button>
-
-                <div id="image-modal-counter" class="image-modal-counter"></div>
+                        <button id="image-modal-next" class="btn btn-dark rounded-circle position-absolute top-50 end-0 translate-middle-y me-2" type="button" style="z-index: 1055; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        
+                        <div id="image-modal-counter" class="text-white mt-3 fw-bold fs-5 text-shadow"></div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 }
 
+function bindQtyControls() {
+    const qtyDecrease = document.getElementById("qty-decrease");
+    const qtyIncrease = document.getElementById("qty-increase");
+    const qtyDisplay = document.getElementById("qty-display");
+    const quantityInput = document.getElementById("cart-quantity");
+
+    if (!qtyDecrease || !qtyIncrease || !qtyDisplay || !quantityInput) return;
+
+    qtyDecrease.addEventListener("click", () => {
+        const current = Number(quantityInput.value) || 1;
+        if (current <= 1) return;
+        const next = current - 1;
+        quantityInput.value = next;
+        qtyDisplay.textContent = next;
+        qtyDecrease.disabled = next <= 1;
+        qtyIncrease.disabled = next >= Number(quantityInput.max);
+    });
+
+    qtyIncrease.addEventListener("click", () => {
+        const current = Number(quantityInput.value) || 1;
+        const max = Number(quantityInput.max) || 1;
+        if (current >= max) return;
+        const next = current + 1;
+        quantityInput.value = next;
+        qtyDisplay.textContent = next;
+        qtyDecrease.disabled = next <= 1;
+        qtyIncrease.disabled = next >= max;
+    });
+}
+
 function bindGalleryButtons() {
     const thumbnails = document.querySelectorAll(".sub-image-thumb");
+    const mainImage = document.getElementById("main-product-image");
+    
+    if (imageAutoPlayInterval) {
+        clearInterval(imageAutoPlayInterval);
+    }
+    
+    if (thumbnails.length > 1) {
+        imageAutoPlayInterval = setInterval(() => {
+            currentGalleryIndex = (currentGalleryIndex + 1) % thumbnails.length;
+            const nextThumb = thumbnails[currentGalleryIndex];
+            updateMainImageFromThumb(nextThumb, thumbnails, mainImage);
+        }, 5000);
+    }
 
     thumbnails.forEach(thumbnail => {
         thumbnail.addEventListener("click", () => {
-            const imageIndex = Number(thumbnail.dataset.imageIndex || 0);
-            openImageModal(imageIndex);
+            if (imageAutoPlayInterval) clearInterval(imageAutoPlayInterval);
+            updateMainImageFromThumb(thumbnail, thumbnails, mainImage);
         });
     });
 
-    const closeButton = document.getElementById("image-modal-close");
+    const scrollContainer = document.getElementById("gallery-scroll-container");
+    const galPrevBtn = document.getElementById("gallery-prev-btn");
+    const galNextBtn = document.getElementById("gallery-next-btn");
+    
+    if (galPrevBtn && scrollContainer) {
+        galPrevBtn.addEventListener("click", () => {
+            scrollContainer.scrollBy({ left: -80, behavior: "smooth" });
+            if (imageAutoPlayInterval) clearInterval(imageAutoPlayInterval);
+        });
+    }
+    if (galNextBtn && scrollContainer) {
+        galNextBtn.addEventListener("click", () => {
+            scrollContainer.scrollBy({ left: 80, behavior: "smooth" });
+            if (imageAutoPlayInterval) clearInterval(imageAutoPlayInterval);
+        });
+    }
+
     const prevButton = document.getElementById("image-modal-prev");
     const nextButton = document.getElementById("image-modal-next");
-    const modal = document.getElementById("image-modal");
 
-    if (closeButton) {
-        closeButton.addEventListener("click", closeImageModal);
+    if (prevButton) prevButton.addEventListener("click", showPreviousImage);
+    if (nextButton) nextButton.addEventListener("click", showNextImage);
+}
+
+function updateMainImageFromThumb(thumbnail, thumbnails, mainImage) {
+    if (!thumbnail) return;
+    
+    thumbnails.forEach(t => {
+        t.classList.remove("active");
+        t.style.opacity = "0.5";
+        t.style.border = "1px solid #ddd";
+    });
+    
+    thumbnail.classList.add("active");
+    thumbnail.style.opacity = "1";
+    thumbnail.style.border = "2px solid #0d6efd";
+
+    if (mainImage && thumbnail.dataset.imageUrl) {
+        mainImage.src = thumbnail.dataset.imageUrl;
     }
 
-    if (prevButton) {
-        prevButton.addEventListener("click", showPreviousImage);
-    }
-
-    if (nextButton) {
-        nextButton.addEventListener("click", showNextImage);
-    }
-
-    if (modal) {
-        modal.addEventListener("click", event => {
-            if (event.target === modal) {
-                closeImageModal();
-            }
-        });
+    currentGalleryIndex = Number(thumbnail.dataset.imageIndex || 0);
+    
+    const scrollContainer = document.getElementById("gallery-scroll-container");
+    if (scrollContainer) {
+        const thumbLeft = thumbnail.offsetLeft;
+        const containerLeft = scrollContainer.scrollLeft;
+        const containerWidth = scrollContainer.clientWidth;
+        
+        if (thumbLeft < containerLeft || thumbLeft + 70 > containerLeft + containerWidth) {
+            scrollContainer.scrollTo({ left: thumbLeft - containerWidth / 2 + 35, behavior: 'smooth' });
+        }
     }
 }
 
@@ -626,25 +753,23 @@ function openImageModal(index) {
     }
 
     currentGalleryIndex = index;
-
-    const modal = document.getElementById("image-modal");
-
-    if (!modal) {
-        return;
-    }
-
-    modal.classList.add("show");
     updateImageModal();
+
+    const modalElement = document.getElementById("image-modal");
+    if (modalElement) {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
+    }
 }
 
 function closeImageModal() {
-    const modal = document.getElementById("image-modal");
-
-    if (!modal) {
-        return;
+    const modalElement = document.getElementById("image-modal");
+    if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
     }
-
-    modal.classList.remove("show");
 }
 
 function showPreviousImage() {
@@ -678,7 +803,8 @@ function updateImageModal() {
         return;
     }
 
-    modalImage.src = image.imageUrl;
+    const imgUrl = image.imageUrl || image.image_url || image.image_key;
+    modalImage.src = imgUrl;
     counter.textContent = `${currentGalleryIndex + 1} / ${galleryImages.length}`;
 }
 
@@ -766,7 +892,7 @@ async function addToCart(productId) {
 
     } finally {
         addButton.disabled = false;
-        addButton.textContent = "Thêm vào giỏ hàng";
+        addButton.textContent = "🛒 Thêm vào giỏ hàng";
     }
 }
 
