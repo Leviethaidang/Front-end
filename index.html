@@ -3,57 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HaShop - Trang chủ</title>
+    <title>HaShop - Trang Chủ | Thời trang chất lượng cao</title>
+    <meta name="description" content="HaShop - Mua sắm thời trang chất lượng cao với giá hợp lý. Đa dạng mẫu mã, size và màu sắc.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/plugin/nice-select/nice-select.css">
+    <link rel="stylesheet" href="/assets/plugin/OwlCarousel2-2.3.4/dist/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/plugin/OwlCarousel2-2.3.4/dist/assets/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/assets/plugin/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="/assets/plugin/slick/slick.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/assets/css/common.css">
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/index.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <section class="hero-section">
+    <!-- Full-width Hero Banner -->
+    <div class="banner">
+        <div class="container-fluid hero-banner-container">
+            <div class="owl-carousel owl-theme banner-slider m-0 p-0">
+                <div class="banner-slide"> <img src="/assets/images/banner/BannerNam.png" alt="Thời trang Nam"> </div>
+                <div class="banner-slide"> <img src="/assets/images/banner/BannerNu.png" alt="Thời trang Nữ"> </div>
+                <div class="banner-slide" data-filter="sale"> <img src="/assets/images/banner/BannerSale.png" alt="Khuyến mãi"> </div>
+                <div class="banner-slide"> <img src="/assets/images/banner/BannerUnisex.png" alt="Thời trang Unisex"> </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Product Section -->
+    <div class="product mt-50 mb-100">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="hero-title fw-bold mb-4">
-                        Mua sắm thông minh,
-                        <span class="hero-gradient">tiết kiệm hơn</span>
-                    </h1>
-                    <p class="hero-subtitle mb-5 text-muted">
-                        Khám phá trải nghiệm mua sắm trực tuyến hiện đại với sản phẩm chất lượng, giao hàng nhanh chóng và hỗ trợ tận tình.
-                    </p>
-                    <div class="d-flex gap-3">
-                        <a href="#products-container" class="btn btn-primary-gradient btn-lg">
-                            Xem sản phẩm <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                        <a href="/login" class="btn btn-outline-light btn-lg">
-                            Đăng nhập
-                        </a>
+            <h2 class="product-section-title mb-4" id="main-title" style="display: none;">TẤT CẢ SẢN PHẨM</h2>
+            
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="sticky-top" style="top: 100px; padding: 20px; border: 1px solid #E8DDD4; border-radius: 8px; background: #FAF6F1; box-shadow: 0 2px 10px rgba(139, 94, 60, 0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold m-0" style="color: #8B5E3C; letter-spacing: 1px;">BỘ LỌC</h5>
+                            <button class="btn btn-link p-0 text-decoration-none" id="btn-reset-filters" style="color: #d70018; font-size: 0.9rem; font-weight: 500;">
+                                Làm mới
+                            </button>
+                        </div>
+                        
+                        <!-- Clear filter container (populated by JS) -->
+                        <div id="clear-filter-container"></div>
+                        
+                        <div id="filter-controls-container">
+                            <div class="mb-4" id="category-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Danh mục</label>
+                                <select class="form-select border-0 shadow-sm" id="category-filter-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả danh mục</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+
+
+                            <div class="mb-4" id="price-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Mức giá</label>
+                                <select class="form-select border-0 shadow-sm" id="price-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="under-200">Dưới 200.000đ</option>
+                                    <option value="200-500">200.000đ - 500.000đ</option>
+                                    <option value="500-1000">500.000đ - 1.000.000đ</option>
+                                    <option value="over-1000">Trên 1.000.000đ</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4" id="stock-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Tình trạng</label>
+                                <select class="form-select border-0 shadow-sm" id="stock-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="in-stock">Còn hàng</option>
+                                    <option value="out-of-stock">Hết hàng</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn w-100 fw-bold mb-3" id="btn-apply-filter" style="color: #fff; background-color: #8B5E3C; transition: 0.3s;">
+                                Lọc
+                            </button>
+
+                            <button class="btn w-100 fw-bold" id="btn-back-home" style="color: #8B5E3C; border: 1px solid #8B5E3C; background: transparent; transition: 0.3s;">
+                                &#8592; Quay lại
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6 text-center">
-                    <div class="hero-image-wrapper">
-                        <i class="bi bi-shop hero-icon"></i>
+                
+                <!-- Main Products -->
+                <div class="col-lg-9">
+                    <div class="d-flex justify-content-end mb-4" id="sort-container" style="display: none !important;">
+                        <select class="form-select border-0 shadow-sm" id="sort-select" style="width: 220px; background-color: #fff; border-radius: 6px;">
+                            <option value="default">Mới nhất</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="sold-desc">Bán chạy nhất</option>
+                            <option value="stock-asc">Sắp hết hàng</option>
+                        </select>
+                    </div>
+                    <div id="products-container">
+                        <!-- Products dynamically loaded by JS -->
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <main class="container py-5">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold mb-3">Sản phẩm mới nhất</h2>
-            <p class="text-muted">Danh sách sản phẩm được tải trực tiếp từ Product Service.</p>
-        </div>
+    <div id="footer-placeholder"></div>
 
-        <div id="products-container" class="products-grid"></div>
-    </main>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/plugin/nice-select/jquery.nice-select.min.js"></script>
+    <script src="/assets/plugin/OwlCarousel2-2.3.4/dist/owl.carousel.min.js"></script>
+    <script src="/assets/plugin/nouislider/nouislider.min.js"></script>
+    <script src="/assets/plugin/slick/slick.min.js"></script>
+    <script src="/assets/js/main.js"></script>
 
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/index.js"></script>
+    <script src="/assets/js/footer.js"></script>
 </body>
 </html>
