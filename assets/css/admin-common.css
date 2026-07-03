@@ -1,11 +1,11 @@
 :root {
-    --primary-orange: #ff8c00;
-    --primary-orange-light: #ffb347;
-    --dark-bg: #1a1a1a;
-    --dark-card: #2a2a2a;
-    --dark-border: #555;
-    --text-light: #ffffff;
-    --text-muted: #eeeeee;
+    --primary-orange: #8b5e3c;
+    --primary-orange-light: #c4956c;
+    --dark-bg: #ffffff;
+    --dark-card: #ffffff;
+    --dark-border: #e8ddd4;
+    --text-light: #2f2a26;
+    --text-muted: #6f6a66;
 }
 
 * {
@@ -18,10 +18,7 @@ body {
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background:
-        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 179, 71, 0.08), transparent 24%),
-        var(--dark-bg);
+    background: var(--dark-bg);
     color: var(--text-light);
 }
 
@@ -77,10 +74,10 @@ a {
 .loading,
 .error,
 .empty-orders {
-    background: rgba(42, 42, 42, 0.96);
+    background: #ffffff;
     border: 1px solid var(--dark-border);
     border-radius: 18px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
 }
 
 .box,
@@ -104,13 +101,13 @@ select {
     padding: 11px 12px;
     border: 1px solid var(--dark-border);
     border-radius: 12px;
-    background: rgba(18, 18, 18, 0.84);
+    background: #ffffff;
     color: var(--text-light);
 }
 
 input::placeholder,
 textarea::placeholder {
-    color: rgba(238, 238, 238, 0.45);
+    color: #a8a29e;
 }
 
 input:focus,
@@ -118,7 +115,7 @@ textarea:focus,
 select:focus {
     outline: none;
     border-color: var(--primary-orange);
-    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.18);
+    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
 }
 
 textarea {
@@ -142,7 +139,7 @@ table {
 
 th,
 td {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #f0e7df;
     padding: 12px;
     text-align: left;
     vertical-align: top;
@@ -150,12 +147,12 @@ td {
 }
 
 th {
-    background: rgba(255, 255, 255, 0.05);
+    background: #faf6f1;
     font-weight: 700;
 }
 
 tbody tr:hover td {
-    background: rgba(255, 140, 0, 0.06);
+    background: #fffaf5;
 }
 
 .btn {
@@ -198,11 +195,11 @@ tbody tr:hover td {
 }
 
 .message.danger {
-    color: #ff9a9a;
+    color: #c2410c;
 }
 
 .message.success {
-    color: #a7f3d0;
+    color: #15803d;
 }
 
 .management-grid {
@@ -230,7 +227,7 @@ tbody tr:hover td {
 }
 
 .error {
-    color: #ff9a9a;
+    color: #c2410c;
 }
 
 .orders-table {
@@ -242,13 +239,13 @@ tbody tr:hover td {
 .orders-table th,
 .orders-table td {
     padding: 13px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid #f0e7df;
     text-align: left;
     vertical-align: top;
 }
 
 .orders-table th {
-    background: rgba(255, 255, 255, 0.04);
+    background: #faf6f1;
 }
 
 .order-id {
@@ -277,33 +274,33 @@ tbody tr:hover td {
 }
 
 .status-pending {
-    background: rgba(255, 193, 7, 0.16);
-    color: #ffd65a;
+    background: #fff7ed;
+    color: #b45309;
 }
 
 .status-confirmed {
-    background: rgba(15, 157, 88, 0.18);
-    color: #86efac;
+    background: #ecfdf5;
+    color: #047857;
 }
 
 .status-shipping {
-    background: rgba(43, 109, 246, 0.16);
-    color: #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
 }
 
 .status-completed {
-    background: rgba(34, 197, 94, 0.18);
-    color: #86efac;
+    background: #ecfdf5;
+    color: #047857;
 }
 
 .status-cancelled,
 .status-failed {
-    background: rgba(215, 38, 61, 0.16);
-    color: #fca5a5;
+    background: #fef2f2;
+    color: #b91c1c;
 }
 
 .status-default {
-    background: rgba(255, 255, 255, 0.12);
+    background: #f5efe8;
     color: var(--text-light);
 }
 
@@ -313,7 +310,7 @@ tbody tr:hover td {
     border-radius: 10px;
     font-size: 14px;
     min-width: 150px;
-    background: rgba(18, 18, 18, 0.84);
+    background: #ffffff;
     color: var(--text-light);
 }
 
@@ -329,7 +326,7 @@ tbody tr:hover td {
 .save-btn {
     margin-top: 8px;
     background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
-    color: #111111;
+    color: #ffffff;
 }
 
 .save-btn:disabled {
@@ -373,7 +370,7 @@ tbody tr:hover td {
     border: 1px solid var(--dark-border);
     border-radius: 14px;
     padding: 14px;
-    background: rgba(255, 255, 255, 0.03);
+    background: #ffffff;
 }
 
 .variant-header {
@@ -436,7 +433,7 @@ tbody tr:hover td {
     border: 1px solid var(--dark-border);
     border-radius: 18px;
     padding: 22px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 18px 40px rgba(139, 94, 60, 0.12);
 }
 
 .modal-header,
@@ -537,7 +534,7 @@ tbody tr:hover td {
     padding: 14px;
     border: 1px solid var(--dark-border);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.03);
+    background: #ffffff;
 }
 
 .admin-order-item img {
@@ -673,145 +670,4 @@ tbody tr:hover td {
     .footer-content {
         align-items: flex-start;
     }
-}
-
-/* Light admin theme aligned with Khang homepage */
-:root {
-    --primary-orange: #8b5e3c;
-    --primary-orange-light: #c4956c;
-    --dark-bg: #faf6f1;
-    --dark-card: #ffffff;
-    --dark-border: #e8ddd4;
-    --text-light: #2f2a26;
-    --text-muted: #6f6a66;
-}
-
-body {
-    background: #ffffff;
-    color: var(--text-light);
-}
-
-.admin-layout-container {
-    background: #ffffff;
-}
-
-.page-header h1,
-.page-header h2,
-.box h3,
-.table-section h3,
-.variant-header h4,
-.modal-header h3,
-.order-detail-modal-header h3,
-.modal-section-title,
-.modal-info-grid strong {
-    color: var(--text-light);
-}
-
-.page-header p,
-.small-text,
-.product-summary-desc,
-.admin-order-item-meta,
-.section-note,
-.footer-links a,
-.footer-copy,
-.user-id-cell {
-    color: var(--text-muted);
-}
-
-.box,
-.table-section,
-.loading,
-.error,
-.empty-orders,
-.modal-box,
-.order-detail-modal-box,
-.variant-section,
-.admin-order-item {
-    background: #ffffff;
-    border-color: var(--dark-border);
-    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
-}
-
-input,
-textarea,
-select,
-.status-select {
-    background: #ffffff;
-    color: var(--text-light);
-    border-color: var(--dark-border);
-}
-
-input::placeholder,
-textarea::placeholder,
-.filter-input::placeholder {
-    color: #a8a29e;
-}
-
-input:focus,
-textarea:focus,
-select:focus,
-.status-select:focus {
-    border-color: var(--primary-orange);
-    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
-}
-
-th,
-td,
-.orders-table th,
-.orders-table td {
-    color: var(--text-light);
-    border-color: #f0e7df;
-}
-
-th,
-.orders-table th {
-    background: #faf6f1;
-}
-
-tbody tr:hover td {
-    background: #fffaf5;
-}
-
-.message.danger,
-.error {
-    color: #c2410c;
-}
-
-.message.success {
-    color: #15803d;
-}
-
-.status-default {
-    background: #f5efe8;
-    color: var(--text-light);
-}
-
-.status-pending {
-    background: #fff7ed;
-    color: #b45309;
-}
-
-.status-confirmed,
-.status-completed {
-    background: #ecfdf5;
-    color: #047857;
-}
-
-.status-shipping {
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-
-.status-cancelled,
-.status-failed {
-    background: #fef2f2;
-    color: #b91c1c;
-}
-
-.modal-close-btn {
-    color: var(--text-light);
-}
-
-.footer-minimal {
-    border-top-color: var(--dark-border);
 }

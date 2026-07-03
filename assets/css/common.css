@@ -1,11 +1,25 @@
 :root {
-    --primary-orange: #ff8c00;
-    --primary-orange-light: #ffb347;
-    --dark-bg: #1a1a1a;
-    --dark-card: #2a2a2a;
-    --dark-border: #555;
-    --text-light: #ffffff;
-    --text-muted: #cccccc;
+    --primary-orange: #8b5e3c;
+    --primary-orange-light: #c4956c;
+    --dark-bg: #ffffff;
+    --dark-card: #ffffff;
+    --dark-border: #e8ddd4;
+    --text-light: #2f2a26;
+    --text-muted: #6f6a66;
+    --surface-2: #ffffff;
+    --border: #e8ddd4;
+    --silk-dur: 0.25s;
+    --silk: ease;
+    --shadow-sm: 0 6px 18px rgba(139, 94, 60, 0.08);
+    --bg: #ffffff;
+    --text-1: #2f2a26;
+    --text-2: #5f6368;
+    --accent: #8b5e3c;
+    --accent-mid: #6b4226;
+    --accent-ghost: #faf6f1;
+    --accent-border: #e8ddd4;
+    --radius: 8px;
+    --shadow-md: 0 12px 28px rgba(50, 50, 50, 0.12);
 }
 
 body {
@@ -84,7 +98,7 @@ body {
 .card-custom {
     background: var(--dark-card);
     border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
     border: 1px solid var(--dark-border);
 }
 
@@ -104,7 +118,7 @@ body {
 
 .dropdown-item.active {
     background-color: var(--primary-orange);
-    color: #000000;
+    color: #ffffff;
 }
 
 hr {

@@ -1,11 +1,8 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background:
-        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 179, 71, 0.08), transparent 24%),
-        #1a1a1a;
-    color: #ffffff;
+    background: #ffffff;
+    color: #2f2a26;
 }
 
 .container {
@@ -23,18 +20,18 @@ body {
 }
 
 .page-header p {
-    color: #eeeeee;
+    color: #6f6a66;
     margin: 0;
 }
 
 .box {
-    border: 1px solid #555;
-    background: rgba(42, 42, 42, 0.96);
+    border: 1px solid #e8ddd4;
+    background: #ffffff;
     padding: 20px;
     border-radius: 18px;
     margin-bottom: 24px;
     max-width: 700px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
 }
 
 input,
@@ -44,23 +41,23 @@ select {
     box-sizing: border-box;
     padding: 11px 12px;
     margin: 6px 0;
-    border: 1px solid #555;
+    border: 1px solid #e8ddd4;
     border-radius: 12px;
-    background: rgba(18, 18, 18, 0.84);
-    color: #ffffff;
+    background: #ffffff;
+    color: #2f2a26;
 }
 
 input::placeholder,
 textarea::placeholder {
-    color: rgba(238, 238, 238, 0.45);
+    color: #a8a29e;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border-color: #ff8c00;
-    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.18);
+    border-color: #8b5e3c;
+    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
 }
 
 textarea {
@@ -69,12 +66,12 @@ textarea {
 }
 
 .table-section {
-    background: rgba(42, 42, 42, 0.96);
+    background: #ffffff;
     border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
     overflow-x: auto;
-    border: 1px solid #555;
+    border: 1px solid #e8ddd4;
 }
 
 table {
@@ -86,15 +83,15 @@ table {
 
 th,
 td {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #f0e7df;
     padding: 10px;
     text-align: left;
     vertical-align: top;
-    color: #ffffff;
+    color: #2f2a26;
 }
 
 th {
-    background: rgba(255, 255, 255, 0.05);
+    background: #faf6f1;
 }
 
 .btn {
@@ -142,16 +139,16 @@ th {
 }
 
 .message.danger {
-    color: #ff9a9a;
+    color: #c2410c;
 }
 
 .message.success {
-    color: #a7f3d0;
+    color: #15803d;
 }
 
 .user-id-cell {
     font-size: 12px;
-    color: #eeeeee;
+    color: #6f6a66;
     word-break: break-all;
 }
 
@@ -164,62 +161,4 @@ th {
     .table-section {
         padding: 16px;
     }
-}
-
-/* Light admin page override */
-body {
-    background: #ffffff;
-    color: #2f2a26;
-}
-
-.page-header h1,
-.page-header h2,
-.box h3,
-.table-section h3,
-th,
-td {
-    color: #2f2a26;
-}
-
-.page-header p,
-.user-id-cell,
-.small-text {
-    color: #6f6a66;
-}
-
-.box,
-.table-section {
-    background: #ffffff;
-    border-color: #e8ddd4;
-    box-shadow: 0 12px 32px rgba(139, 94, 60, 0.08);
-}
-
-input,
-textarea,
-select {
-    background: #ffffff;
-    border-color: #e8ddd4;
-    color: #2f2a26;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: #a8a29e;
-}
-
-th {
-    background: #faf6f1;
-}
-
-th,
-td {
-    border-color: #f0e7df;
-}
-
-.message.danger {
-    color: #c2410c;
-}
-
-.message.success {
-    color: #15803d;
 }

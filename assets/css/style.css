@@ -23,7 +23,9 @@
 
 
 body{
-  font-family: var(--body-font-family)
+  font-family: var(--body-font-family);
+  background: #ffffff;
+  color: var(--text-color);
 }
 
 
