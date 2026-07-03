@@ -1,13 +1,18 @@
-<header class="navigation shadow-sm border-bottom">
+<header class="navigation shadow-sm border-bottom glass-nav">
   <div class="navbar-sticky">
       <div class="navbar navbar-middle navbar-expand-lg mt-lg-3 ">
           <div class="container">
               <a class="navbar-brand flex-shrink-0 " href="/">
                   <img src="/assets/images/LogoNhoHaShop.png" class="logo main-logo" alt="HaShop" style="height: 40px; display: block;">
               </a>
-              <div class="input-group d-none d-lg-flex me-5">
-                  <input id="searchInput" class="form-control py-10 px-20" type="text" placeholder="Tìm kiếm sản phẩm...">
-                  <button type="button" class="btn btn-primary bg-gradient d-none d-lg-block">Tìm kiếm</button>
+              <div class="input-group d-none d-lg-flex me-5 position-relative" style="max-width: 400px;">
+                  <input id="searchInput" class="form-control py-10 px-20 modern-input" type="text" placeholder="Tìm kiếm sản phẩm...">
+                  <button type="button" class="btn btn-brand-gradient d-none d-lg-block hover-lift" id="btnSearch">Tìm kiếm</button>
+                  
+                  <!-- Dropdown gợi ý tìm kiếm -->
+                  <div id="search-suggestions" class="dropdown-menu w-100 shadow-sm border-0" style="position: absolute; top: 100%; left: 0; z-index: 1000; max-height: 400px; overflow-y: auto; display: none;">
+                      <!-- Gợi ý được render bằng JS -->
+                  </div>
               </div>
               
               <div class="list-inline d-flex" id="navbar-auth-section">
@@ -24,19 +29,18 @@
                   </div>
                   <div class="offcanvas-body">
                       <div class="d-block d-lg-none mb-4">
-                          <div class="input-group me-5">
-                              <input id="searchInputMobile" class="form-control py-10 px-20" type="text" placeholder="Tìm kiếm...">
-                              <button type="button" class="btn btn-primary bg-gradient">Tìm</button>
+                          <div class="input-group me-5 position-relative">
+                              <input id="searchInputMobile" class="form-control py-10 px-20 modern-input" type="text" placeholder="Tìm kiếm...">
+                              <button type="button" class="btn btn-brand-gradient hover-lift" id="btnSearchMobile">Tìm</button>
+                              
+                              <div id="search-suggestions-mobile" class="dropdown-menu w-100 shadow-sm border-0" style="position: absolute; top: 100%; left: 0; z-index: 1000; max-height: 300px; overflow-y: auto; display: none;">
+                                  <!-- Gợi ý được render bằng JS -->
+                              </div>
                           </div>
                       </div>
                       <div>
-                          <ul class="navbar-nav align-items-center">
-                              <li class="nav-item w-100 w-lg-auto">
-                                  <a class="nav-link" href="/">Trang chủ</a>
-                              </li>
-                              <li class="nav-item w-100 w-lg-auto">
-                                  <a class="nav-link" href="/orders">Đơn hàng</a>
-                              </li>
+                          <ul class="navbar-nav align-items-center" id="dynamic-category-menu">
+                              <!-- Menu categories 2 cấp sẽ được JS render ở đây -->
                           </ul>
                       </div>
                       <div id="mobile-auth-section" class="d-block d-lg-none mt-4">

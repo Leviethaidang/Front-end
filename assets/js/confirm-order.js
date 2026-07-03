@@ -419,8 +419,8 @@ function renderConfirmOrderPage() {
     content.innerHTML = `
         <div class="col-lg-8">
             <!-- Receiver Info Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white p-3">
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
                     <h5 class="mb-0">📦 Thông tin nhận hàng</h5>
                 </div>
                 <div class="card-body p-4">
@@ -446,8 +446,8 @@ function renderConfirmOrderPage() {
             </div>
 
             <!-- Products Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center">
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">🛒 Sản phẩm đặt hàng</h5>
                     <span class="badge bg-secondary">${state.items.length} sản phẩm</span>
                 </div>
@@ -457,8 +457,8 @@ function renderConfirmOrderPage() {
             </div>
 
             <!-- Payment Methods Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white p-3">
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
                     <h5 class="mb-0">💳 Phương thức thanh toán</h5>
                 </div>
                 <div class="card-body p-4">
@@ -469,8 +469,8 @@ function renderConfirmOrderPage() {
 
         <!-- Summary Panel -->
         <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white p-3">
+            <div class="modern-card mb-4">
+                <div class="card-header bg-white p-3 border-bottom-0">
                     <h5 class="mb-0">🧭 Tóm tắt đơn hàng</h5>
                 </div>
                 <div class="card-body p-4">
@@ -497,7 +497,7 @@ function renderConfirmOrderPage() {
                     </div>
 
                     <button
-                        class="btn btn-primary bg-gradient w-100 py-3 mb-3 fw-bold fs-6"
+                        class="btn btn-brand-gradient hover-lift w-100 py-3 mb-3 fw-bold fs-6"
                         id="place-order-btn"
                         ${supportedPaymentMethods.length === 0 ? "disabled" : ""}
                     >

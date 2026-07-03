@@ -56,11 +56,11 @@ function formatDate(value) {
 }
 
 function showMessage(message, type = "success") {
-    messageBox.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
+    messageBox.className = `message ${type}`;
     messageBox.textContent = message;
 
     setTimeout(() => {
-        messageBox.className = "";
+        messageBox.className = "message";
         messageBox.textContent = "";
     }, 3000);
 }
@@ -116,12 +116,27 @@ function getPaymentStatusText(status) {
 }
 
 function getStatusClass(status) {
-    if (status === "PENDING_PAYMENT" || status === "PENDING") return "bg-warning text-dark";
-    if (status === "CONFIRMED" || status === "PAID") return "bg-primary";
-    if (status === "SHIPPING") return "bg-info text-dark";
-    if (status === "COMPLETED") return "bg-success";
-    if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") return "bg-danger";
-    return "bg-secondary";
+    if (status === "PENDING_PAYMENT" || status === "PENDING") {
+        return "status-pending";
+    }
+
+    if (status === "CONFIRMED" || status === "PAID") {
+        return "status-confirmed";
+    }
+
+    if (status === "SHIPPING") {
+        return "status-shipping";
+    }
+
+    if (status === "COMPLETED") {
+        return "status-completed";
+    }
+
+    if (status === "CANCELLED" || status === "PAYMENT_FAILED" || status === "FAILED") {
+        return "status-failed";
+    }
+
+    return "status-default";
 }
 
 async function loadAdminOrders() {
@@ -155,29 +170,27 @@ function renderOrders(orders) {
 
     const rowsHtml = orders.map(renderOrderRow).join("");
 
-    content.className = "";
+    content.className = "table-card";
     content.innerHTML = `
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Mã đơn</th>
-                        <th>Ngày đặt</th>
-                        <th>Người nhận</th>
-                        <th>Phương thức thanh toán</th>
-                        <th>Thanh toán</th>
-                        <th>Số lượng</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái đơn</th>
-                        <th class="text-end">Cập nhật</th>
-                    </tr>
-                </thead>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Ngày đặt</th>
+                    <th>Người nhận</th>
+                    <th>Phương thức thanh toán</th>
+                    <th>Thanh toán</th>
+                    <th>Số lượng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái đơn</th>
+                    <th>Cập nhật</th>
+                </tr>
+            </thead>
 
-                <tbody>
-                    ${rowsHtml}
-                </tbody>
-            </table>
-        </div>
+            <tbody>
+                ${rowsHtml}
+            </tbody>
+        </table>
     `;
 
     bindUpdateButtons();
@@ -198,71 +211,72 @@ function renderOrderRow(order) {
 
     return `
         <tr>
-            <td class="align-middle">
-                <div class="fw-bold text-primary">#${escapeHtml(orderId)}</div>
-                <div class="text-muted small">${escapeHtml(order.sourceType || order.source_type || "")}</div>
+            <td>
+                <div class="order-id">#${escapeHtml(orderId)}</div>
+                <div class="small-text">${escapeHtml(order.sourceType || order.source_type || "")}</div>
             </td>
 
-            <td class="align-middle text-muted small">
+            <td>
                 ${escapeHtml(formatDate(order.createdAt || order.created_at))}
             </td>
 
-            <td class="align-middle">
-                <div class="fw-bold">${escapeHtml(receiverName)}</div>
-                <div class="text-muted small">${escapeHtml(receiverPhone)}</div>
-                <div class="text-muted small text-truncate" style="max-width: 150px;" title="${escapeHtml(shippingAddress)}">${escapeHtml(shippingAddress)}</div>
+            <td>
+                <strong>${escapeHtml(receiverName)}</strong>
+                <div class="small-text">${escapeHtml(receiverPhone)}</div>
+                <div class="small-text">${escapeHtml(shippingAddress)}</div>
             </td>
 
-            <td class="align-middle">
-                <div class="fw-bold">${escapeHtml(paymentMethodType)}</div>
-                <div class="text-muted small">${escapeHtml(paymentMethodDisplayName)}</div>
+            <td>
+                <strong>${escapeHtml(paymentMethodType)}</strong>
+                <div class="small-text">${escapeHtml(paymentMethodDisplayName)}</div>
             </td>
 
-            <td class="align-middle">
-                <span class="badge ${getStatusClass(paymentStatus)}">
+            <td>
+                <span class="status-badge ${getStatusClass(paymentStatus)}">
                     ${escapeHtml(getPaymentStatusText(paymentStatus))}
                 </span>
             </td>
 
-            <td class="align-middle text-center fw-bold">
+            <td>
                 ${escapeHtml(order.totalQuantity || order.total_quantity || 0)}
             </td>
 
-            <td class="align-middle text-success fw-bold text-nowrap">
-                ${formatPrice(order.totalAmount || order.total_amount || 0)}
+            <td>
+                <span class="money">
+                    ${formatPrice(order.totalAmount || order.total_amount || 0)}
+                </span>
             </td>
 
-            <td class="align-middle">
-                <span class="badge ${getStatusClass(orderStatus)}">
+            <td>
+                <span class="status-badge ${getStatusClass(orderStatus)}">
                     ${escapeHtml(getOrderStatusText(orderStatus))}
                 </span>
             </td>
 
-            <td class="align-middle text-end">
-                <div class="d-flex flex-column gap-2 align-items-end">
-                    <button
-                        class="btn btn-sm btn-outline-info view-detail-btn text-nowrap"
-                        data-order-id="${escapeAttribute(orderId)}"
-                    >
-                        <i class="bi bi-eye"></i> Xem chi tiết
-                    </button>
+            <td>
+                <button
+                    class="detail-btn view-detail-btn"
+                    data-order-id="${escapeAttribute(orderId)}"
+                >
+                    Xem chi tiết
+                </button>
 
-                    <div class="input-group input-group-sm flex-nowrap" style="width: 200px;">
-                        <select
-                            class="form-select border-primary"
-                            id="status-select-${escapeAttribute(orderId)}"
-                            data-current-status="${escapeAttribute(orderStatus)}"
-                        >
-                            ${renderStatusOptions(orderStatus)}
-                        </select>
-                        <button
-                            class="btn btn-primary update-status-btn"
-                            data-order-id="${escapeAttribute(orderId)}"
-                        >
-                            <i class="bi bi-check-lg"></i>
-                        </button>
-                    </div>
-                </div>
+                <select
+                    class="status-select"
+                    id="status-select-${escapeAttribute(orderId)}"
+                    data-current-status="${escapeAttribute(orderStatus)}"
+                >
+                    ${renderStatusOptions(orderStatus)}
+                </select>
+
+                <br>
+
+                <button
+                    class="save-btn update-status-btn"
+                    data-order-id="${escapeAttribute(orderId)}"
+                >
+                    Lưu trạng thái
+                </button>
             </td>
         </tr>
     `;
@@ -358,19 +372,24 @@ function ensureOrderDetailModal() {
     const modal = document.createElement("div");
 
     modal.id = "order-detail-modal";
-    modal.className = "modal fade";
-    modal.setAttribute("tabindex", "-1");
+    modal.className = "order-detail-modal-overlay";
 
     modal.innerHTML = `
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Chi tiết đơn hàng</h5>
-                    <button type="button" class="btn-close" id="close-order-detail-modal-btn" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4" id="order-detail-modal-content">
-                    Đang tải...
-                </div>
+        <div class="order-detail-modal-box">
+            <div class="order-detail-modal-header">
+                <h3>Chi tiết đơn hàng</h3>
+
+                <button
+                    id="close-order-detail-modal-btn"
+                    class="modal-close-btn"
+                    type="button"
+                >
+                    ×
+                </button>
+            </div>
+
+            <div id="order-detail-modal-content" class="order-detail-modal-content">
+                Đang tải...
             </div>
         </div>
     `;
@@ -405,11 +424,8 @@ async function openOrderDetailModal(orderId) {
     modal.classList.add("show");
 
     modalContent.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Đang tải...</span>
-            </div>
-            <p class="mt-3 text-muted">Đang tải chi tiết đơn hàng #${escapeHtml(orderId)}...</p>
+        <div class="modal-loading">
+            Đang tải chi tiết đơn hàng #${escapeHtml(orderId)}...
         </div>
     `;
 
@@ -453,74 +469,95 @@ function renderOrderDetailContent(order) {
     const items = order.items || [];
 
     return `
-        <div class="card border mb-4 shadow-sm">
-            <div class="card-header bg-light fw-bold">Thông tin chung</div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="text-muted small mb-1">Mã đơn</div>
-                        <div class="fw-bold text-primary">#${escapeHtml(orderId)}</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-muted small mb-1">Ngày đặt</div>
-                        <div>${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-muted small mb-1">Trạng thái đơn</div>
-                        <span class="badge ${getStatusClass(orderStatus)}">${escapeHtml(getOrderStatusText(orderStatus))}</span>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-muted small mb-1">Thanh toán</div>
-                        <span class="badge ${getStatusClass(paymentStatus)}">${escapeHtml(getPaymentStatusText(paymentStatus))}</span>
-                    </div>
+        <div class="modal-section">
+            <div class="modal-section-title">Thông tin đơn hàng</div>
+
+            <div class="modal-info-grid">
+                <div>
+                    <strong>Mã đơn</strong>
+                    <div>#${escapeHtml(orderId)}</div>
+                </div>
+
+                <div>
+                    <strong>Ngày đặt</strong>
+                    <div>${escapeHtml(formatDate(order.createdAt || order.created_at))}</div>
+                </div>
+
+                <div>
+                    <strong>Trạng thái đơn</strong>
+                    <span class="status-badge ${getStatusClass(orderStatus)}">
+                        ${escapeHtml(getOrderStatusText(orderStatus))}
+                    </span>
+                </div>
+
+                <div>
+                    <strong>Thanh toán</strong>
+                    <span class="status-badge ${getStatusClass(paymentStatus)}">
+                        ${escapeHtml(getPaymentStatusText(paymentStatus))}
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <div class="card border h-100 shadow-sm">
-                    <div class="card-header bg-light fw-bold">Thông tin nhận hàng</div>
-                    <div class="card-body">
-                        <div class="mb-2"><strong>Người nhận:</strong> ${escapeHtml(receiverName)}</div>
-                        <div class="mb-2"><strong>Điện thoại:</strong> ${escapeHtml(receiverPhone)}</div>
-                        <div><strong>Địa chỉ:</strong> ${escapeHtml(shippingAddress)}</div>
-                    </div>
+        <div class="modal-section">
+            <div class="modal-section-title">Thông tin nhận hàng</div>
+
+            <div class="modal-info-grid">
+                <div>
+                    <strong>Người nhận</strong>
+                    <div>${escapeHtml(receiverName)}</div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card border h-100 shadow-sm">
-                    <div class="card-header bg-light fw-bold">Phương thức thanh toán</div>
-                    <div class="card-body">
-                        <div class="mb-2"><strong>Loại:</strong> ${escapeHtml(paymentMethodType)}</div>
-                        <div><strong>Phương thức:</strong> ${escapeHtml(paymentMethodDisplayName)}</div>
-                    </div>
+
+                <div>
+                    <strong>Số điện thoại</strong>
+                    <div>${escapeHtml(receiverPhone)}</div>
+                </div>
+
+                <div class="modal-info-wide">
+                    <strong>Địa chỉ</strong>
+                    <div>${escapeHtml(shippingAddress)}</div>
                 </div>
             </div>
         </div>
 
-        <div class="card border shadow-sm mb-4">
-            <div class="card-header bg-light fw-bold">Sản phẩm cần đóng gói</div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    ${items.length > 0
-                        ? items.map(renderAdminOrderItem).join("")
-                        : `<div class="list-group-item text-muted">Đơn hàng không có sản phẩm.</div>`
-                    }
+        <div class="modal-section">
+            <div class="modal-section-title">Phương thức thanh toán</div>
+
+            <div class="modal-info-grid">
+                <div>
+                    <strong>Loại</strong>
+                    <div>${escapeHtml(paymentMethodType)}</div>
+                </div>
+
+                <div>
+                    <strong>Phương thức</strong>
+                    <div>${escapeHtml(paymentMethodDisplayName)}</div>
                 </div>
             </div>
         </div>
 
-        <div class="card border shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted">Tổng số lượng:</span>
-                    <span class="fw-bold fs-5">${escapeHtml(order.totalQuantity || order.total_quantity || 0)}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted">Tổng tiền:</span>
-                    <span class="fw-bold fs-4 text-success">${formatPrice(order.totalAmount || order.total_amount || 0)}</span>
-                </div>
+        <div class="modal-section">
+            <div class="modal-section-title">Sản phẩm cần đóng gói</div>
+
+            <div class="admin-order-items">
+                ${items.length > 0
+                    ? items.map(renderAdminOrderItem).join("")
+                    : `<div class="small-text">Đơn hàng không có sản phẩm.</div>`
+                }
+            </div>
+        </div>
+
+        <div class="modal-summary">
+            <div>
+                <strong>Tổng số lượng:</strong>
+                ${escapeHtml(order.totalQuantity || order.total_quantity || 0)}
+            </div>
+
+            <div>
+                <strong>Tổng tiền:</strong>
+                <span class="money">
+                    ${formatPrice(order.totalAmount || order.total_amount || 0)}
+                </span>
             </div>
         </div>
     `;
@@ -540,49 +577,60 @@ function renderAdminOrderItem(item) {
     const subtotal = item.subtotal || 0;
 
     const imageHtml = imageUrl
-        ? `<img class="img-thumbnail me-3" style="width: 70px; height: 70px; object-fit: cover;" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
-        : `<div class="d-flex align-items-center justify-content-center bg-light text-muted rounded me-3" style="width: 70px; height: 70px;"><i class="bi bi-image fs-3"></i></div>`;
+        ? `<img class="admin-order-item-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(productName)}">`
+        : "Không có ảnh";
 
     const colorDotHtml = colorCode
-        ? `<span class="rounded-circle d-inline-block border border-secondary align-middle me-1" style="width: 14px; height: 14px; background: ${escapeAttribute(colorCode)};"></span>`
+        ? `<span class="admin-color-dot" style="background: ${escapeAttribute(colorCode)};"></span>`
         : "";
 
     const variantHtml = (sizeName || colorName)
         ? `
-            <div class="d-flex flex-wrap gap-2 mb-2">
-                <span class="badge bg-light text-dark border">
+            <div class="admin-variant-info">
+                <span class="admin-variant-badge">
                     Size: ${escapeHtml(sizeName || "Không rõ")}
                 </span>
-                <span class="badge bg-light text-dark border d-flex align-items-center">
+
+                <span class="admin-variant-badge">
                     ${colorDotHtml}
                     Màu: ${escapeHtml(colorName || "Không rõ")}
                 </span>
             </div>
         `
         : `
-            <div class="text-warning small mb-2">
-                <i class="bi bi-exclamation-triangle"></i> Đơn hàng cũ chưa có dữ liệu size/màu.
+            <div class="admin-variant-warning">
+                Đơn hàng cũ chưa có dữ liệu size/màu.
             </div>
         `;
 
     return `
-        <div class="list-group-item p-3">
-            <div class="d-flex align-items-start">
+        <div class="admin-order-item">
+            <div class="admin-order-item-image-wrap">
                 ${imageHtml}
-                <div class="flex-grow-1">
-                    <h6 class="mb-1 fw-bold">${escapeHtml(productName)}</h6>
-                    <div class="text-muted small mb-2">${escapeHtml(categoryName)}</div>
-                    ${variantHtml}
-                    
-                    <div class="d-flex justify-content-between align-items-end mt-2">
-                        <div>
-                            <div class="text-danger fw-bold">Cần đóng gói: ${escapeHtml(quantity)}</div>
-                        </div>
-                        <div class="text-end">
-                            <div class="text-muted small">Đơn giá: ${formatPrice(unitPrice)}</div>
-                            <div class="fw-bold text-success mt-1">Tạm tính: ${formatPrice(subtotal)}</div>
-                        </div>
-                    </div>
+            </div>
+
+            <div class="admin-order-item-info">
+                <div class="admin-order-item-name">
+                    ${escapeHtml(productName)}
+                </div>
+
+                <div class="small-text">
+                    ${escapeHtml(categoryName)}
+                </div>
+
+                ${variantHtml}
+
+                <div class="admin-pack-quantity">
+                    Cần đóng gói:
+                    <strong>${escapeHtml(quantity)}</strong>
+                </div>
+
+                <div class="small-text">
+                    Đơn giá: ${formatPrice(unitPrice)}
+                </div>
+
+                <div class="small-text">
+                    Tạm tính: ${formatPrice(subtotal)}
                 </div>
             </div>
         </div>

@@ -10,12 +10,12 @@ createUserBtn.addEventListener("click", createUser);
 loadUsers();
 
 function setMessage(text, type = "success") {
-    message.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
+    message.className = `message ${type}`;
     message.textContent = text;
 }
 
 function clearMessage() {
-    message.className = "";
+    message.className = "message";
     message.textContent = "";
 }
 
@@ -155,55 +155,51 @@ function createUserRow(user) {
     const status = user.status || "ACTIVE";
 
     return `
-    return `
         <tr>
-            <td class="align-middle text-muted small">${escapeHtml(userId)}</td>
+            <td class="user-id-cell">${escapeHtml(userId)}</td>
 
-            <td class="align-middle">
+            <td>
                 <input
-                    class="form-control form-control-sm"
                     id="name-${escapeAttribute(userId)}"
                     value="${escapeAttribute(user.full_name)}"
                 >
             </td>
 
-            <td class="align-middle">
+            <td>
                 <input
-                    class="form-control form-control-sm"
                     id="email-${escapeAttribute(userId)}"
                     value="${escapeAttribute(user.email)}"
                 >
             </td>
 
-            <td class="align-middle">
+            <td>
                 <input
-                    class="form-control form-control-sm"
                     id="phone-${escapeAttribute(userId)}"
                     value="${escapeAttribute(user.phone_number)}"
                 >
             </td>
 
-            <td class="align-middle">
-                <textarea class="form-control form-control-sm" rows="1" id="address-${escapeAttribute(userId)}">${escapeHtml(user.default_shipping_address || "")}</textarea>
+            <td>
+                <textarea id="address-${escapeAttribute(userId)}">${escapeHtml(user.default_shipping_address || "")}</textarea>
             </td>
 
-            <td class="align-middle">
-                <select class="form-select form-select-sm ${status === 'ACTIVE' ? 'text-success' : 'text-danger'}" id="status-${escapeAttribute(userId)}">
+            <td>
+                <select id="status-${escapeAttribute(userId)}">
                     <option value="ACTIVE" ${status === "ACTIVE" ? "selected" : ""}>ACTIVE</option>
                     <option value="DISABLED" ${status === "DISABLED" ? "selected" : ""}>DISABLED</option>
                 </select>
             </td>
 
-            <td class="align-middle text-end">
+            <td>
                 <button
-                    class="btn btn-sm btn-outline-primary update-user-btn"
+                    class="btn btn-blue update-user-btn"
                     data-user-id="${escapeAttribute(userId)}"
                 >
                     Lưu
                 </button>
 
                 <button
-                    class="btn btn-sm btn-outline-danger delete-user-btn ms-1"
+                    class="btn btn-red delete-user-btn"
                     data-user-id="${escapeAttribute(userId)}"
                 >
                     Xóa

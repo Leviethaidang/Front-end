@@ -168,7 +168,7 @@ body {
     border: 1px solid rgba(26, 113, 200, 0.20);
 }
 .status-badge.delivered {
-    background: rgba(26, 122, 110, 0.10);
+    background: rgba(139, 94, 60, 0.10);
     color: var(--accent);
     border: 1px solid var(--accent-border);
 }
@@ -178,7 +178,7 @@ body {
     border: 1px solid rgba(215, 0, 24, 0.15);
 }
 .status-badge.payment-paid {
-    background: rgba(26, 122, 110, 0.10);
+    background: rgba(139, 94, 60, 0.10);
     color: var(--accent);
     border: 1px solid var(--accent-border);
 }

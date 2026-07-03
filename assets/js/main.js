@@ -9,7 +9,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 $(".banner-slider").owlCarousel({
     responsiveClass: true,
-    loop: false,
+    loop: true,
     margin: 0,
     autoplay: true,
     dots: false,

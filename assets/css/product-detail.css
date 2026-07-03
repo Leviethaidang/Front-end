@@ -160,7 +160,7 @@ body {
     border-radius: 100px;
 }
 .product-stock-status.in-stock {
-    background: rgba(26, 122, 110, 0.08);
+    background: rgba(139, 94, 60, 0.08);
     color: var(--accent);
 }
 .product-stock-status.out-of-stock {
@@ -269,7 +269,7 @@ body {
     background: var(--accent);
     border-color: var(--accent);
     color: white;
-    box-shadow: 0 4px 12px rgba(26, 122, 110, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
 }
 .option-btn:disabled {
     background: var(--bg-alt);
@@ -364,7 +364,7 @@ body {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(26, 122, 110, 0.25);
+    box-shadow: 0 4px 16px rgba(139, 94, 60, 0.25);
     transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk);
     font-family: inherit;
 }

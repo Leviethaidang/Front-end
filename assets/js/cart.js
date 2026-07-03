@@ -157,8 +157,8 @@ function renderCart(cart) {
     cartContent.innerHTML = `
         <div class="row">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
+                <div class="modern-card mb-4">
+                    <div class="card-header bg-white py-3 border-bottom-0">
                         <h5 class="mb-0">🛒 Sản phẩm trong giỏ (${items.length} sản phẩm)</h5>
                     </div>
                     <div class="card-body p-0">
@@ -168,8 +168,8 @@ function renderCart(cart) {
             </div>
 
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3">
+                <div class="modern-card">
+                    <div class="card-header bg-white py-3 border-bottom-0">
                         <h5 class="mb-0">Tóm tắt đơn hàng</h5>
                     </div>
                     <div class="card-body">
@@ -193,7 +193,7 @@ function renderCart(cart) {
                             </div>
                         ` : ""}
 
-                        <button class="btn btn-primary bg-gradient w-100 py-2 mb-3" id="go-checkout-btn">
+                        <button class="btn btn-brand-gradient hover-lift w-100 py-2 mb-3" id="go-checkout-btn">
                             ${hasInvalidItem ? "⚠️ Vui lòng xử lý sản phẩm lỗi" : "✅ Thanh toán ngay"}
                         </button>
 

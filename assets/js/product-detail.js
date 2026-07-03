@@ -281,6 +281,11 @@ function renderProductDetail(product) {
     detailContainer.className = "detail-card";
 
     detailContainer.innerHTML = `
+        <div class="mb-3 text-start">
+            <button onclick="window.history.back()" class="btn btn-outline-secondary btn-sm px-3">
+                &#8592; Quay lại
+            </button>
+        </div>
         <div class="row">
             <!-- Image Column -->
             <div class="col-md-6">

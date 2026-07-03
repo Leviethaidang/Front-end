@@ -280,7 +280,7 @@ function renderOrderCard(order) {
     const sourceLabel = sourceType === "CART" ? "🛒 Giỏ hàng" : sourceType === "BUY_NOW" ? "⚡ Mua ngay" : "";
 
     return `
-        <div class="card border-0 shadow-sm mb-4" id="order-card-${escapeAttribute(orderId)}">
+        <div class="modern-card mb-4" id="order-card-${escapeAttribute(orderId)}">
             <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                     <h5 class="mb-1 fw-bold">Đơn #${escapeHtml(orderId)}</h5>
@@ -316,7 +316,7 @@ function renderOrderCard(order) {
                     </div>
                     <div class="fs-5">Tổng: <strong class="text-success">${formatPrice(order.totalAmount || order.total_amount || 0)}</strong></div>
                 </div>
-                <a class="btn btn-outline-primary mt-3 mt-md-0" href="/orders/${escapeAttribute(orderId)}" id="view-order-${escapeAttribute(orderId)}">
+                <a class="btn btn-outline-brand hover-lift mt-3 mt-md-0" href="/orders/${escapeAttribute(orderId)}" id="view-order-${escapeAttribute(orderId)}">
                     Xem chi tiết
                 </a>
             </div>

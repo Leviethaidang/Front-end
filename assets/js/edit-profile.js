@@ -33,7 +33,7 @@ function setMessage(message, type = "success") {
         return;
     }
 
-    messageBox.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
+    messageBox.className = `message ${type}`;
     messageBox.textContent = message;
 }
 
@@ -44,7 +44,7 @@ function setPaymentMessage(message, type = "success") {
         return;
     }
 
-    messageBox.className = `alert alert-${type === "success" ? "success" : "danger"} mt-3`;
+    messageBox.className = `message ${type}`;
     messageBox.textContent = message;
 }
 
@@ -118,74 +118,86 @@ async function loadEditProfile() {
 
 function renderEditForm(profile) {
     editContent.innerHTML = `
-        <div class="mb-5">
-            <h4 class="mb-4">Thông tin cá nhân</h4>
+        <div class="section-block">
+            <h3>Thông tin cá nhân</h3>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">User ID</label>
-                <div class="form-control bg-light">${escapeHtml(profile.user_id)}</div>
-            </div>
+            <p>
+                <strong>User ID:</strong>
+                <span class="user-id">${escapeHtml(profile.user_id)}</span>
+            </p>
 
-            <div class="mb-3">
-                <label for="fullName" class="form-label fw-bold">Họ và tên</label>
-                <input id="fullName" class="form-control" value="${escapeAttribute(profile.full_name)}">
-            </div>
+            <label for="fullName">Họ và tên</label>
+            <input
+                id="fullName"
+                value="${escapeAttribute(profile.full_name)}"
+            >
 
-            <div class="mb-3">
-                <label for="email" class="form-label fw-bold">Email</label>
-                <input id="email" type="email" class="form-control" value="${escapeAttribute(profile.email)}">
-            </div>
+            <label for="email">Email</label>
+            <input
+                id="email"
+                type="email"
+                value="${escapeAttribute(profile.email)}"
+            >
 
-            <div class="mb-3">
-                <label for="phoneNumber" class="form-label fw-bold">Số điện thoại</label>
-                <input id="phoneNumber" class="form-control" value="${escapeAttribute(profile.phone_number || "")}" placeholder="+84901234567">
-            </div>
+            <label for="phoneNumber">Số điện thoại</label>
+            <input
+                id="phoneNumber"
+                value="${escapeAttribute(profile.phone_number || "")}"
+                placeholder="+84901234567"
+            >
 
-            <div class="mb-3">
-                <label for="defaultShippingAddress" class="form-label fw-bold">Địa chỉ giao hàng mặc định</label>
-                <textarea id="defaultShippingAddress" class="form-control" placeholder="Nhập địa chỉ giao hàng" rows="3">${escapeHtml(profile.default_shipping_address || "")}</textarea>
-            </div>
+            <label for="defaultShippingAddress">Địa chỉ giao hàng mặc định</label>
+            <textarea
+                id="defaultShippingAddress"
+                placeholder="Nhập địa chỉ giao hàng"
+            >${escapeHtml(profile.default_shipping_address || "")}</textarea>
 
-            <button id="updateProfileBtn" class="btn btn-primary px-4 mt-2">
+            <button id="updateProfileBtn" class="btn btn-green">
                 Lưu thay đổi
             </button>
 
-            <div id="message-box" class="mt-3"></div>
+            <p id="message-box" class="message"></p>
 
-            <div id="email-verify-box" class="mt-4 p-4 border rounded bg-light" style="display:none;">
-                <h5 class="mb-3">Xác minh email mới</h5>
-                <p class="text-warning small mb-3">
+            <div id="email-verify-box" class="section" style="display:none;">
+                <h3>Xác minh email mới</h3>
+
+                <p class="warning-text">
                     Nếu bạn đổi email, hãy kiểm tra email mới để lấy mã xác minh.
                 </p>
-                <div class="input-group mb-3">
-                    <input id="emailVerifyCode" class="form-control" placeholder="Mã xác minh email">
-                    <button id="verifyEmailBtn" class="btn btn-outline-primary">Xác minh email</button>
-                </div>
+
+                <input
+                    id="emailVerifyCode"
+                    placeholder="Mã xác minh email"
+                >
+
+                <button id="verifyEmailBtn" class="btn btn-blue">
+                    Xác minh email
+                </button>
             </div>
         </div>
 
-        <div class="pt-4 border-top">
-            <h4 class="mb-4">Phương thức thanh toán</h4>
+        <div class="section payment-section">
+            <h3>Phương thức thanh toán</h3>
 
-            <div class="card bg-light border-0 mb-4 p-4">
-                <h5 class="mb-3">Liên kết phương thức mới</h5>
-                
-                <div class="mb-3">
-                    <label for="paymentType" class="form-label fw-bold">Loại phương thức thanh toán</label>
-                    <select id="paymentType" class="form-select">
-                        <option value="MOMO">MoMo</option>
-                        <option value="BANK">Ngân hàng</option>
-                    </select>
+            <div class="payment-add-box">
+                <label for="paymentType">Loại phương thức thanh toán</label>
+                <select id="paymentType">
+                    <option value="MOMO">MoMo</option>
+                    <option value="BANK">Ngân hàng</option>
+                </select>
+
+                <div id="momoFields">
+                    <label for="momoPhoneNumber">Số điện thoại MoMo</label>
+                    <input
+                        id="momoPhoneNumber"
+                        value="${escapeAttribute(profile.phone_number || "")}"
+                        placeholder="+84901234567"
+                    >
                 </div>
 
-                <div id="momoFields" class="mb-3">
-                    <label for="momoPhoneNumber" class="form-label fw-bold">Số điện thoại MoMo</label>
-                    <input id="momoPhoneNumber" class="form-control" value="${escapeAttribute(profile.phone_number || "")}" placeholder="+84901234567">
-                </div>
-
-                <div id="bankFields" class="mb-3" style="display:none;">
-                    <label for="bankName" class="form-label fw-bold">Ngân hàng</label>
-                    <select id="bankName" class="form-select mb-3">
+                <div id="bankFields" style="display:none;">
+                    <label for="bankName">Ngân hàng</label>
+                    <select id="bankName">
                         <option value="">-- Chọn ngân hàng --</option>
                         <option value="Vietcombank">Vietcombank</option>
                         <option value="Techcombank">Techcombank</option>
@@ -197,20 +209,24 @@ function renderEditForm(profile) {
                         <option value="Sacombank">Sacombank</option>
                     </select>
 
-                    <label for="bankAccountNumber" class="form-label fw-bold">Số tài khoản</label>
-                    <input id="bankAccountNumber" class="form-control" placeholder="Nhập số tài khoản">
+                    <label for="bankAccountNumber">Số tài khoản</label>
+                    <input
+                        id="bankAccountNumber"
+                        placeholder="Nhập số tài khoản"
+                    >
                 </div>
 
-                <button id="addPaymentMethodBtn" class="btn btn-primary mt-2">
+                <button id="addPaymentMethodBtn" class="btn btn-blue">
                     Liên kết phương thức thanh toán
                 </button>
 
-                <div id="payment-message-box" class="mt-3"></div>
+                <p id="payment-message-box" class="message"></p>
             </div>
 
-            <h5 class="mb-3">Danh sách phương thức thanh toán</h5>
+            <h4>Danh sách phương thức thanh toán</h4>
+
             <div id="payment-methods-box">
-                <div class="text-center py-3 text-muted">Đang tải phương thức thanh toán...</div>
+                Đang tải phương thức thanh toán...
             </div>
         </div>
     `;
@@ -433,14 +449,14 @@ function renderPaymentMethodsTable() {
         const methodTypeLabel = getPaymentTypeLabel(methodType);
 
         const defaultBadge = isDefault
-            ? `<span class="badge bg-success ms-2">Mặc định</span>`
+            ? `<span class="badge badge-default">Mặc định</span>`
             : "";
 
         const setDefaultButton = isDefault
-            ? `<span class="text-muted small">Đang mặc định</span>`
+            ? `<span class="muted-text">Đang mặc định</span>`
             : `
                 <button
-                    class="btn btn-sm btn-outline-primary"
+                    class="btn-small btn-blue"
                     data-action="set-default"
                     data-id="${paymentMethodId}"
                 >
@@ -449,10 +465,10 @@ function renderPaymentMethodsTable() {
             `;
 
         const deleteButton = isSystemDefault || methodType === "COD"
-            ? `<span class="text-muted small">Không thể xóa</span>`
+            ? `<span class="muted-text">Không thể xóa</span>`
             : `
                 <button
-                    class="btn btn-sm btn-outline-danger ms-2"
+                    class="btn-small btn-danger"
                     data-action="delete"
                     data-id="${paymentMethodId}"
                 >
@@ -462,13 +478,13 @@ function renderPaymentMethodsTable() {
 
         return `
             <tr>
-                <td class="align-middle">${escapeHtml(methodTypeLabel)}</td>
-                <td class="align-middle">
+                <td>${escapeHtml(methodTypeLabel)}</td>
+                <td>
                     ${escapeHtml(method.display_name || "")}
                     ${defaultBadge}
                 </td>
-                <td class="align-middle">${escapeHtml(formatPaymentDetail(method))}</td>
-                <td class="align-middle text-end">
+                <td>${escapeHtml(formatPaymentDetail(method))}</td>
+                <td class="payment-actions">
                     ${setDefaultButton}
                     ${deleteButton}
                 </td>
@@ -477,14 +493,14 @@ function renderPaymentMethodsTable() {
     }).join("");
 
     paymentMethodsBox.innerHTML = `
-        <div class="table-responsive">
-            <table class="table table-hover align-middle border">
-                <thead class="table-light">
+        <div class="table-wrapper">
+            <table class="payment-table">
+                <thead>
                     <tr>
                         <th>Loại</th>
                         <th>Tên hiển thị</th>
                         <th>Thông tin</th>
-                        <th class="text-end">Thao tác</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>

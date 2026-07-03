@@ -22,8 +22,8 @@ function escapeHtml(value) {
 
 function showLoginRequired() {
     profileContent.innerHTML = `
-        <div class="alert alert-danger">Bạn chưa đăng nhập.</div>
-        <a href="/login" class="btn btn-outline-danger">Đăng nhập ngay</a>
+        <p class="danger">Bạn chưa đăng nhập.</p>
+        <a href="/login" class="login-link">Đăng nhập</a>
     `;
 
     editButton.style.display = "none";
@@ -68,8 +68,8 @@ async function loadDefaultPaymentMethod() {
 
         if (!response.ok) {
             paymentMethodElement.innerHTML = `
-                <div class="col-sm-4 text-muted fw-bold">Phương thức thanh toán mặc định:</div>
-                <div class="col-sm-8 text-danger">${escapeHtml(data.error || "Không thể tải phương thức thanh toán.")}</div>
+                <span class="profile-label">Phương thức thanh toán mặc định:</span>
+                <span class="danger">${escapeHtml(data.error || "Không thể tải phương thức thanh toán.")}</span>
             `;
             return;
         }
@@ -77,16 +77,16 @@ async function loadDefaultPaymentMethod() {
         const defaultPaymentName = getDefaultPaymentDisplayName(data.paymentMethods);
 
         paymentMethodElement.innerHTML = `
-            <div class="col-sm-4 text-muted fw-bold">Phương thức thanh toán mặc định:</div>
-            <div class="col-sm-8">${escapeHtml(defaultPaymentName)}</div>
+            <span class="profile-label">Phương thức thanh toán mặc định:</span>
+            ${escapeHtml(defaultPaymentName)}
         `;
 
     } catch (error) {
         console.error("Lỗi load payment methods:", error);
 
         paymentMethodElement.innerHTML = `
-            <div class="col-sm-4 text-muted fw-bold">Phương thức thanh toán mặc định:</div>
-            <div class="col-sm-8 text-danger">Không thể kết nối Payment Service.</div>
+            <span class="profile-label">Phương thức thanh toán mặc định:</span>
+            <span class="danger">Không thể kết nối Payment Service.</span>
         `;
     }
 }
@@ -115,7 +115,7 @@ async function loadProfile() {
 
         if (!response.ok) {
             profileContent.innerHTML = `
-                <div class="alert alert-danger">${escapeHtml(data.error || "Không thể tải profile.")}</div>
+                <p class="danger">${escapeHtml(data.error || "Không thể tải profile.")}</p>
             `;
 
             editButton.style.display = "none";
@@ -131,35 +131,35 @@ async function loadProfile() {
         }
 
         profileContent.innerHTML = `
-            <div class="row mb-3 border-bottom pb-3">
-                <div class="col-sm-4 text-muted fw-bold">User ID:</div>
-                <div class="col-sm-8 user-id">${escapeHtml(profile.user_id)}</div>
-            </div>
+            <p>
+                <span class="profile-label">User ID:</span>
+                <span class="user-id">${escapeHtml(profile.user_id)}</span>
+            </p>
 
-            <div class="row mb-3 border-bottom pb-3">
-                <div class="col-sm-4 text-muted fw-bold">Họ và tên:</div>
-                <div class="col-sm-8">${escapeHtml(profile.full_name)}</div>
-            </div>
+            <p>
+                <span class="profile-label">Họ và tên:</span>
+                ${escapeHtml(profile.full_name)}
+            </p>
 
-            <div class="row mb-3 border-bottom pb-3">
-                <div class="col-sm-4 text-muted fw-bold">Email:</div>
-                <div class="col-sm-8">${escapeHtml(profile.email)}</div>
-            </div>
+            <p>
+                <span class="profile-label">Email:</span>
+                ${escapeHtml(profile.email)}
+            </p>
 
-            <div class="row mb-3 border-bottom pb-3">
-                <div class="col-sm-4 text-muted fw-bold">Số điện thoại:</div>
-                <div class="col-sm-8">${escapeHtml(profile.phone_number || "Chưa cập nhật")}</div>
-            </div>
+            <p>
+                <span class="profile-label">Số điện thoại:</span>
+                ${escapeHtml(profile.phone_number || "Chưa cập nhật")}
+            </p>
 
-            <div class="row mb-3 border-bottom pb-3">
-                <div class="col-sm-4 text-muted fw-bold">Địa chỉ giao hàng:</div>
-                <div class="col-sm-8">${escapeHtml(profile.default_shipping_address || "Chưa cập nhật")}</div>
-            </div>
+            <p>
+                <span class="profile-label">Địa chỉ giao hàng:</span>
+                ${escapeHtml(profile.default_shipping_address || "Chưa cập nhật")}
+            </p>
 
-            <div class="row mb-3" id="default-payment-method">
-                <div class="col-sm-4 text-muted fw-bold">Phương thức thanh toán mặc định:</div>
-                <div class="col-sm-8">Đang tải...</div>
-            </div>
+            <p id="default-payment-method">
+                <span class="profile-label">Phương thức thanh toán mặc định:</span>
+                Đang tải...
+            </p>
         `;
 
         editButton.style.display = "inline-block";
@@ -170,7 +170,7 @@ async function loadProfile() {
         console.error("Lỗi load profile:", error);
 
         profileContent.innerHTML = `
-            <div class="alert alert-danger">Không thể kết nối User Service.</div>
+            <p class="danger">Không thể kết nối User Service.</p>
         `;
 
         editButton.style.display = "none";

@@ -19,6 +19,8 @@ async function loadNavbar() {
         setupNavbarClickOutside();
         setupNavbarScroll();
         setupMobileMenu();
+        loadAndRenderCategories();
+        setupSearch();
 
     } catch (error) {
         console.error("Lỗi load navbar:", error);
@@ -197,3 +199,205 @@ function escapeHtml(value) {
 }
 
 loadNavbar();
+
+async function loadAndRenderCategories() {
+    const container = document.getElementById('dynamic-category-menu');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${APP_CONFIG.PRODUCT_SERVICE_URL}/api/categories`);
+        const data = await response.json();
+        
+        let categories = [];
+        if (response.ok && data.categories) {
+            categories = data.categories;
+        }
+
+        if(categories.length === 0) return;
+
+        // Lọc ra các danh mục gốc (không có parent)
+        const rootCategories = categories.filter(c => c.parent_category_id === null || c.parent_category_id === undefined);
+        let html = '';
+
+        rootCategories.forEach((root, index) => {
+            const children = categories.filter(c => c.parent_category_id == root.category_id);
+            
+            // Hiển thị dạng Mega Menu cho tất cả các danh mục gốc có con
+            if (children.length > 0) {
+                html += `
+                    <li class="nav-item category-item w-100 w-lg-auto me-3">
+                        <a class="nav-link category-link d-flex align-items-center" href="/index.html?categoryId=${root.category_id}">
+                            <i class="bi bi-grid me-1"></i> ${escapeHtml(root.category_name)}
+                            <i class="bi bi-chevron-down arrow-icon ms-1" style="font-size: 0.8em;"></i>
+                        </a>
+                        <div class="mega-menu-phukien" style="min-width: 300px; width: max-content; padding: 20px;">
+                            <h6 class="mega-group-title mb-3">Khám phá ${escapeHtml(root.category_name)}</h6>
+                            <div class="d-flex flex-wrap gap-3">
+                                ${children.map(c => `
+                                    <div class="mega-item">
+                                        <a href="/index.html?categoryId=${c.category_id}">
+                                            <div class="mega-icon-box"><i class="bi bi-tag"></i></div>
+                                            <span class="mega-item-text">${escapeHtml(c.category_name)}</span>
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </li>
+                `;
+            }
+            // Không có con thì chỉ là link bình thường
+            else {
+                html += `
+                    <li class="nav-item category-item w-100 w-lg-auto me-3">
+                        <a class="nav-link category-link d-flex align-items-center" href="/index.html?categoryId=${root.category_id}">
+                            ${escapeHtml(root.category_name)}
+                        </a>
+                    </li>
+                `;
+            }
+        });
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error("Lỗi load categories:", error);
+    }
+}
+
+// ==========================
+// SEARCH FUNCTIONALITY
+// ==========================
+let navbarProductsCache = null;
+
+async function fetchProductsForSearch() {
+    if (navbarProductsCache) return navbarProductsCache;
+    try {
+        const url = window.APP_CONFIG?.PRODUCT_SERVICE_URL || "";
+        const res = await fetch(`${url}/api/products`);
+        if (!res.ok) return [];
+        const data = await res.json();
+        navbarProductsCache = data.products || [];
+        return navbarProductsCache;
+    } catch (e) {
+        console.error("Lỗi fetch search products:", e);
+        return [];
+    }
+}
+
+function setupSearch() {
+    const searchInputs = [
+        { 
+            input: document.getElementById('searchInput'), 
+            btn: document.getElementById('btnSearch'), 
+            dropdown: document.getElementById('search-suggestions') 
+        },
+        { 
+            input: document.getElementById('searchInputMobile'), 
+            btn: document.getElementById('btnSearchMobile'), 
+            dropdown: document.getElementById('search-suggestions-mobile') 
+        }
+    ];
+    
+    searchInputs.forEach(({input, btn, dropdown}) => {
+        if (!input || !dropdown) return;
+        
+        let debounceTimer;
+        
+        input.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const query = e.target.value.trim().toLowerCase();
+            
+            if (query.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            debounceTimer = setTimeout(async () => {
+                const products = await fetchProductsForSearch();
+                const matched = products.filter(p => {
+                    const name = (p.product_name || p.productName || "").toLowerCase();
+                    return name.includes(query);
+                });
+                
+                renderSuggestions(matched, dropdown, input);
+            }, 300);
+        });
+        
+        const executeSearch = () => {
+            const query = input.value.trim();
+            if (query) {
+                // Navigate to index.html with search query
+                window.location.href = `/?search=${encodeURIComponent(query)}`;
+            }
+        };
+        
+        if (btn) btn.addEventListener('click', executeSearch);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executeSearch();
+            }
+        });
+        
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+}
+
+function renderSuggestions(products, dropdown, inputElement) {
+    if (products.length === 0) {
+        dropdown.innerHTML = `
+            <div class="p-3 text-center text-muted">
+                <p class="mb-0 small">Không tìm thấy sản phẩm đúng ý bạn, hãy xem thêm các sản phẩm ở bên dưới.</p>
+            </div>
+        `;
+        dropdown.style.display = 'block';
+        return;
+    }
+    
+    const maxItems = 5;
+    const sliced = products.slice(0, maxItems);
+    
+    let html = '';
+    sliced.forEach(p => {
+        const id = p.product_id;
+        const name = p.product_name || p.productName || "Không có tên";
+        const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price || 0);
+        const imageUrl = p.imageUrl || p.image_url || p.image_key;
+        
+        // Use escapeHtml from common.js if available, otherwise just use the raw string (assuming trusted DB data for names)
+        const safeName = typeof escapeHtml === 'function' ? escapeHtml(name) : name;
+        
+        const imgHtml = imageUrl 
+            ? `<img src="${imageUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" class="me-3">` 
+            : `<div class="bg-light me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 4px;"><i class="bi bi-image text-muted"></i></div>`;
+        
+        html += `
+            <a href="/products/${id}" class="dropdown-item d-flex align-items-center py-2 border-bottom text-wrap" style="white-space: normal; padding-left: 10px; padding-right: 10px;">
+                ${imgHtml}
+                <div>
+                    <div class="fw-bold fs-6 text-dark" style="line-height: 1.2;">${safeName}</div>
+                    <div class="text-danger fw-bold mt-1" style="font-size: 0.9rem;">${price}</div>
+                </div>
+            </a>
+        `;
+    });
+    
+    if (products.length > maxItems) {
+        html += `
+            <div class="p-2 text-center bg-light">
+                <button type="button" class="btn btn-link text-primary p-0 text-decoration-none fw-bold" onclick="event.preventDefault(); document.getElementById('${inputElement.id}').nextElementSibling.click();">
+                    Xem tất cả ${products.length} kết quả...
+                </button>
+            </div>
+        `;
+    }
+    
+    dropdown.innerHTML = html;
+    dropdown.style.display = 'block';
+}

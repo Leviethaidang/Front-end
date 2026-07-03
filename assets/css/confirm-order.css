@@ -364,7 +364,7 @@ body {
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(26, 122, 110, 0.30);
+    box-shadow: 0 6px 20px rgba(139, 94, 60, 0.30);
     transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk), box-shadow var(--silk-dur) var(--silk);
     font-family: inherit;
     letter-spacing: 0.02em;
@@ -373,7 +373,7 @@ body {
 .place-order-btn:hover:not(:disabled) {
     background: var(--accent-mid);
     transform: scale(1.02);
-    box-shadow: 0 8px 28px rgba(26, 122, 110, 0.40);
+    box-shadow: 0 8px 28px rgba(139, 94, 60, 0.40);
 }
 
 .place-order-btn:disabled {

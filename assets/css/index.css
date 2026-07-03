@@ -25,7 +25,7 @@ body {
     height: 55vw;
     max-width: 720px;
     max-height: 720px;
-    background: radial-gradient(ellipse at center, rgba(91, 191, 181, 0.18) 0%, rgba(42, 157, 143, 0.06) 50%, transparent 75%);
+    background: radial-gradient(ellipse at center, rgba(139, 94, 60, 0.14) 0%, rgba(196, 149, 108, 0.06) 50%, transparent 75%);
     border-radius: 50%;
     pointer-events: none;
 }
@@ -38,7 +38,7 @@ body {
     height: 40vw;
     max-width: 500px;
     max-height: 500px;
-    background: radial-gradient(ellipse at center, rgba(26, 122, 110, 0.10) 0%, transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(107, 66, 38, 0.10) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
 }

@@ -256,7 +256,7 @@ function renderOrderDetail(order) {
             <!-- Main Column -->
             <div class="col-lg-8">
                 <!-- Header Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="modern-card mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <div>
@@ -274,7 +274,7 @@ function renderOrderDetail(order) {
                 </div>
 
                 <!-- Products Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="modern-card mb-4">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">🛍️ Sản phẩm đặt hàng</h5>
                         <span class="text-muted small">${items.length} sản phẩm</span>
@@ -285,7 +285,7 @@ function renderOrderDetail(order) {
                 </div>
 
                 <!-- Receiver Info Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="modern-card mb-4">
                     <div class="card-header bg-white py-3">
                         <h5 class="mb-0">📦 Thông tin giao hàng</h5>
                     </div>
@@ -321,7 +321,7 @@ function renderOrderDetail(order) {
                 </div>
 
                 <!-- Payment Info Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="modern-card mb-4">
                     <div class="card-header bg-white py-3">
                         <h5 class="mb-0">💳 Thông tin thanh toán</h5>
                     </div>
@@ -371,7 +371,7 @@ function renderOrderDetail(order) {
             <div class="col-lg-4">
 
                 <!-- Summary Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="modern-card mb-4">
                     <div class="card-header bg-white py-3">
                         <h5 class="mb-0">🧾 Tóm tắt đơn hàng</h5>
                     </div>

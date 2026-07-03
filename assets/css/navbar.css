@@ -182,12 +182,12 @@
     border-radius: 100px;
     font-weight: 600;
     transition: background var(--silk-dur) var(--silk), transform var(--silk-dur) var(--silk), box-shadow var(--silk-dur) var(--silk);
-    box-shadow: 0 4px 16px rgba(26, 122, 110, 0.25);
+    box-shadow: 0 4px 16px rgba(139, 94, 60, 0.25);
 }
 .cart-link:hover {
     background: var(--accent-mid);
     transform: scale(1.02);
-    box-shadow: 0 6px 24px rgba(26, 122, 110, 0.35);
+    box-shadow: 0 6px 24px rgba(139, 94, 60, 0.35);
 }
 
 /* Responsive */

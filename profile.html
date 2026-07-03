@@ -2,47 +2,67 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Profile</title>
-    
-    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Hồ sơ cá nhân</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <main>
-        <section class="mt-50 mb-100">
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-2">Hồ sơ cá nhân</h2>
-                        <p class="text-muted">Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
+    <div class="profile-section">
+        <div class="container">
+            <div class="page-header mb-5">
+                <h1 class="fw-bold mb-2">Hồ sơ cá nhân</h1>
+                <p class="text-muted">Quản lý thông tin tài khoản HaShop của bạn.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card profile-card">
+                        <div class="profile-header-card">
+                            <div class="avatar-wrapper">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <h3 class="fw-bold mt-3 mb-1">HaShop</h3>
+                            <p class="text-muted mb-0">Tài khoản của bạn</p>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <a href="/profile" class="list-group-item list-group-item-action active">
+                                <i class="bi bi-person me-3"></i>Thông tin cá nhân
+                            </a>
+                            <a href="/profile/edit" class="list-group-item list-group-item-action">
+                                <i class="bi bi-pencil-square me-3"></i>Chỉnh sửa hồ sơ
+                            </a>
+                            <a href="/orders" class="list-group-item list-group-item-action">
+                                <i class="bi bi-bag me-3"></i>Đơn hàng của tôi
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-6 col-md-8">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4" id="profile-content">
-                                <div class="text-center py-4">
-                                    <div class="spinner-border text-success" role="status">
-                                        <span class="visually-hidden">Đang tải dữ liệu...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white border-0 p-4 pt-0">
-                                <a href="/profile/edit" class="btn btn-primary" id="edit-button">
-                                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa thông tin
-                                </a>
-                            </div>
+                <div class="col-lg-8">
+                    <div class="card info-card">
+                        <div class="card-header-custom">
+                            <h4 class="fw-bold mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin tài khoản</h4>
+                        </div>
+                        <div class="card-body" id="profile-content">
+                            Đang tải dữ liệu...
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <a href="/profile/edit" class="btn btn-primary-gradient" id="edit-button">
+                                <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa hồ sơ
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <div id="footer-placeholder"></div>
 
@@ -54,3 +74,4 @@
     <script src="/assets/js/footer.js"></script>
 </body>
 </html>
+

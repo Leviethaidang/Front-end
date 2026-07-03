@@ -3,21 +3,21 @@
     --heading-font-family: Montserrat;
     --primary-nav-font-family: Montserrat, var(--fallback-font);
     --fallback-font: sans-serif;
-    --text-color: #86AE34;;
-    --text-active-color: #86AE34;;
-    --disable-text-color: #555555;
-    --btn-color: #fff;
-    --btn-bg: #86AE34;;
-    --btn-border-color: #86AE34;; 
-    --btn-hover-color: #fff;
-    --btn-hover-bg: #333333;
-    --btn-hover-border-color: #86AE34;; 
-    --btn-active-color: #fff;
-    --btn-active-bg: #86AE34;;
-    --global-gray-400: #e6e6e6;
-    --global-gray-500: #aaaaaa;
+    --text-color: #2C1810;
+    --text-active-color: #8B5E3C;
+    --disable-text-color: #6B5B4E;
+    --btn-color: #ffffff;
+    --btn-bg: #8B5E3C;
+    --btn-border-color: #8B5E3C; 
+    --btn-hover-color: #ffffff;
+    --btn-hover-bg: #6B4226;
+    --btn-hover-border-color: #6B4226; 
+    --btn-active-color: #ffffff;
+    --btn-active-bg: #8B5E3C;
+    --global-gray-400: #E8DDD4;
+    --global-gray-500: #9C8B7E;
     --heading-font: Futura, sans-serif;
-    --section-bg-1: #ebebeb;
+    --section-bg-1: #FAF6F1;
 }
 
 
@@ -153,7 +153,7 @@ input:checked {
 }
 
 .bg-color {
-  background-color: #81DA5B !important;
+  background-color: #C4956C !important;
 }
 
 
@@ -243,9 +243,8 @@ input:checked {
 /* Banner Section */
 
 .banner-slider .owl-nav .owl-prev {
-  background-color: #fff !important;
-  box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
-    rgba(60, 64, 67, 0.15) 0 2px 6px 2px;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: none;
   position: absolute;
   top: 45%;
   left: 10px;
@@ -254,14 +253,14 @@ input:checked {
   border-radius: 100%;
   outline: none;
   font-size: 25px !important;
-  transition: 0.5s ease;
+  transition: 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 
 .banner-slider .owl-nav .owl-next {
-  background-color: #fff !important;
-  box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
-    rgba(60, 64, 67, 0.15) 0 2px 6px 2px;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: none;
   position: absolute;
   top: 45%;
   right: 9px;
@@ -270,7 +269,13 @@ input:checked {
   border-radius: 100%;
   outline: none;
   font-size: 25px !important;
-  transition: 0.5s ease;
+  transition: 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.banner-slider .owl-nav .owl-prev:hover,
+.banner-slider .owl-nav .owl-next:hover {
+  background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 
@@ -714,7 +719,7 @@ input:checked {
   font-size: 14px;
   font-weight: 700;
   font-family: var(--heading-font) !important;
-  color: #0a85d1;
+  color: #8B5E3C;
   transition: 0.5s ease;
 }
 
@@ -1045,12 +1050,14 @@ blockquote {
 .qty-container input::-webkit-outer-spin-button,
 .qty-container input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 
 /* Firefox */
 .qty-container input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 
@@ -1338,4 +1345,499 @@ box-shadow: none;
   #product-img-active img {
     max-width: 300px;
   }
+}
+/* === MEGA MENU CATEGORY STYLES (FROM THE GIOI DI DONG) === */
+.category-dropdown {
+    position: absolute !important;
+    z-index: 99999 !important;
+    display: none;
+    background: #fff;
+    border-radius: 0 6px 6px 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+    padding: 8px 0;
+    list-style: none;
+    min-width: 200px;
+    animation: dropDown 0.18s ease;
+    margin-top: 0;
+}
+
+@keyframes dropDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    padding: 9px 18px;
+    color: #333 !important;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background 0.15s, padding-left 0.15s;
+    gap: 8px;
+}
+
+.dropdown-link:hover {
+    background: rgba(139, 94, 60, 0.06);
+    color: #8B5E3C !important;
+    padding-left: 22px;
+}
+
+.dropdown-link i {
+    color: #8B5E3C;
+    min-width: 16px;
+}
+
+.category-item,
+.dropdown-item-cat {
+    position: relative;
+}
+
+.submenu-products {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: #fff;
+    min-height: 100%;
+    border-radius: 4px;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 100000;
+}
+
+.dropdown-item-cat:hover>.submenu-products {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.category-dropdown {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 10000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-item:hover .category-dropdown {
+    display: block !important;
+    animation: fadeIn 0.15s ease-out forwards;
+}
+
+.mega-menu-phukien {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    background: #fff;
+    width: 900px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 10000;
+    padding: 20px;
+    min-height: 200px;
+}
+
+.category-item:hover .mega-menu-phukien {
+    display: block !important;
+    animation: fadeIn 0.15s ease-out forwards;
+}
+
+.category-item:hover .arrow-icon {
+    transform: rotate(180deg);
+}
+.arrow-icon {
+    transition: transform 0.2s;
+}
+
+.mega-group-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.mega-item {
+    text-align: center;
+    width: 80px;
+    margin-bottom: 15px;
+}
+
+.mega-item a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.mega-item a:hover {
+    color: #8B5E3C;
+}
+
+.mega-icon-box {
+    width: 50px;
+    height: 50px;
+    background: #FAF6F1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-size: 1.5rem;
+    color: #8B5E3C;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.mega-item a:hover .mega-icon-box {
+    transform: translateY(-3px);
+    background: rgba(139, 94, 60, 0.08);
+}
+
+.mega-item-text {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+/* ==========================================================================
+   MODERN DESIGN UTILITIES (Added for Beautification)
+   ========================================================================== */
+
+/* Glassmorphism */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(232, 221, 212, 0.5) !important;
+    position: relative;
+    z-index: 1050;
+}
+
+/* Micro-animations */
+.hover-lift {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(139, 94, 60, 0.12); /* shadow using brand brown */
+}
+
+.btn-brand-gradient {
+    background: linear-gradient(135deg, #8B5E3C, #6B4226);
+    color: white !important;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-brand-gradient:hover {
+    background: linear-gradient(135deg, #6B4226, #4A2B18);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 94, 60, 0.3);
+}
+
+.link-brand-hover {
+    transition: color 0.3s ease;
+}
+.link-brand-hover:hover {
+    color: #8B5E3C !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #FAF6F1;
+}
+::-webkit-scrollbar-thumb {
+    background: #E8DDD4;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #8B5E3C;
+}
+
+/* Modern Card Styling */
+.modern-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #E8DDD4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.modern-card:hover {
+    box-shadow: 0 8px 24px rgba(139, 94, 60, 0.08);
+    border-color: #8B5E3C;
+}
+
+/* Forms & Inputs */
+.modern-input {
+    border-radius: 8px;
+    border: 1px solid #E8DDD4;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+.modern-input:focus {
+    border-color: #8B5E3C;
+    box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.15);
+    outline: none;
+}
+
+/* Badges */
+.badge-brand {
+    background-color: #FAF6F1;
+    color: #8B5E3C;
+    border: 1px solid #8B5E3C;
+    font-weight: 500;
+}
+.badge-brand-solid {
+    background-color: #8B5E3C;
+    color: white;
+}
+
+/* Utility to override bootstrap green to brand color */
+.text-success {
+    color: #8B5E3C !important;
+}
+.bg-success {
+    background-color: #8B5E3C !important;
+}
+.btn-success {
+    background-color: #8B5E3C !important;
+    border-color: #8B5E3C !important;
+}
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+    background-color: #6B4226 !important;
+    border-color: #6B4226 !important;
+}
+
+/* ==========================================================================
+   INDEX.HTML SPECIFIC STYLES (Extracted for better organization)
+   ========================================================================== */
+/* Filter Bar Modernization (Canifa Style) */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    padding: 1rem 0;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+.filter-tabs {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.filter-tab {
+    border: none;
+    background: transparent;
+    color: #777;
+    padding: 0.5rem 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.filter-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: #000;
+    transition: width 0.3s ease;
+}
+.filter-tab:hover {
+    color: #000;
+}
+.filter-tab.active {
+    color: #000;
+    font-weight: 600;
+}
+.filter-tab.active::after {
+    width: 100%;
+}
+
+/* Minimalist Product Card (Canifa Style) */
+.product-card {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+.product-card:hover {
+    transform: none;
+    box-shadow: none !important;
+}
+.product-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    background: #f4f4f4;
+    margin-bottom: 1rem;
+}
+.product-image-wrapper img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+.product-card:hover .product-image-wrapper img {
+    transform: scale(1.05);
+}
+
+/* Overlay Button */
+.btn-cart-overlay {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    background: rgba(139, 94, 60, 0.95); /* Brand Brown */
+    color: #fff !important;
+    text-align: center;
+    padding: 12px 0;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    opacity: 0;
+    text-decoration: none;
+}
+.btn-cart-overlay:hover {
+    background: #6B4226; /* Darker Brown */
+}
+.product-card:hover .btn-cart-overlay {
+    bottom: 0;
+    opacity: 1;
+}
+
+/* Custom Brand Button */
+.btn-outline-brand {
+    color: #8B5E3C;
+    border-color: #8B5E3C;
+}
+.btn-outline-brand:hover {
+    color: #fff;
+    background-color: #8B5E3C;
+    border-color: #8B5E3C;
+}
+
+.stock-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #000 !important;
+    color: #fff;
+    border-radius: 0;
+    box-shadow: none;
+}
+.stock-badge.bg-danger {
+    background: #d70018 !important; /* Canifa red */
+}
+.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Banner Enhancements */
+.hero-banner-container {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+}
+.hero-banner-container img {
+    width: 100%;
+    border-radius: 0;
+    object-fit: contain;
+    max-height: 420px;
+    background: #FAF6F1;
+}
+.banner-slide {
+    cursor: pointer;
+    position: relative;
+}
+.banner-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+.banner-slide:hover::after {
+    background: rgba(139, 94, 60, 0.08);
+}
+
+/* Typography adjustments */
+.card-title {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    color: #333 !important;
+    min-height: auto !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block !important;
+}
+.sell-price {
+    font-size: 1.1rem !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+/* Pagination Styles */
+.custom-pagination .page-link {
+    color: #8B5E3C;
+    border-color: #E8DDD4;
+    background-color: #fff;
+    padding: 0.5rem 1rem;
+    margin: 0 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+.custom-pagination .page-link:hover {
+    color: #fff;
+    background-color: #8B5E3C;
+    border-color: #8B5E3C;
+}
+.custom-pagination .page-item.active .page-link {
+    background-color: #8B5E3C;
+    border-color: #8B5E3C;
+    color: #fff;
+}
+.custom-pagination .page-item.disabled .page-link {
+    color: #9C8B7E;
+    background-color: #FAF6F1;
+    border-color: #E8DDD4;
 }

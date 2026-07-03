@@ -1,90 +1,173 @@
+:root {
+    --primary-orange: #8B5E3C;
+    --primary-orange-light: #C4956C;
+    --dark-bg: #1a1a1a;
+    --dark-card: #2a2a2a;
+    --dark-border: #555;
+    --text-light: #ffffff;
+    --text-muted: #eeeeee;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f5f5f5;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-light);
 }
 
-.container {
-    max-width: 760px;
-    margin: 40px auto;
-    padding: 0 20px;
+.navbar-custom {
+    background-color: var(--dark-card);
+    border-bottom: 1px solid var(--dark-border);
+    padding: 1rem 0;
 }
 
-.page-header {
-    margin-bottom: 24px;
+.navbar-brand {
+    font-size: 1.5rem;
+    color: var(--primary-orange);
 }
 
-.page-header h2 {
-    margin-bottom: 8px;
+.navbar-custom a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.profile-section {
+    padding: 3rem 0;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: var(--text-light);
 }
 
 .page-header p {
-    color: #666;
-    margin: 0;
+    color: var(--text-muted);
 }
 
 .profile-card {
-    border: 1px solid #ddd;
-    padding: 24px;
+    background-color: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.profile-header-card {
+    background: linear-gradient(135deg, rgba(160,103,75,0.2) 0%, rgba(196,149,108,0.1) 100%);
+    padding: 2rem;
+    text-align: center;
+}
+
+.avatar-wrapper {
+    width: 120px;
+    height: 120px;
+    background-color: var(--dark-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.avatar-wrapper i {
+    font-size: 4rem;
+    color: var(--primary-orange);
+}
+
+.list-group-item {
+    background-color: transparent;
+    border-color: var(--dark-border);
+    color: var(--text-light);
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background: linear-gradient(135deg, rgba(160,103,75,0.2) 0%, rgba(196,149,108,0.1) 100%);
+    color: var(--primary-orange);
+    border-color: var(--dark-border);
+}
+
+.info-card {
+    background-color: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 16px;
+}
+
+.card-header-custom {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.card-header-custom h4 {
+    color: var(--text-light);
+}
+
+.info-item {
+    padding: 1rem;
+    background-color: rgba(255,255,255,0.08);
     border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--dark-border);
 }
 
-.profile-card p {
-    margin: 14px 0;
-    line-height: 1.5;
+.info-item label {
+    color: var(--text-muted);
 }
 
-.profile-label {
-    font-weight: bold;
+.info-item .fw-semibold {
+    color: var(--text-light);
 }
 
-.actions {
-    margin-top: 18px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 15px;
-    background: #333;
-    color: white;
-    text-decoration: none;
+.btn-primary-gradient {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+    color: #000000;
     border: none;
-    border-radius: 5px;
-    margin-top: 8px;
-    margin-right: 8px;
-    cursor: pointer;
-    font-weight: bold;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.btn-blue {
-    background: #007bff;
+.btn-primary-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(160,103,75,0.4);
+    color: #000000;
 }
 
-.btn-blue:hover {
-    background: #0069d9;
+.footer-minimal {
+    background-color: var(--dark-bg);
+    border-top: 1px solid var(--dark-border);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
 }
 
-.danger {
-    color: #c0392b;
-    font-weight: bold;
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.login-link {
-    display: inline-block;
-    margin-top: 12px;
-    color: #007bff;
+.footer-brand {
+    color: var(--primary-orange);
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    color: var(--text-muted);
     text-decoration: none;
-    font-weight: bold;
 }
 
-.login-link:hover {
-    text-decoration: underline;
+.footer-copy {
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
-.user-id {
-    word-break: break-all;
-    color: #555;
-    font-size: 14px;
+@media (max-width: 991.98px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
 }

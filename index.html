@@ -15,106 +15,107 @@
     <link rel="stylesheet" href="/assets/plugin/nouislider/nouislider.min.css">
     <link rel="stylesheet" href="/assets/plugin/slick/slick.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <style>
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .filter-tabs {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .filter-tab {
-            border: 1px solid #dee2e6;
-            background: #fff;
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .filter-tab:hover, .filter-tab.active {
-            background: #198754;
-            color: white;
-            border-color: #198754;
-        }
-        .product-card {
-            height: 100%;
-        }
-        .no-image {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            background: #f8f9fa;
-            color: #6c757d;
-        }
-    </style>
+
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <!-- Banner Slider -->
-    <div class="banner py-4">
-        <div class="container">
-             <div class="row">
-                 <div class="col-lg-8 col-md-8 col-sm-12 col-12">
-                    <div class="owl-carousel owl-theme banner-slider">
-                        <div> <img src="/assets/images/banner/1.png" class="rounded" alt="Banner"> </div>
-                        <div> <img src="/assets/images/banner/2.png" class="rounded" alt="Banner"> </div>
-                    </div>
-                 </div>
-                 <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div class="mb-4 shine">
-                         <a href="#">
-                             <img src="/assets/images/banner/5.png" class="rounded w-100" alt="Banner">
-                         </a>
-                      </div>
-                      <div class="text-center shine">
-                        <a href="#">
-                            <img src="/assets/images/banner/6.png" class="rounded w-100" alt="Banner">
-                        </a>
-                    </div>
-                 </div>
-             </div>
+    <!-- Full-width Hero Banner -->
+    <div class="banner">
+        <div class="container-fluid hero-banner-container">
+            <div class="owl-carousel owl-theme banner-slider m-0 p-0">
+                <div class="banner-slide" data-filter="Nam"> <img src="/assets/images/banner/BannerNam.png" alt="Thời trang Nam"> </div>
+                <div class="banner-slide" data-filter="Nữ"> <img src="/assets/images/banner/BannerNu.png" alt="Thời trang Nữ"> </div>
+                <div class="banner-slide" data-filter="sale"> <img src="/assets/images/banner/BannerSale.png" alt="Khuyến mãi"> </div>
+                <div class="banner-slide" data-filter="Unisex"> <img src="/assets/images/banner/BannerUnisex.png" alt="Thời trang Unisex"> </div>
+            </div>
         </div>
     </div>
     
     <!-- Product Section -->
     <div class="product mt-50 mb-100">
         <div class="container">
-            <h2 class="product-section-title mb-4">Sản phẩm của chúng tôi</h2>
+            <h2 class="product-section-title mb-4" id="main-title" style="display: none;">TẤT CẢ SẢN PHẨM</h2>
             
-            <!-- Filter Bar -->
-            <div class="filter-bar" id="filter-bar" style="display:none;">
-                <div class="d-flex align-items-center flex-wrap gap-3">
-                    <span class="filter-label fw-bold">Danh mục:</span>
-                    <div class="filter-tabs" id="category-tabs">
-                        <button class="filter-tab active" data-category="all">Tất cả</button>
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="sticky-top" style="top: 100px; padding: 20px; border: 1px solid #E8DDD4; border-radius: 8px; background: #FAF6F1; box-shadow: 0 2px 10px rgba(139, 94, 60, 0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold m-0" style="color: #8B5E3C; letter-spacing: 1px;">BỘ LỌC</h5>
+                            <button class="btn btn-link p-0 text-decoration-none" id="btn-reset-filters" style="color: #d70018; font-size: 0.9rem; font-weight: 500;">
+                                Làm mới
+                            </button>
+                        </div>
+                        
+                        <!-- Clear filter container (populated by JS) -->
+                        <div id="clear-filter-container"></div>
+                        
+                        <div id="filter-controls-container">
+                            <div class="mb-4" id="category-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Danh mục</label>
+                                <select class="form-select border-0 shadow-sm" id="category-filter-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả danh mục</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+
+                            <div class="mb-4" id="gender-filter-section" style="display: none;">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Giới tính</label>
+                                <select class="form-select border-0 shadow-sm" id="gender-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Unisex">Unisex</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4" id="price-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Mức giá</label>
+                                <select class="form-select border-0 shadow-sm" id="price-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="under-200">Dưới 200.000đ</option>
+                                    <option value="200-500">200.000đ - 500.000đ</option>
+                                    <option value="500-1000">500.000đ - 1.000.000đ</option>
+                                    <option value="over-1000">Trên 1.000.000đ</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4" id="stock-filter-section">
+                                <label class="form-label fw-bold text-muted small text-uppercase">Tình trạng</label>
+                                <select class="form-select border-0 shadow-sm" id="stock-select" style="background-color: #fff; border-radius: 6px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="in-stock">Còn hàng</option>
+                                    <option value="out-of-stock">Hết hàng</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn w-100 fw-bold mb-3" id="btn-apply-filter" style="color: #fff; background-color: #8B5E3C; transition: 0.3s;">
+                                Lọc
+                            </button>
+
+                            <button class="btn w-100 fw-bold" id="btn-back-home" style="color: #8B5E3C; border: 1px solid #8B5E3C; background: transparent; transition: 0.3s;">
+                                &#8592; Quay lại
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <select class="form-select" id="sort-select" style="min-width: 150px;">
-                        <option value="default">Mặc định</option>
-                        <option value="price-asc">Giá tăng dần</option>
-                        <option value="price-desc">Giá giảm dần</option>
-                        <option value="sold-desc">Bán chạy nhất</option>
-                        <option value="stock-asc">Sắp hết hàng</option>
-                    </select>
+                
+                <!-- Main Products -->
+                <div class="col-lg-9">
+                    <div class="d-flex justify-content-end mb-4" id="sort-container" style="display: none !important;">
+                        <select class="form-select border-0 shadow-sm" id="sort-select" style="width: 220px; background-color: #fff; border-radius: 6px;">
+                            <option value="default">Mới nhất</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="sold-desc">Bán chạy nhất</option>
+                            <option value="stock-asc">Sắp hết hàng</option>
+                        </select>
+                    </div>
+                    <div id="products-container">
+                        <!-- Products dynamically loaded by JS -->
+                    </div>
                 </div>
-            </div>
-
-            <!-- Products Container -->
-            <div class="row g-4 row-cols-xl-4 row-cols-lg-3 row-cols-2 row-cols-sm-2 row-cols-md-2 mt-1" id="products-container">
-                <!-- Products dynamically loaded by JS -->
             </div>
         </div>
     </div>
