@@ -1,3 +1,60 @@
+function findNavbarStylesheet(href) {
+    return Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+        .find(link => {
+            const currentHref = link.getAttribute("href") || "";
+            return currentHref === href || currentHref.endsWith(href);
+        });
+}
+
+function ensureNavbarStylesheet(id, href, beforeElement = null) {
+    const existingById = document.getElementById(id);
+    const existingByHref = findNavbarStylesheet(href);
+    const existing = existingById || existingByHref;
+
+    if (existing) {
+        existing.id = existing.id || id;
+        return existing;
+    }
+
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = href;
+
+    if (beforeElement && beforeElement.parentNode) {
+        beforeElement.parentNode.insertBefore(link, beforeElement);
+    } else {
+        document.head.appendChild(link);
+    }
+
+    return link;
+}
+
+function ensureNavbarScript(id, src) {
+    if (window.bootstrap || document.getElementById(id)) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.id = id;
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+    });
+}
+
+async function ensureNavbarAssets() {
+    const navbarCss = findNavbarStylesheet("/assets/css/navbar.css");
+
+    ensureNavbarStylesheet("hashop-bootstrap-css", "/assets/css/bootstrap.min.css", navbarCss);
+    ensureNavbarStylesheet("hashop-bootstrap-icons-css", "/assets/font/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css", navbarCss);
+    ensureNavbarStylesheet("hashop-navbar-css", "/assets/css/navbar.css");
+
+    await ensureNavbarScript("hashop-bootstrap-js", "/assets/js/bootstrap.bundle.min.js");
+}
+
 async function loadNavbar() {
     const placeholder = document.getElementById("navbar-placeholder");
 
@@ -6,6 +63,8 @@ async function loadNavbar() {
     }
 
     try {
+        await ensureNavbarAssets();
+
         const response = await fetch("/navbar.html");
 
         if (!response.ok) {
@@ -107,6 +166,8 @@ function renderNavbarAuthSection() {
             `;
         }
     }
+
+    setupAuthDropdownFallback();
 }
 
 function getTokenPayload(token) {
@@ -178,6 +239,49 @@ function setupMobileMenu() {
 
     mobileMenu.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => closeMobileMenu());
+    });
+}
+
+function setupAuthDropdownFallback() {
+    if (window.bootstrap?.Dropdown) {
+        return;
+    }
+
+    const toggles = document.querySelectorAll('.navigation [data-bs-toggle="dropdown"]');
+
+    toggles.forEach(toggle => {
+        if (toggle.dataset.hashopDropdownBound === "true") {
+            return;
+        }
+
+        toggle.dataset.hashopDropdownBound = "true";
+        toggle.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = toggle.parentElement?.querySelector(".dropdown-menu");
+            if (!menu) {
+                return;
+            }
+
+            const isOpen = menu.classList.toggle("show");
+            toggle.setAttribute("aria-expanded", String(isOpen));
+        });
+    });
+
+    if (document.body.dataset.hashopDropdownCloseBound === "true") {
+        return;
+    }
+
+    document.body.dataset.hashopDropdownCloseBound = "true";
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".navigation .dropdown-menu.show").forEach(menu => {
+            menu.classList.remove("show");
+        });
+
+        document.querySelectorAll('.navigation [data-bs-toggle="dropdown"][aria-expanded="true"]').forEach(toggle => {
+            toggle.setAttribute("aria-expanded", "false");
+        });
     });
 }
 
