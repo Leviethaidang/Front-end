@@ -210,7 +210,7 @@ function setupFilters(products) {
     if (btnResetFilters) {
         btnResetFilters.addEventListener("click", () => {
             currentCategory = "all";
-                        currentPriceRange = "all";
+            currentPriceRange = "all";
             currentStockStatus = "all";
             currentSort = "default";
             currentSearch = "";
@@ -308,7 +308,6 @@ function setupFilters(products) {
 }
 
 function applyFiltersAndRender() {
-    const filterControls = document.getElementById("filter-controls-container");
     const mainTitle = document.getElementById("main-title");
     const clearFilterContainer = document.getElementById("clear-filter-container");
     const sortContainer = document.getElementById("sort-container");
@@ -316,7 +315,7 @@ function applyFiltersAndRender() {
 
     if (currentCategory === "all") {
         // --- Grouped Home View (Canifa Style) ---
-                if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
+        if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "none", "important");
         
         // Ensure category select says "all"
@@ -361,7 +360,7 @@ function applyFiltersAndRender() {
         renderGroupedProducts(Array.from(groups.values()));
     } else {
         // --- Single Category List View ---
-                if (clearFilterContainer) clearFilterContainer.innerHTML = "";
+        if (clearFilterContainer) clearFilterContainer.innerHTML = "";
         if (mainTitle) mainTitle.style.display = "block";
         if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
         if (btnBackHome) btnBackHome.style.setProperty("display", "block", "important");
@@ -380,9 +379,6 @@ function applyFiltersAndRender() {
         // Category filter
         if (currentCategory !== "all") {
             const targetCategoryIds = [String(currentCategory)];
-            
-            // Include child categories if it's a parent category
-            
 
             filtered = filtered.filter(p => {
                 const catId = p.category_id ?? p.categoryId;
@@ -427,43 +423,20 @@ function applyFiltersAndRender() {
                 break;
         }
 
-        // Check if current category is a parent category
-        const isParentCategory = false;
+        // Render as flat list
+        if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
+        if (btnBackHome) btnBackHome.style.setProperty("display", "inline-block", "important");
 
-        if (isParentCategory && !currentSearch && currentGender === "all") {
-            // Render as grouped cards
-            if (sortContainer) sortContainer.style.setProperty("display", "none", "important");
-            if (btnBackHome) btnBackHome.style.setProperty("display", "none", "important");
+        // Pagination logic
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedItems = filtered.slice(startIndex, endIndex);
 
-            const childCategories = allCategories.filter(c => String(c.parent_category_id) === String(currentCategory));
-            const groups = [];
-            childCategories.forEach(child => {
-                const childProducts = filtered.filter(p => String(p.category_id ?? p.categoryId) === String(child.category_id));
-                if (childProducts.length > 0) {
-                    groups.push({
-                        id: child.category_id,
-                        name: child.category_name,
-                        products: childProducts
-                    });
-                }
-            });
-            renderGroupedProducts(groups);
-        } else {
-            // Render as flat list
-            if (sortContainer) sortContainer.style.setProperty("display", "flex", "important");
-            if (btnBackHome) btnBackHome.style.setProperty("display", "inline-block", "important");
-
-            // Pagination logic
-            const totalItems = filtered.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-            
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedItems = filtered.slice(startIndex, endIndex);
-
-            renderProductsList(paginatedItems, totalPages, currentPage);
-        }
+        renderProductsList(paginatedItems, totalPages, currentPage);
     }
 }
 
@@ -571,21 +544,6 @@ function renderGroupedProducts(groups) {
             observer.observe(el);
         });
     }, 100);
-    // Attach click events to "View All" buttons
-    productsContainer.querySelectorAll(".btn-view-all").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentCategory = btn.dataset.category;
-            // Reset filters when entering category
-                        currentSort = "default";
-            currentPage = 1;
-            const sortSelect = document.getElementById("sort-select");
-            if (genderSelect) genderSelect.value = "all";
-            if (sortSelect) sortSelect.value = "default";
-            
-            applyFiltersAndRender();
-            window.scrollTo({ top: document.querySelector('.product').offsetTop - 50, behavior: 'smooth' });
-        });
-    });
 }
 
 function renderProductsList(products, totalPages = 1, current = 1) {
