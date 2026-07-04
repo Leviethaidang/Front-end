@@ -4,6 +4,26 @@ const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");
 const message = document.getElementById("login-message");
 
+// Password toggle functionality
+document.querySelectorAll('.password-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const eyeOff = this.querySelector('.eye-off');
+        const eyeOn = this.querySelector('.eye-on');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeOff.style.display = 'none';
+            eyeOn.style.display = 'block';
+        } else {
+            input.type = 'password';
+            eyeOff.style.display = 'block';
+            eyeOn.style.display = 'none';
+        }
+    });
+});
+
 loginForm.addEventListener("submit", login);
 
 function setMessage(text, type = "danger") {
