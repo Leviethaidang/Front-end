@@ -1,90 +1,231 @@
-body {
-    font-family: Arial, sans-serif;
+* {
     margin: 0;
-    background: #f5f5f5;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.container {
-    max-width: 760px;
-    margin: 40px auto;
-    padding: 0 20px;
+body {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background: #FAF8F5;
+    color: #666666;
+    line-height: 1.6;
 }
 
-.page-header {
-    margin-bottom: 24px;
+.custom-header {
+    height: 72px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #F0F0F0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.page-header h2 {
+.header-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #5C3B23;
+    letter-spacing: 1px;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-link {
+    color: #666666;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #8B5E3C;
+}
+
+.nav-register-btn {
+    background: #8B5E3C;
+    color: #FFFFFF;
+    padding: 10px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.nav-register-btn:hover {
+    background: #6F472A;
+}
+
+.main-container {
+    padding: 60px 40px;
+}
+
+.profile-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Phần 1: Thông tin người dùng */
+.user-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.user-section .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #FAF8F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.user-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #5C3B23;
     margin-bottom: 8px;
 }
 
-.page-header p {
-    color: #666;
-    margin: 0;
+.user-email {
+    font-size: 16px;
+    color: #666666;
 }
 
-.profile-card {
-    border: 1px solid #ddd;
-    padding: 24px;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+/* Phần 2: Menu chức năng */
+.menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
-.profile-card p {
-    margin: 14px 0;
-    line-height: 1.5;
-}
-
-.profile-label {
-    font-weight: bold;
-}
-
-.actions {
-    margin-top: 18px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 15px;
-    background: #333;
-    color: white;
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
     text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    margin-top: 8px;
-    margin-right: 8px;
-    cursor: pointer;
-    font-weight: bold;
+    color: #666666;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.btn-blue {
-    background: #007bff;
+.menu-item:hover {
+    background: #FAF8F5;
+    color: #8B5E3C;
 }
 
-.btn-blue:hover {
-    background: #0069d9;
+.menu-item.active {
+    background: #FAF8F5;
+    color: #8B5E3C;
+    font-weight: 600;
 }
 
-.danger {
-    color: #c0392b;
-    font-weight: bold;
+.menu-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.login-link {
-    display: inline-block;
-    margin-top: 12px;
-    color: #007bff;
-    text-decoration: none;
-    font-weight: bold;
+/* Phần 3: Thông tin tài khoản */
+.info-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
-.login-link:hover {
-    text-decoration: underline;
+.info-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #5C3B23;
+    margin-bottom: 32px;
 }
 
-.user-id {
-    word-break: break-all;
-    color: #555;
+.info-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.info-item {
+    background: #FAF8F5;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item-full {
+    grid-column: 1 / -1;
+}
+
+.info-label {
     font-size: 14px;
+    font-weight: 500;
+    color: #A0A0A0;
+}
+
+.info-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 40px 20px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-name {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-container {
+        padding: 0 20px;
+    }
+
+    .info-card {
+        padding: 24px;
+    }
 }

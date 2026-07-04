@@ -2,27 +2,91 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Chỉnh sửa Profile</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Chỉnh sửa hồ sơ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/navbar.css">
     <link rel="stylesheet" href="/assets/css/edit-profile.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
-
-    <div class="container">
-        <div class="page-header">
-            <h2>Chỉnh sửa hồ sơ</h2>
+    <!-- Custom Header for Edit Profile Page -->
+    <header class="custom-header">
+        <div class="header-container">
+            <div class="logo">HASHOP</div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link">Sản phẩm</a>
+                <a href="#" class="nav-link">Sản phẩm mới</a>
+                <a href="#" class="nav-link">Bộ sưu tập</a>
+                <a href="/login" class="nav-register-btn">Đăng xuất</a>
+            </nav>
         </div>
+    </header>
 
-        <div id="edit-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
+    <main class="main-container">
+        <div class="profile-wrapper">
+            <div class="page-header">
+                <a href="/profile.html" class="back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="#5C3B23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Quay lại
+                </a>
+                <h1>Chỉnh sửa hồ sơ</h1>
+                <p>Cập nhật thông tin tài khoản của bạn</p>
+            </div>
 
-        <div class="actions">
-            <a href="/profile" class="btn">Quay lại hồ sơ</a>
+            <div class="profile-card">
+                <form id="edit-profile-form">
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="edit-name">Họ tên</label>
+                                <input type="text" id="edit-name" value="Nguyễn Văn A">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-email">Email</label>
+                                <input type="email" id="edit-email" value="nguyenvana@example.com" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-phone">Số điện thoại</label>
+                                <input type="tel" id="edit-phone" value="+84 901 234 567">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-birthday">Ngày sinh</label>
+                                <input type="date" id="edit-birthday" value="1990-01-01">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-gender">Giới tính</label>
+                                <select id="edit-gender">
+                                    <option value="male" selected>Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="edit-address">Địa chỉ</label>
+                                <textarea id="edit-address" rows="3">123 Đường ABC, Quận 1, TP. Hồ Chí Minh</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/profile.html" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/navbar.js"></script>
