@@ -111,7 +111,33 @@
                         Đăng ký
                     </button>
                 </form>
-                
+
+                <form id="otp-form" class="otp-form" hidden>
+                    <div class="otp-icon">
+                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 6L12 13L2 6" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <div class="otp-inputs">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" autocomplete="one-time-code">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                    </div>
+
+                    <button id="verify-button" type="submit" class="submit-btn" disabled>
+                        XÃ¡c thá»±c
+                    </button>
+
+                    <button id="back-to-register" type="button" class="text-button">
+                        Quay láº¡i chá»‰nh sá»­a thÃ´ng tin
+                    </button>
+                </form>
+
                 <div id="register-message" class="message"></div>
                 
                 <div class="small-text">

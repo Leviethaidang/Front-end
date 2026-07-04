@@ -258,6 +258,58 @@ body {
     color: #188038;
 }
 
+.otp-form[hidden] {
+    display: none;
+}
+
+.otp-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.otp-input {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #E6E6E6;
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    color: #5C3B23;
+    text-align: center;
+    background: #FFFFFF;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+.otp-input:focus {
+    border-color: #8B5E3C;
+}
+
+.text-button {
+    display: block;
+    margin: 18px auto 0;
+    border: 0;
+    background: transparent;
+    color: #8B5E3C;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.text-button:hover {
+    text-decoration: underline;
+}
+
 .small-text {
     text-align: center;
     font-size: 15px;
