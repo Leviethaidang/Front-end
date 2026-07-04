@@ -114,6 +114,11 @@ function renderNavbarAuthSection() {
             const isAdmin = groups.includes("Admin");
 
             authSection.innerHTML = `
+                <div class="list-inline-item me-4">
+                    <a class="text-muted position-relative" href="/cart" title="Giỏ hàng">
+                        <i class="bi bi-cart"></i>
+                    </a>
+                </div>
                 <div class="list-inline-item me-4 dropdown">
                     <a href="#" class="text-muted dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
                         <i class="bi bi-person-check"></i> Xin chào, ${escapeHtml(fullName)}
@@ -128,11 +133,6 @@ function renderNavbarAuthSection() {
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" onclick="logout(event)">Đăng xuất</a></li>
                     </ul>
-                </div>
-                <div class="list-inline-item me-4">
-                    <a class="text-muted position-relative" href="/cart" title="Giỏ hàng">
-                        <i class="bi bi-cart"></i>
-                    </a>
                 </div>
             `;
         }
