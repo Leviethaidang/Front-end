@@ -75,6 +75,70 @@
                     </div>
                 </form>
             </div>
+
+            <section class="profile-card payment-card">
+                <div class="payment-section-header">
+                    <div>
+                        <h2>Phương thức thanh toán</h2>
+                        <p>Liên kết, đặt mặc định hoặc xóa phương thức thanh toán của bạn.</p>
+                    </div>
+                </div>
+
+                <div class="payment-add-box">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentType">Loại phương thức thanh toán</label>
+                            <select id="paymentType">
+                                <option value="MOMO">MoMo</option>
+                                <option value="BANK">Ngân hàng</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="momoFields" class="form-row">
+                        <div class="form-group full-width">
+                            <label for="momoPhoneNumber">Số điện thoại MoMo</label>
+                            <input id="momoPhoneNumber" placeholder="+84901234567">
+                        </div>
+                    </div>
+
+                    <div id="bankFields" class="payment-hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bankName">Ngân hàng</label>
+                                <select id="bankName">
+                                    <option value="">-- Chọn ngân hàng --</option>
+                                    <option value="Vietcombank">Vietcombank</option>
+                                    <option value="Techcombank">Techcombank</option>
+                                    <option value="ACB">ACB</option>
+                                    <option value="BIDV">BIDV</option>
+                                    <option value="VietinBank">VietinBank</option>
+                                    <option value="MB Bank">MB Bank</option>
+                                    <option value="VPBank">VPBank</option>
+                                    <option value="Sacombank">Sacombank</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bankAccountNumber">Số tài khoản</label>
+                                <input id="bankAccountNumber" placeholder="Nhập số tài khoản">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="addPaymentMethodBtn" type="button" class="btn btn-primary">
+                        Liên kết phương thức thanh toán
+                    </button>
+
+                    <p id="payment-message-box" class="message"></p>
+                </div>
+
+                <div class="payment-list-header">
+                    <h3>Danh sách phương thức thanh toán</h3>
+                </div>
+                <div id="payment-methods-box" class="payment-methods-box">
+                    Đang tải phương thức thanh toán...
+                </div>
+            </section>
         </div>
     </main>
 

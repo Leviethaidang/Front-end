@@ -118,6 +118,116 @@ body {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
+.payment-card {
+    margin-top: 28px;
+}
+
+.payment-section-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+}
+
+.payment-section-header h2,
+.payment-list-header h3 {
+    color: #5C3B23;
+    margin: 0 0 8px;
+}
+
+.payment-section-header p {
+    margin: 0;
+    color: #666666;
+}
+
+.payment-add-box {
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #E6E6E6;
+}
+
+.payment-hidden {
+    display: none;
+}
+
+.payment-methods-box {
+    color: #333333;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 680px;
+}
+
+.payment-table th,
+.payment-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #E6E6E6;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.payment-table th {
+    color: #5C3B23;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-blue {
+    background: #8B5E3C;
+    color: #FFFFFF;
+}
+
+.btn-danger {
+    background: #fff1f1;
+    color: #c0392b;
+}
+
+.badge {
+    display: inline-flex;
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-default {
+    background: #F4E8DD;
+    color: #8B5E3C;
+}
+
+.muted-text {
+    color: #A0A0A0;
+    font-size: 13px;
+}
+
 .message {
     margin-bottom: 20px;
     font-size: 14px;
