@@ -2,40 +2,74 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Đăng nhập</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/login.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
+    <header class="auth-header">
+        <div class="auth-header-container">
+            <div class="auth-logo">HASHOP</div>
+            <nav class="auth-nav">
+                <a href="register.html" class="auth-btn-register">Đăng ký</a>
+            </nav>
+        </div>
+    </header>
 
-    <div class="login-page">
-        <div class="form-box">
-            <h2>Đăng nhập</h2>
-
-            <form id="login-form">
-                <input id="login-email" type="email" placeholder="Email">
-                <input id="login-password" type="password" placeholder="Mật khẩu">
-
-                <button id="login-button" type="submit">
-                    Đăng nhập
-                </button>
-            </form>
-
-            <div id="login-message" class="message"></div>
-
-            <div class="small-text">
-                Chưa có tài khoản?
-                <a href="/register">Nhấn vào đây để đăng ký</a>
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-overlay"></div>
+            <div class="auth-left-content">
+                <h1 class="auth-brand">HASHOP</h1>
+                <p class="auth-tagline">THỜI TRANG CHO MỌI PHONG CÁCH</p>
+                <p class="auth-description">Khám phá những bộ sưu tập mới nhất với thiết kế hiện đại và trải nghiệm mua sắm tiện lợi.</p>
             </div>
+        </div>
 
-            <a class="home-link" href="/">← Quay về trang chủ</a>
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-title">Chào mừng trở lại</h2>
+                <p class="auth-subtitle">Đăng nhập để tiếp tục mua sắm tại HaShop.</p>
+
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" placeholder="Email" class="auth-input">
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Mật khẩu" class="auth-input">
+                        <button type="button" class="password-toggle" id="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="auth-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <span>Ghi nhớ đăng nhập</span>
+                        </label>
+                        <a href="#" class="forgot-password">Quên mật khẩu</a>
+                    </div>
+
+                    <button type="submit" class="auth-btn">Đăng nhập</button>
+                </form>
+
+                <div id="login-message" class="message"></div>
+
+                <p class="auth-footer">
+                    Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+                </p>
+            </div>
         </div>
     </div>
 
     <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/login.js"></script>
 </body>
 </html>

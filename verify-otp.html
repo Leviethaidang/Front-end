@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Xác nhận tài khoản</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/verify-otp.css">
+</head>
+<body>
+    <header class="auth-header">
+        <div class="auth-header-container">
+            <div class="auth-logo">HASHOP</div>
+            <nav class="auth-nav">
+                <a href="login.html" class="auth-btn-register">Đăng nhập</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-overlay"></div>
+            <div class="auth-left-content">
+                <h1 class="auth-brand">HASHOP</h1>
+                <p class="auth-tagline">THỜI TRANG CHO MỌI PHONG CÁCH</p>
+                <p class="auth-description">Khám phá những bộ sưu tập mới nhất với thiết kế hiện đại và trải nghiệm mua sắm tiện lợi.</p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <div class="otp-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h2 class="auth-title">Xác nhận tài khoản</h2>
+                <p class="auth-subtitle">Chúng tôi đã gửi mã xác nhận đến email của bạn.</p>
+
+                <form id="otp-form" class="auth-form">
+                    <div class="input-group">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="text" id="otp-code" placeholder="Nhập mã xác nhận" class="auth-input" maxlength="6">
+                    </div>
+
+                    <button type="submit" class="auth-btn">Xác nhận</button>
+                </form>
+
+                <div id="otp-message" class="message"></div>
+
+                <p class="resend-text">
+                    Không nhận được mã? <a href="#" id="resend-btn">Gửi lại</a>
+                </p>
+
+                <p class="auth-footer">
+                    <a href="register.html">← Quay lại đăng ký</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/verify-otp.js"></script>
+</body>
+</html>

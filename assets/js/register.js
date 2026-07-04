@@ -1,19 +1,30 @@
 const USER_SERVICE_URL = window.APP_CONFIG?.USER_SERVICE_URL || "";
 
 const registerForm = document.getElementById("register-form");
-const confirmForm = document.getElementById("confirm-form");
-
-const registerButton = document.getElementById("register-button");
-const confirmButton = document.getElementById("confirm-button");
-
-const otpBox = document.getElementById("otp-box");
+const registerButton = document.querySelector(".auth-btn");
 const message = document.getElementById("register-message");
 
+const togglePassword1 = document.getElementById("toggle-password1");
+const togglePassword2 = document.getElementById("toggle-password2");
+const password1 = document.getElementById("reg-password");
+const password2 = document.getElementById("reg-confirm-password");
+
 registerForm.addEventListener("submit", register);
-confirmForm.addEventListener("submit", confirmRegister);
+
+togglePassword1.addEventListener("click", () => {
+    const type = password1.type === "password" ? "text" : "password";
+    password1.type = type;
+    togglePassword1.innerHTML = type === "password" ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+});
+
+togglePassword2.addEventListener("click", () => {
+    const type = password2.type === "password" ? "text" : "password";
+    password2.type = type;
+    togglePassword2.innerHTML = type === "password" ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+});
 
 function setMessage(text, type = "danger") {
-    message.className = `message ${type}`;
+    message.className = type === "success" ? "message success" : "message error";
     message.textContent = text;
 }
 
@@ -27,26 +38,32 @@ async function register(event) {
 
     clearMessage();
 
-    const body = {
-        fullName: document.getElementById("reg-name").value.trim(),
-        email: document.getElementById("reg-email").value.trim(),
-        phoneNumber: document.getElementById("reg-phone").value.trim(),
-        password: document.getElementById("reg-password").value
-    };
+    const fullName = document.getElementById("reg-name").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const phoneNumber = document.getElementById("reg-phone").value.trim();
+    const password = document.getElementById("reg-password").value;
+    const confirmPassword = document.getElementById("reg-confirm-password").value;
 
-    if (!body.fullName || !body.email || !body.phoneNumber || !body.password) {
-        setMessage("Vui lòng nhập đầy đủ thông tin.", "danger");
+    if (!fullName || !email || !phoneNumber || !password || !confirmPassword) {
+        setMessage("Vui lòng nhập đầy đủ thông tin.");
         return;
     }
 
-    if (!body.phoneNumber.startsWith("+")) {
-        setMessage("Số điện thoại phải dùng định dạng quốc tế, ví dụ +84901234567.", "danger");
+    if (password !== confirmPassword) {
+        setMessage("Mật khẩu xác nhận không khớp.");
         return;
     }
 
     try {
         registerButton.disabled = true;
         registerButton.textContent = "Đang đăng ký...";
+
+        const body = {
+            fullName,
+            email,
+            phoneNumber,
+            password
+        };
 
         const response = await fetch(`${USER_SERVICE_URL}/api/users/auth/register`, {
             method: "POST",
@@ -59,76 +76,19 @@ async function register(event) {
         const data = await response.json();
 
         if (!response.ok) {
-            setMessage(data.error || "Đăng ký thất bại.", "danger");
+            setMessage(data.error || "Đăng ký thất bại.");
             return;
         }
 
-        setMessage(
-            data.message || "Đăng ký thành công. Vui lòng nhập mã xác nhận.",
-            "success"
-        );
-
-        otpBox.style.display = "block";
+        localStorage.setItem("registerEmail", email);
+        window.location.href = "verify-otp.html";
 
     } catch (error) {
         console.error("Lỗi đăng ký:", error);
-        setMessage("Không thể kết nối User Service.", "danger");
+        setMessage("Không thể kết nối User Service.");
 
     } finally {
         registerButton.disabled = false;
         registerButton.textContent = "Đăng ký";
-    }
-}
-
-async function confirmRegister(event) {
-    event.preventDefault();
-
-    clearMessage();
-
-    const body = {
-        email: document.getElementById("reg-email").value.trim(),
-        code: document.getElementById("otp-code").value.trim()
-    };
-
-    if (!body.email || !body.code) {
-        setMessage("Vui lòng nhập email và mã xác nhận.", "danger");
-        return;
-    }
-
-    try {
-        confirmButton.disabled = true;
-        confirmButton.textContent = "Đang xác nhận...";
-
-        const response = await fetch(`${USER_SERVICE_URL}/api/users/auth/confirm-register`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            setMessage(data.error || "Xác nhận thất bại.", "danger");
-            return;
-        }
-
-        setMessage(
-            data.message || "Xác nhận thành công! Đang chuyển sang trang đăng nhập...",
-            "success"
-        );
-
-        setTimeout(() => {
-            window.location.href = "/login";
-        }, 1500);
-
-    } catch (error) {
-        console.error("Lỗi xác nhận tài khoản:", error);
-        setMessage("Không thể xác nhận tài khoản.", "danger");
-
-    } finally {
-        confirmButton.disabled = false;
-        confirmButton.textContent = "Xác nhận tài khoản";
     }
 }

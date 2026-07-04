@@ -2,60 +2,84 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Đăng ký</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/register.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
+    <header class="auth-header">
+        <div class="auth-header-container">
+            <div class="auth-logo">HASHOP</div>
+            <nav class="auth-nav">
+                <a href="login.html" class="auth-btn-register">Đăng nhập</a>
+            </nav>
+        </div>
+    </header>
 
-    <div class="register-page">
-        <div class="form-box">
-            <h2>Đăng ký tài khoản</h2>
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <div class="auth-overlay"></div>
+            <div class="auth-left-content">
+                <h1 class="auth-brand">HASHOP</h1>
+                <p class="auth-tagline">THỜI TRANG CHO MỌI PHONG CÁCH</p>
+                <p class="auth-description">Khám phá những bộ sưu tập mới nhất với thiết kế hiện đại và trải nghiệm mua sắm tiện lợi.</p>
+            </div>
+        </div>
 
-            <form id="register-form">
-                <input id="reg-name" placeholder="Họ và tên">
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-title">Tạo tài khoản</h2>
+                <p class="auth-subtitle">Đăng ký để bắt đầu mua sắm tại HaShop.</p>
 
-                <input id="reg-email" type="email" placeholder="Email">
+                <form id="register-form" class="auth-form">
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="reg-name" placeholder="Họ tên" class="auth-input">
+                    </div>
 
-                <input id="reg-phone" placeholder="Số điện thoại, ví dụ +84901234567">
-                <div class="hint">Số điện thoại nên dùng định dạng quốc tế</div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="reg-email" placeholder="Email" class="auth-input">
+                    </div>
 
-                <input id="reg-password" type="password" placeholder="Mật khẩu">
+                    <div class="input-group">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" id="reg-phone" placeholder="Số điện thoại" class="auth-input">
+                    </div>
 
-                <button id="register-button" type="submit">
-                    Đăng ký
-                </button>
-            </form>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="reg-password" placeholder="Mật khẩu" class="auth-input">
+                        <button type="button" class="password-toggle" id="toggle-password1">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
 
-            <div id="otp-box" class="otp-box">
-                <hr>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="reg-confirm-password" placeholder="Xác nhận mật khẩu" class="auth-input">
+                        <button type="button" class="password-toggle" id="toggle-password2">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
 
-                <p>Nhập mã xác nhận được gửi về email/số điện thoại:</p>
-
-                <form id="confirm-form">
-                    <input id="otp-code" placeholder="Mã xác nhận">
-
-                    <button id="confirm-button" class="btn-blue" type="submit">
-                        Xác nhận tài khoản
-                    </button>
+                    <button type="submit" class="auth-btn">Đăng ký</button>
                 </form>
+
+                <div id="register-message" class="message"></div>
+
+                <p class="auth-footer">
+                    Đã có tài khoản? <a href="login.html">Đăng nhập</a>
+                </p>
             </div>
-
-            <div id="register-message" class="message"></div>
-
-            <div class="small-text">
-                Đã có tài khoản?
-                <a href="/login">Đăng nhập</a>
-            </div>
-
-            <a class="home-link" href="/">← Quay về trang chủ</a>
         </div>
     </div>
 
     <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/register.js"></script>
 </body>
 </html>

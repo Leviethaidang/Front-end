@@ -2,33 +2,140 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Profile</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Hồ sơ cá nhân</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
-
-    <div class="container">
-        <div class="page-header">
-            <h2>Hồ sơ cá nhân</h2>
-            <p>Thông tin tài khoản và địa chỉ giao hàng của bạn.</p>
+    <header class="auth-header">
+        <div class="auth-header-container">
+            <div class="auth-logo">HASHOP</div>
+            <nav class="auth-nav">
+                <a href="profile.html" class="auth-btn-register">
+                    <i class="fas fa-user"></i>
+                </a>
+            </nav>
         </div>
+    </header>
 
-        <div id="profile-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
+    <div class="profile-wrapper">
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name" id="profile-name">Đang tải...</h1>
+                        <p class="profile-email" id="profile-email">Đang tải...</p>
+                    </div>
+                </div>
 
-        <div class="actions">
-            <a href="/profile/edit" class="btn btn-blue" id="edit-button">
-                Chỉnh sửa thông tin
-            </a>
+                <div class="profile-menu">
+                    <button class="menu-item active" data-tab="info">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Thông tin cá nhân</span>
+                    </button>
+                    <button class="menu-item" data-tab="edit">
+                        <i class="fas fa-edit"></i>
+                        <span>Chỉnh sửa</span>
+                    </button>
+                    <button class="menu-item" data-tab="orders">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Đơn hàng</span>
+                    </button>
+                </div>
+
+                <div class="profile-content">
+                    <div class="tab-content active" id="info-tab">
+                        <h2 class="section-title">Thông tin tài khoản</h2>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Họ tên</label>
+                                <p id="info-name">Đang tải...</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Email</label>
+                                <p id="info-email">Đang tải...</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Số điện thoại</label>
+                                <p id="info-phone">Đang tải...</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Ngày sinh</label>
+                                <p id="info-birthday">Chưa cập nhật</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Giới tính</label>
+                                <p id="info-gender">Chưa cập nhật</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Địa chỉ</label>
+                                <p id="info-address">Chưa cập nhật</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="tab-content" id="edit-tab">
+                        <h2 class="section-title">Chỉnh sửa thông tin</h2>
+                        <form id="edit-form" class="edit-form">
+                            <div class="form-group">
+                                <label>Họ tên</label>
+                                <input type="text" id="edit-name" placeholder="Nhập họ tên">
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại</label>
+                                <input type="text" id="edit-phone" placeholder="Nhập số điện thoại">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Ngày sinh</label>
+                                    <input type="date" id="edit-birthday">
+                                </div>
+                                <div class="form-group">
+                                    <label>Giới tính</label>
+                                    <select id="edit-gender">
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ</label>
+                                <textarea id="edit-address" placeholder="Nhập địa chỉ" rows="3"></textarea>
+                            </div>
+                            <div class="profile-actions">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="orders-tab">
+                        <h2 class="section-title">Đơn hàng của bạn</h2>
+                        <div class="orders-list">
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>Chưa có đơn hàng nào</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/navbar.js"></script>
     <script src="/assets/js/profile.js"></script>
 </body>
 </html>

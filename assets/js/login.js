@@ -1,10 +1,18 @@
 const USER_SERVICE_URL = window.APP_CONFIG?.USER_SERVICE_URL || "";
 
 const loginForm = document.getElementById("login-form");
-const loginButton = document.getElementById("login-button");
+const loginButton = document.querySelector(".auth-btn");
 const message = document.getElementById("login-message");
+const togglePasswordBtn = document.getElementById("toggle-password");
+const passwordInput = document.getElementById("login-password");
 
 loginForm.addEventListener("submit", login);
+
+togglePasswordBtn.addEventListener("click", () => {
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    togglePasswordBtn.innerHTML = type === "password" ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+});
 
 function setMessage(text, type = "danger") {
     message.className = type === "success" ? "message success" : "message";
@@ -81,7 +89,7 @@ async function login(event) {
         setMessage("Đăng nhập thành công. Đang chuyển hướng...", "success");
 
         setTimeout(() => {
-            window.location.href = "/";
+            window.location.href = "index.html";
         }, 500);
 
     } catch (error) {

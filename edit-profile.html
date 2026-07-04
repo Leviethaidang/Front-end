@@ -2,30 +2,151 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>HaShop - Chỉnh sửa Profile</title>
-
-    <link rel="stylesheet" href="/assets/css/navbar.css">
-    <link rel="stylesheet" href="/assets/css/edit-profile.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaShop - Chỉnh sửa hồ sơ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/edit-profile.css">
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
-
-    <div class="container">
-        <div class="page-header">
-            <h2>Chỉnh sửa hồ sơ</h2>
+    <header class="auth-header">
+        <div class="auth-header-container">
+            <div class="auth-logo">HASHOP</div>
+            <nav class="auth-nav">
+                <a href="profile.html" class="auth-btn-register">
+                    <i class="fas fa-user"></i>
+                </a>
+            </nav>
         </div>
+    </header>
 
-        <div id="edit-content" class="profile-card">
-            Đang tải dữ liệu...
-        </div>
+    <div class="edit-profile-wrapper">
+        <div class="edit-profile-container">
+            <div class="edit-profile-page-header">
+                <h1 class="edit-profile-page-title">Chỉnh sửa hồ sơ</h1>
+                <p class="edit-profile-page-subtitle">Cập nhật thông tin tài khoản và phương thức thanh toán của bạn.</p>
+            </div>
 
-        <div class="actions">
-            <a href="/profile" class="btn">Quay lại hồ sơ</a>
+            <div class="edit-profile-card">
+                <!-- SECTION 1: THÔNG TIN CÁ NHÂN -->
+                <section class="edit-profile-section">
+                    <h2 class="edit-profile-section-title">Thông tin cá nhân</h2>
+                    <div class="edit-profile-user-id">
+                        <span class="edit-profile-label">User ID:</span>
+                        <span id="user-id-display" class="edit-profile-value">090a65dc-b071-70af-a1c9-6d20a30ed6bc</span>
+                    </div>
+                    <div class="edit-profile-grid">
+                        <div class="edit-profile-input-group">
+                            <label for="edit-name" class="edit-profile-label">Họ và tên</label>
+                            <div class="edit-profile-input-wrapper">
+                                <i class="fas fa-user edit-profile-input-icon"></i>
+                                <input type="text" id="edit-name" class="edit-profile-input" placeholder="Nhập họ tên">
+                            </div>
+                        </div>
+                        <div class="edit-profile-input-group">
+                            <label for="edit-email" class="edit-profile-label">Email</label>
+                            <div class="edit-profile-input-wrapper">
+                                <i class="fas fa-envelope edit-profile-input-icon"></i>
+                                <input type="email" id="edit-email" class="edit-profile-input" placeholder="Nhập email">
+                            </div>
+                        </div>
+                        <div class="edit-profile-input-group">
+                            <label for="edit-phone" class="edit-profile-label">Số điện thoại</label>
+                            <div class="edit-profile-input-wrapper">
+                                <i class="fas fa-phone edit-profile-input-icon"></i>
+                                <input type="text" id="edit-phone" class="edit-profile-input" placeholder="Nhập số điện thoại">
+                            </div>
+                        </div>
+                        <div class="edit-profile-input-group edit-profile-full-width">
+                            <label for="edit-address" class="edit-profile-label">Địa chỉ giao hàng</label>
+                            <div class="edit-profile-input-wrapper">
+                                <i class="fas fa-map-marker-alt edit-profile-input-icon"></i>
+                                <input type="text" id="edit-address" class="edit-profile-input" placeholder="Nhập địa chỉ giao hàng">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: PHƯƠNG THỨC THANH TOÁN -->
+                <section class="edit-profile-section">
+                    <h2 class="edit-profile-section-title">Phương thức thanh toán</h2>
+                    <div class="edit-profile-grid">
+                        <div class="edit-profile-input-group">
+                            <label for="payment-type" class="edit-profile-label">Loại phương thức thanh toán</label>
+                            <div class="edit-profile-select-wrapper">
+                                <select id="payment-type" class="edit-profile-select">
+                                    <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                                    <option value="momo" selected>MoMo</option>
+                                    <option value="zalopay">ZaloPay</option>
+                                    <option value="bank">Ngân hàng</option>
+                                </select>
+                                <i class="fas fa-chevron-down edit-profile-select-icon"></i>
+                            </div>
+                        </div>
+                        <div class="edit-profile-input-group">
+                            <label for="momo-phone" class="edit-profile-label">Số điện thoại MoMo</label>
+                            <div class="edit-profile-input-wrapper">
+                                <i class="fas fa-mobile-alt edit-profile-input-icon"></i>
+                                <input type="text" id="momo-phone" class="edit-profile-input" placeholder="+8454084697">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="edit-profile-note">Liên kết phương thức thanh toán</p>
+                </section>
+
+                <!-- SECTION 3: DANH SÁCH PHƯƠNG THỨC THANH TOÁN -->
+                <section class="edit-profile-section">
+                    <h2 class="edit-profile-section-title">Danh sách phương thức thanh toán</h2>
+                    <div class="edit-profile-table-wrapper">
+                        <table class="edit-profile-table">
+                            <thead class="edit-profile-table-header">
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Loại</th>
+                                    <th>Thông tin</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="edit-profile-table-body">
+                                <tr class="edit-profile-table-row">
+                                    <td>
+                                        <div class="edit-profile-payment-logo">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="edit-profile-payment-name">COD</span>
+                                    </td>
+                                    <td>
+                                        <span class="edit-profile-payment-info">Thanh toán khi nhận hàng</span>
+                                    </td>
+                                    <td>
+                                        <span class="edit-profile-badge edit-profile-badge-default">Mặc định</span>
+                                    </td>
+                                    <td>
+                                        <span class="edit-profile-disabled-text">Không thể xóa</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- BUTTON LƯU THAY ĐỔI -->
+                <div class="edit-profile-button-container">
+                    <button type="submit" id="save-profile-btn" class="edit-profile-save-btn">
+                        <i class="fas fa-save"></i>
+                        Lưu thay đổi
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/navbar.js"></script>
-    <script src="/assets/js/edit-profile.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/edit-profile.js"></script>
 </body>
 </html>
