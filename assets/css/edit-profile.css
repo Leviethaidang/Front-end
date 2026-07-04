@@ -148,7 +148,7 @@ body {
 }
 
 .payment-hidden {
-    display: none;
+    display: none !important;
 }
 
 .payment-methods-box {
