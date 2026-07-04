@@ -5,6 +5,25 @@ const loginButton = document.getElementById("login-button");
 const message = document.getElementById("login-message");
 
 loginForm.addEventListener("submit", login);
+setupPasswordToggles();
+
+function setupPasswordToggles() {
+    document.querySelectorAll(".password-toggle").forEach(toggle => {
+        toggle.addEventListener("click", () => {
+            const targetId = toggle.dataset.target;
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const showPassword = input.type === "password";
+            input.type = showPassword ? "text" : "password";
+
+            const eyeOff = toggle.querySelector(".eye-off");
+            const eyeOn = toggle.querySelector(".eye-on");
+            if (eyeOff) eyeOff.style.display = showPassword ? "none" : "";
+            if (eyeOn) eyeOn.style.display = showPassword ? "" : "none";
+        });
+    });
+}
 
 function setMessage(text, type = "danger") {
     message.className = type === "success" ? "message success" : "message";

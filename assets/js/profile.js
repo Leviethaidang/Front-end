@@ -1,178 +1,167 @@
 const USER_SERVICE_URL = window.APP_CONFIG?.USER_SERVICE_URL || "";
 const PAYMENT_SERVICE_URL = window.APP_CONFIG?.PAYMENT_SERVICE_URL || "";
 
-const accessToken = localStorage.getItem("accessToken");
-const profileContent = document.getElementById("profile-content");
-const editButton = document.getElementById("edit-button");
+const profileFields = {
+    name: document.getElementById("profile-name"),
+    email: document.getElementById("profile-email"),
+    fullName: document.getElementById("profile-full-name"),
+    emailValue: document.getElementById("profile-email-value"),
+    phone: document.getElementById("profile-phone"),
+    address: document.getElementById("profile-address"),
+    payment: document.getElementById("profile-payment"),
+    userId: document.getElementById("profile-user-id"),
+    createdAt: document.getElementById("profile-created-at")
+};
 
 loadProfile();
 
-function escapeHtml(value) {
-    if (value === null || value === undefined) {
-        return "";
+function setText(element, value, fallback = "Chưa cập nhật") {
+    if (!element) {
+        return;
     }
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    element.textContent = value || fallback;
 }
 
 function showLoginRequired() {
-    profileContent.innerHTML = `
-        <p class="danger">Bạn chưa đăng nhập.</p>
-        <a href="/login" class="login-link">Đăng nhập</a>
-    `;
-
-    editButton.style.display = "none";
+    setText(profileFields.name, "Bạn chưa đăng nhập", "");
+    setText(profileFields.email, "Vui lòng đăng nhập để xem hồ sơ.", "");
 }
 
-function getDefaultPaymentDisplayName(paymentMethods) {
-    if (!Array.isArray(paymentMethods) || paymentMethods.length === 0) {
-        return "Chưa có phương thức thanh toán";
+async function fetchWithAuth(url, options = {}) {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+        showLoginRequired();
+        return null;
     }
 
-    const defaultMethod = paymentMethods.find(method => Number(method.is_default) === 1);
-
-    if (!defaultMethod) {
-        return "Chưa có phương thức thanh toán mặc định";
-    }
-
-    return defaultMethod.display_name || "Chưa có tên phương thức thanh toán";
-}
-
-async function loadDefaultPaymentMethod() {
-    const paymentMethodElement = document.getElementById("default-payment-method");
-
-    if (!paymentMethodElement) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`${PAYMENT_SERVICE_URL}/api/payments/me/payment-methods`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (response.status === 401) {
-            localStorage.removeItem("accessToken");
-            showLoginRequired();
-            return;
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+            ...(options.headers || {})
         }
+    });
 
-        if (!response.ok) {
-            paymentMethodElement.innerHTML = `
-                <span class="profile-label">Phương thức thanh toán mặc định:</span>
-                <span class="danger">${escapeHtml(data.error || "Không thể tải phương thức thanh toán.")}</span>
-            `;
-            return;
-        }
-
-        const defaultPaymentName = getDefaultPaymentDisplayName(data.paymentMethods);
-
-        paymentMethodElement.innerHTML = `
-            <span class="profile-label">Phương thức thanh toán mặc định:</span>
-            ${escapeHtml(defaultPaymentName)}
-        `;
-
-    } catch (error) {
-        console.error("Lỗi load payment methods:", error);
-
-        paymentMethodElement.innerHTML = `
-            <span class="profile-label">Phương thức thanh toán mặc định:</span>
-            <span class="danger">Không thể kết nối Payment Service.</span>
-        `;
+    if (response.status === 401) {
+        localStorage.removeItem("accessToken");
+        showLoginRequired();
+        return null;
     }
+
+    return response;
 }
 
 async function loadProfile() {
-    if (!accessToken) {
-        showLoginRequired();
-        return;
-    }
-
     try {
-        const response = await fetch(`${USER_SERVICE_URL}/api/users/me`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
+        const response = await fetchWithAuth(`${USER_SERVICE_URL}/api/users/me`, {
+            method: "GET"
         });
+
+        if (!response) {
+            return;
+        }
 
         const data = await response.json();
 
-        if (response.status === 401) {
-            localStorage.removeItem("accessToken");
-            showLoginRequired();
-            return;
-        }
-
         if (!response.ok) {
-            profileContent.innerHTML = `
-                <p class="danger">${escapeHtml(data.error || "Không thể tải profile.")}</p>
-            `;
-
-            editButton.style.display = "none";
+            setText(profileFields.name, data.error || "Không thể tải hồ sơ.", "");
             return;
         }
 
-        const profile = data.profile;
+        const profile = data.profile || {};
 
-        localStorage.setItem("fullName", profile.full_name || "");
+        setText(profileFields.name, profile.full_name);
+        setText(profileFields.email, profile.email);
+        setText(profileFields.fullName, profile.full_name);
+        setText(profileFields.emailValue, profile.email);
+        setText(profileFields.phone, profile.phone_number);
+        setText(profileFields.address, profile.default_shipping_address);
+        setText(profileFields.userId, profile.user_id);
+        setText(profileFields.createdAt, formatDate(profile.created_at));
 
-        if (typeof renderNavbarAuthSection === "function") {
-            renderNavbarAuthSection();
+        if (profile.full_name) {
+            localStorage.setItem("fullName", profile.full_name);
         }
-
-        profileContent.innerHTML = `
-            <p>
-                <span class="profile-label">User ID:</span>
-                <span class="user-id">${escapeHtml(profile.user_id)}</span>
-            </p>
-
-            <p>
-                <span class="profile-label">Họ và tên:</span>
-                ${escapeHtml(profile.full_name)}
-            </p>
-
-            <p>
-                <span class="profile-label">Email:</span>
-                ${escapeHtml(profile.email)}
-            </p>
-
-            <p>
-                <span class="profile-label">Số điện thoại:</span>
-                ${escapeHtml(profile.phone_number || "Chưa cập nhật")}
-            </p>
-
-            <p>
-                <span class="profile-label">Địa chỉ giao hàng:</span>
-                ${escapeHtml(profile.default_shipping_address || "Chưa cập nhật")}
-            </p>
-
-            <p id="default-payment-method">
-                <span class="profile-label">Phương thức thanh toán mặc định:</span>
-                Đang tải...
-            </p>
-        `;
-
-        editButton.style.display = "inline-block";
 
         await loadDefaultPaymentMethod();
 
     } catch (error) {
         console.error("Lỗi load profile:", error);
-
-        profileContent.innerHTML = `
-            <p class="danger">Không thể kết nối User Service.</p>
-        `;
-
-        editButton.style.display = "none";
+        setText(profileFields.name, "Không thể kết nối User Service.", "");
     }
+}
+
+async function loadDefaultPaymentMethod() {
+    if (!profileFields.payment) {
+        return;
+    }
+
+    try {
+        const response = await fetchWithAuth(`${PAYMENT_SERVICE_URL}/api/payments/me/payment-methods`, {
+            method: "GET"
+        });
+
+        if (!response) {
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            setText(profileFields.payment, "Không thể tải phương thức thanh toán.", "");
+            return;
+        }
+
+        const paymentMethods = data.paymentMethods || [];
+        const defaultMethod = paymentMethods.find(method => Number(method.is_default) === 1);
+
+        if (!defaultMethod) {
+            setText(profileFields.payment, "Chưa có phương thức thanh toán.");
+            return;
+        }
+
+        setText(profileFields.payment, formatPaymentMethod(defaultMethod), "");
+
+    } catch (error) {
+        console.error("Lỗi load payment methods:", error);
+        setText(profileFields.payment, "Không thể kết nối Payment Service.", "");
+    }
+}
+
+function formatPaymentMethod(method) {
+    if (method.method_type === "COD") {
+        return "Thanh toán khi nhận hàng";
+    }
+
+    if (method.method_type === "MOMO") {
+        return method.momo_phone_number
+            ? `MoMo - ${method.momo_phone_number}`
+            : "MoMo";
+    }
+
+    if (method.method_type === "BANK") {
+        const bankName = method.bank_name || "Ngân hàng";
+        const accountNumber = method.bank_account_number || "";
+
+        return accountNumber ? `${bankName} - ${accountNumber}` : bankName;
+    }
+
+    return method.display_name || method.method_type || "Chưa cập nhật";
+}
+
+function formatDate(value) {
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return new Intl.DateTimeFormat("vi-VN").format(date);
 }
