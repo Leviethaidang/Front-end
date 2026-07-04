@@ -142,62 +142,63 @@ body {
     justify-content: center;
     align-items: center;
     padding: 60px 40px;
-    overflow-y: auto;
 }
 
 .form-wrapper {
     width: 100%;
     max-width: 470px;
+    text-align: center;
+}
+
+.icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .form-title {
-    font-size: 54px;
+    font-size: 36px;
     font-weight: 700;
     color: #5C3B23;
     margin-bottom: 12px;
 }
 
 .form-subtitle {
-    font-size: 18px;
+    font-size: 16px;
     color: #666666;
     margin-bottom: 40px;
+    line-height: 1.6;
 }
 
-.input-group {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.input-icon {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+.otp-inputs {
     display: flex;
-    align-items: center;
     justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
 }
 
-.input-group input {
-    width: 100%;
+.otp-input {
+    width: 56px;
     height: 56px;
-    padding: 0 20px 0 50px;
     border: 1px solid #E6E6E6;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 24px;
+    font-weight: 700;
     font-family: 'Poppins', 'Inter', sans-serif;
-    color: #333333;
+    color: #5C3B23;
+    text-align: center;
     background: #FFFFFF;
     transition: border-color 0.3s ease;
     outline: none;
 }
 
-.input-group input::placeholder {
-    color: #A0A0A0;
+.otp-input:focus {
+    border-color: #8B5E3C;
 }
 
-.input-group input:focus {
-    border-color: #8B5E3C;
+.otp-input::placeholder {
+    color: #A0A0A0;
 }
 
 .submit-btn {
@@ -212,7 +213,6 @@ body {
     font-family: 'Poppins', 'Inter', sans-serif;
     cursor: pointer;
     transition: background 0.3s ease;
-    margin-top: 8px;
 }
 
 .submit-btn:hover {
@@ -234,6 +234,34 @@ body {
 
 .message.success {
     color: #188038;
+}
+
+.resend-text {
+    font-size: 15px;
+    color: #666666;
+    margin-top: 24px;
+}
+
+.resend-text a {
+    color: #8B5E3C;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.resend-text a:hover {
+    text-decoration: underline;
+}
+
+.resend-text a:disabled,
+.resend-text a.disabled {
+    color: #A0A0A0;
+    pointer-events: none;
+}
+
+.timer {
+    margin-left: 8px;
+    color: #A0A0A0;
 }
 
 .small-text {

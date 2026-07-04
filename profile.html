@@ -4,128 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaShop - Hồ sơ cá nhân</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="assets/css/common.css">
-    <link rel="stylesheet" href="assets/css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/navbar.css">
+    <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-custom">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">HaShop</a>
-            <div class="d-flex align-items-center gap-4">
-                <a href="index.html" class="text-decoration-none">Sản phẩm</a>
-                <div class="dropdown">
-                    <a href="#" class="text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle fs-4"></i>
-                        Nguyễn Văn A
-                        <i class="bi bi-chevron-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item active" href="profile.html"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
-                        <li><a class="dropdown-item" href="edit-profile.html"><i class="bi bi-pencil me-2"></i>Chỉnh sửa</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="login.html"><i class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a></li>
-                    </ul>
-                </div>
-            </div>
+    <!-- Custom Header for Profile Page -->
+    <header class="custom-header">
+        <div class="header-container">
+            <div class="logo">HASHOP</div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link">Sản phẩm</a>
+                <a href="#" class="nav-link">Sản phẩm mới</a>
+                <a href="#" class="nav-link">Bộ sưu tập</a>
+                <a href="/login" class="nav-register-btn">Đăng xuất</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <div class="profile-section">
-        <div class="container">
-            <div class="page-header mb-5">
-                <h1 class="fw-bold mb-2">Hồ sơ cá nhân</h1>
-                <p class="text-muted">Quản lý thông tin tài khoản HaShop của bạn.</p>
+    <main class="main-container">
+        <div class="profile-wrapper">
+            <!-- Phần 1: Thông tin người dùng -->
+            <div class="user-section">
+                <div class="avatar">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2 class="user-name">Nguyễn Văn A</h2>
+                <p class="user-email">nguyenvana@example.com</p>
             </div>
 
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card profile-card">
-                        <div class="profile-header-card">
-                            <div class="avatar-wrapper">
-                                <i class="bi bi-person-circle"></i>
-                            </div>
-                            <h3 class="fw-bold mt-3 mb-1">Nguyễn Văn A</h3>
-                            <p class="text-muted mb-0">nguyenvana@email.com</p>
-                        </div>
-                        <div class="list-group list-group-flush">
-                            <a href="profile.html" class="list-group-item list-group-item-action active">
-                                <i class="bi bi-person me-3"></i>Thông tin cá nhân
-                            </a>
-                            <a href="edit-profile.html" class="list-group-item list-group-item-action">
-                                <i class="bi bi-pencil-square me-3"></i>Chỉnh sửa hồ sơ
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <i class="bi bi-bag me-3"></i>Đơn hàng của tôi
-                            </a>
-                        </div>
+            <!-- Phần 2: Menu chức năng -->
+            <div class="menu-section">
+                <a href="#" class="menu-item active">
+                    <span class="menu-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    Thông tin cá nhân
+                </a>
+                <a href="/edit-profile.html" class="menu-item">
+                    <span class="menu-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    Chỉnh sửa hồ sơ
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 7H4C3.46957 7 2.96086 7.21072 2.58579 7.58579C2.21071 7.96086 2 8.46957 2 9V19C2 19.5304 2.21071 20.0391 2.58579 20.4142C2.96086 20.7893 3.46957 21 4 21H20C20.5304 21 21.0391 20.7893 21.4142 20.4142C21.7893 20.0391 22 19.5304 22 19V9C22 8.46957 21.7893 7.96086 21.4142 7.58579C21.0391 7.21072 20.5304 7 20 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    Đơn hàng của tôi
+                </a>
+            </div>
+
+            <!-- Phần 3: Thông tin tài khoản -->
+            <div class="info-card">
+                <h3 class="info-card-title">
+                    <span class="info-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 16H7C6.44772 16 6 15.5523 6 15V5C6 4.44772 6.44772 4 7 4H17C17.5523 4 18 4.44772 18 5V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 18H22V22H16V18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M11 3C11.5523 3 12 3.44772 12 4V8C12 8.55228 11.5523 9 11 9H7C6.44772 9 6 8.55228 6 8V4C6 3.44772 6.44772 3 7 3H11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    Thông tin tài khoản
+                </h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Họ và tên</span>
+                        <span class="info-value">Nguyễn Văn A</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">nguyenvana@example.com</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Số điện thoại</span>
+                        <span class="info-value">+84 901 234 567</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Địa chỉ</span>
+                        <span class="info-value">123 Đường ABC, Quận 1</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Ngày sinh</span>
+                        <span class="info-value">01/01/1990</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Giới tính</span>
+                        <span class="info-value">Nam</span>
+                    </div>
+                    <div class="info-item info-item-full">
+                        <span class="info-label">Ngày tham gia</span>
+                        <span class="info-value">01/01/2024</span>
                     </div>
                 </div>
-
-                <div class="col-lg-8">
-                    <div class="card info-card">
-                        <div class="card-header-custom">
-                            <h4 class="fw-bold mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin tài khoản</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-item">
-                                        <label class="text-muted mb-1 d-block">Họ và tên</label>
-                                        <div class="fw-semibold fs-5">Nguyễn Văn A</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-item">
-                                        <label class="text-muted mb-1 d-block">Email</label>
-                                        <div class="fw-semibold fs-5">nguyenvana@email.com</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-item">
-                                        <label class="text-muted mb-1 d-block">Số điện thoại</label>
-                                        <div class="fw-semibold fs-5">+84 901 234 567</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-item">
-                                        <label class="text-muted mb-1 d-block">Địa chỉ</label>
-                                        <div class="fw-semibold fs-5">Hà Nội, Việt Nam</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-4">
-                                    <div class="info-item">
-                                        <label class="text-muted mb-1 d-block">Ngày tham gia</label>
-                                        <div class="fw-semibold fs-5">15 Tháng 6, 2024</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="edit-profile.html" class="btn btn-primary-gradient">
-                                <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa hồ sơ
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <footer class="footer-minimal">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">HaShop</div>
-                <div class="footer-links">
-                    <a href="#">Về chúng tôi</a>
-                    <a href="#">Chính sách</a>
-                    <a href="#">Liên hệ</a>
-                    <a href="#">Quy định</a>
-                </div>
-                <div class="footer-copy">© 2024 HaShop. All rights reserved.</div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/navbar.js"></script>
+    <script src="/assets/js/profile.js"></script>
 </body>
 </html>
