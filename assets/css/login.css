@@ -289,54 +289,6 @@ body {
     color: #188038;
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    margin: 32px 0;
-}
-
-.divider::before,
-.divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #E6E6E6;
-}
-
-.divider span {
-    padding: 0 16px;
-    font-size: 14px;
-    color: #A0A0A0;
-}
-
-.social-buttons {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 32px;
-}
-
-.social-btn {
-    flex: 1;
-    height: 56px;
-    border: 1px solid #E6E6E6;
-    border-radius: 10px;
-    background: #FFFFFF;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: 'Poppins', 'Inter', sans-serif;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-}
-
-.social-btn:hover {
-    background: #FAF8F5;
-    border-color: #8B5E3C;
-}
-
 .small-text {
     text-align: center;
     font-size: 15px;
