@@ -738,17 +738,19 @@ function bindGalleryButtons() {
     const scrollContainer = document.getElementById("gallery-scroll-container");
     const galPrevBtn = document.getElementById("gallery-prev-btn");
     const galNextBtn = document.getElementById("gallery-next-btn");
-    
+
     if (galPrevBtn && scrollContainer) {
         galPrevBtn.addEventListener("click", () => {
-            scrollContainer.scrollBy({ left: -80, behavior: "smooth" });
             if (imageAutoPlayInterval) clearInterval(imageAutoPlayInterval);
+            const previousIndex = (currentGalleryIndex - 1 + thumbnails.length) % thumbnails.length;
+            updateMainImageFromThumb(thumbnails[previousIndex], thumbnails, mainImage);
         });
     }
     if (galNextBtn && scrollContainer) {
         galNextBtn.addEventListener("click", () => {
-            scrollContainer.scrollBy({ left: 80, behavior: "smooth" });
             if (imageAutoPlayInterval) clearInterval(imageAutoPlayInterval);
+            const nextIndex = (currentGalleryIndex + 1) % thumbnails.length;
+            updateMainImageFromThumb(thumbnails[nextIndex], thumbnails, mainImage);
         });
     }
 
