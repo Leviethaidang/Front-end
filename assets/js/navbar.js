@@ -102,11 +102,6 @@ function renderNavbarAuthSection() {
                         <i class="bi bi-person"></i>
                     </a>
                 </div>
-                <div class="list-inline-item me-4">
-                    <a class="text-muted position-relative" href="/cart" title="Giỏ hàng">
-                        <i class="bi bi-cart"></i>
-                    </a>
-                </div>
             `;
         } else {
             const payload = getTokenPayload(accessToken);
@@ -143,7 +138,6 @@ function renderNavbarAuthSection() {
         if (!accessToken) {
             mobileAuthSection.innerHTML = `
                 <ul class="navbar-nav align-items-center">
-                    <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/cart">🛒 Giỏ hàng</a></li>
                     <li class="nav-item w-100 w-lg-auto"><a class="nav-link" href="/login">Đăng nhập</a></li>
                 </ul>
             `;
