@@ -59,6 +59,59 @@ function formatPrice(value) {
     });
 }
 
+function getImageUrl(image) {
+    if (!image) {
+        return "";
+    }
+
+    if (typeof image === "string") {
+        return image;
+    }
+
+    return image.imageUrl || image.image_url || image.image_key || "";
+}
+
+function createGalleryImage(url, isMain = false) {
+    return {
+        imageUrl: url,
+        image_url: url,
+        image_key: url,
+        isMain
+    };
+}
+
+function buildProductGalleryImages(product) {
+    const images = [];
+    const seen = new Set();
+
+    const addImage = (image, isMain = false) => {
+        const url = getImageUrl(image);
+
+        if (!url || seen.has(url)) {
+            return;
+        }
+
+        seen.add(url);
+        images.push(typeof image === "object"
+            ? {
+                ...image,
+                imageUrl: url,
+                image_url: image.image_url || url,
+                image_key: image.image_key || url,
+                isMain
+            }
+            : createGalleryImage(url, isMain));
+    };
+
+    addImage(product.imageUrl || product.image_url || product.image_key, true);
+
+    (product.images || product.product_images || []).forEach(image => {
+        addImage(image, false);
+    });
+
+    return images;
+}
+
 function showCartMessage(message, type = "success") {
     const messageElement = document.getElementById("cart-message");
 
@@ -252,17 +305,9 @@ function renderProductDetail(product) {
     const activeVariants = getActiveVariants(product);
     const isOutOfStock = activeVariants.length === 0;
 
-    // Handle both images (product_images array) and single imageUrl/image_key
-    const productImages = product.images || product.product_images || [];
-    galleryImages = productImages;
-
-    // Get main image: first product image or single imageUrl/image_key
-    let mainImageUrl = null;
-    if (productImages.length > 0) {
-        mainImageUrl = productImages[0].imageUrl || productImages[0].image_url || productImages[0].image_key;
-    } else {
-        mainImageUrl = product.imageUrl || product.image_url || product.image_key;
-    }
+    galleryImages = buildProductGalleryImages(product);
+    currentGalleryIndex = 0;
+    const mainImageUrl = getImageUrl(galleryImages[0]);
 
     const productName = product.product_name || product.productName || "Sản phẩm";
     const categoryName = product.category_name || product.categoryName || "Chưa phân loại";
@@ -292,7 +337,7 @@ function renderProductDetail(product) {
                 <div class="product-image-main" id="product-image-main" style="border: 1px solid #eee; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
                     ${mainImageHtml}
                 </div>
-                ${renderSubImageGallery(product)}
+                ${renderSubImageGallery()}
             </div>
 
             <!-- Info Column -->
@@ -575,10 +620,8 @@ function bindActionButtons(product) {
     }
 }
 
-function renderSubImageGallery(product) {
-    const images = product.images || product.product_images || [];
-
-    if (images.length === 0) {
+function renderSubImageGallery() {
+    if (galleryImages.length === 0) {
         return "";
     }
 
@@ -587,8 +630,8 @@ function renderSubImageGallery(product) {
             <div class="d-flex align-items-center justify-content-center">
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="gallery-prev-btn" style="border: none; background: transparent; font-size: 1.5rem;"><i class="bi bi-chevron-left"></i></button>
                 <div class="sub-image-list d-flex overflow-hidden mx-2 py-1" id="gallery-scroll-container" style="max-width: 320px; gap: 10px; scroll-behavior: smooth;">
-                    ${images.map((image, index) => {
-                        const imgUrl = image.imageUrl || image.image_url || image.image_key;
+                    ${galleryImages.map((image, index) => {
+                        const imgUrl = getImageUrl(image);
                         const isActive = index === 0;
                         return `
                             <div
@@ -803,7 +846,7 @@ function updateImageModal() {
         return;
     }
 
-    const imgUrl = image.imageUrl || image.image_url || image.image_key;
+    const imgUrl = getImageUrl(image);
     modalImage.src = imgUrl;
     counter.textContent = `${currentGalleryIndex + 1} / ${galleryImages.length}`;
 }
