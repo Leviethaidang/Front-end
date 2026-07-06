@@ -360,26 +360,6 @@ function getSupportedPaymentMethods() {
         });
     }
 
-    // Check MOMO
-    if (!supported.some(m => normalizeMethodType(m.method_type) === "MOMO")) {
-        supported.push({
-            payment_method_id: -1,
-            method_type: "MOMO",
-            display_name: "Ví MoMo",
-            is_default: 0
-        });
-    }
-
-    // Check BANK
-    if (!supported.some(m => normalizeMethodType(m.method_type) === "BANK")) {
-        supported.push({
-            payment_method_id: -2,
-            method_type: "BANK",
-            display_name: "Chuyển khoản Ngân hàng",
-            is_default: 0
-        });
-    }
-
     return supported;
 }
 
@@ -614,14 +594,6 @@ async function submitOrder() {
     const customerEmail = document.getElementById("customer-email").value.trim();
     const shippingAddress = document.getElementById("shipping-address").value.trim();
     const paymentMethodId = getSelectedPaymentMethodId();
-
-    if (paymentMethodId === "-1" || paymentMethodId === "-2") {
-        showMessage("Bạn chưa liên kết phương thức thanh toán này. Vui lòng cập nhật trong trang Hồ sơ trước khi sử dụng.", "error");
-        setTimeout(() => {
-            window.location.href = "/profile";
-        }, 3000);
-        return;
-    }
 
     if (!receiverName) {
         showMessage("Vui lòng nhập họ tên người nhận.", "error");
