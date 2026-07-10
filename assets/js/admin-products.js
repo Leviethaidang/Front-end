@@ -14,7 +14,7 @@ const createProductBtn = document.getElementById("createProductBtn");
 const productImageInput = document.getElementById("newProductImage");
 const productPreviewImage = document.getElementById("productPreviewImage");
 
-const newProductSubImagesInput = document.getElementById("newProductSubImages");
+const addNewProductSubImageBtn = document.getElementById("addNewProductSubImageBtn");
 const addCreateVariantBtn = document.getElementById("addCreateVariantBtn");
 const createVariantTableBody = document.getElementById("createVariantTableBody");
 
@@ -22,6 +22,7 @@ const editProductModal = document.getElementById("editProductModal");
 const closeEditModalBtn = document.getElementById("closeEditModalBtn");
 const cancelEditProductBtn = document.getElementById("cancelEditProductBtn");
 const saveEditProductBtn = document.getElementById("saveEditProductBtn");
+const addEditProductSubImageBtn = document.getElementById("addEditProductSubImageBtn");
 const addEditVariantBtn = document.getElementById("addEditVariantBtn");
 const editVariantTableBody = document.getElementById("editVariantTableBody");
 
@@ -35,8 +36,16 @@ let editingSubImageKeys = [];
 
 createProductBtn.addEventListener("click", createProduct);
 
+addNewProductSubImageBtn.addEventListener("click", () => {
+    addSubImageInputRow("newProductSubImagesGroup");
+});
+
 addCreateVariantBtn.addEventListener("click", () => {
     addVariantRow("createVariantTableBody");
+});
+
+addEditProductSubImageBtn.addEventListener("click", () => {
+    addSubImageInputRow("editProductSubImagesGroup");
 });
 
 addEditVariantBtn.addEventListener("click", () => {
@@ -109,6 +118,44 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
     return escapeHtml(value);
+}
+
+function addSubImageInputRow(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+
+    const row = document.createElement("div");
+    row.className = "sub-image-input-row";
+    row.innerHTML = `
+        <input class="product-sub-image-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        <button type="button" class="btn btn-red remove-sub-image-input-btn">Xóa</button>
+    `;
+
+    row.querySelector(".remove-sub-image-input-btn").addEventListener("click", () => {
+        row.remove();
+    });
+
+    group.appendChild(row);
+}
+
+function getSubImageFiles(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return [];
+
+    return Array.from(group.querySelectorAll(".product-sub-image-input"))
+        .map(input => input.files?.[0])
+        .filter(Boolean);
+}
+
+function resetSubImageInputs(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+
+    group.innerHTML = `
+        <div class="sub-image-input-row">
+            <input class="product-sub-image-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        </div>
+    `;
 }
 
 function getTokenPayload(token) {
@@ -348,7 +395,7 @@ async function createProduct() {
     const categoryIdRaw = document.getElementById("newCategoryId").value.trim();
     const priceRaw = document.getElementById("newPrice").value.trim();
     const mainFile = document.getElementById("newProductImage").files[0];
-    const subFiles = Array.from(document.getElementById("newProductSubImages").files || []);
+    const subFiles = getSubImageFiles("newProductSubImagesGroup");
 
     let variants = [];
 
@@ -457,7 +504,7 @@ async function openEditModal(productId) {
         document.getElementById("editPrice").value = editingProduct.price || "";
         document.getElementById("editImageKey").value = editingProduct.image_key || "";
         document.getElementById("editProductImage").value = "";
-        document.getElementById("editProductSubImages").value = "";
+        resetSubImageInputs("editProductSubImagesGroup");
 
         renderEditCategoryDropdown(editingProduct.category_id);
 
@@ -557,7 +604,7 @@ async function saveEditProduct() {
     const currentImageKey = document.getElementById("editImageKey").value.trim();
 
     const mainFile = document.getElementById("editProductImage").files[0];
-    const newSubFiles = Array.from(document.getElementById("editProductSubImages").files || []);
+    const newSubFiles = getSubImageFiles("editProductSubImagesGroup");
 
     let variants = [];
 
@@ -814,7 +861,7 @@ function clearProductForm() {
     document.getElementById("newCategoryId").value = "";
     document.getElementById("newPrice").value = "";
     document.getElementById("newProductImage").value = "";
-    document.getElementById("newProductSubImages").value = "";
+    resetSubImageInputs("newProductSubImagesGroup");
 
     productPreviewImage.style.display = "none";
     productPreviewImage.src = "";

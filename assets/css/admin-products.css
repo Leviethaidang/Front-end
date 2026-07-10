@@ -164,6 +164,33 @@ th {
     margin-top: 10px;
 }
 
+.sub-image-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.sub-image-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sub-image-input-row input[type="file"] {
+    margin: 0;
+}
+
+.remove-sub-image-input-btn {
+    flex: 0 0 auto;
+    min-width: 58px;
+}
+
+.sub-image-add-btn {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
 .small-text {
     font-size: 12px;
     color: #6f6a66;

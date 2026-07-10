@@ -59,7 +59,14 @@
                         <input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
                         <img id="productPreviewImage" class="preview-img" alt="Preview">
                         <label class="form-label">Ảnh phụ</label>
-                        <input id="newProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+                        <div id="newProductSubImagesGroup" class="sub-image-input-group">
+                            <div class="sub-image-input-row">
+                                <input class="product-sub-image-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+                            </div>
+                        </div>
+                        <button id="addNewProductSubImageBtn" type="button" class="btn btn-blue sub-image-add-btn">
+                            Thêm ảnh
+                        </button>
 
                         <div class="variant-section">
                             <div class="variant-header">
@@ -190,7 +197,14 @@
             <div id="editSubImagesPreview" class="sub-images-preview"></div>
 
             <label class="form-label">Thêm ảnh phụ mới</label>
-            <input id="editProductSubImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+            <div id="editProductSubImagesGroup" class="sub-image-input-group">
+                <div class="sub-image-input-row">
+                    <input class="product-sub-image-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+                </div>
+            </div>
+            <button id="addEditProductSubImageBtn" type="button" class="btn btn-blue sub-image-add-btn">
+                Thêm ảnh
+            </button>
 
             <div class="variant-section">
                 <div class="variant-header">
