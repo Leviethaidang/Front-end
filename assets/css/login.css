@@ -221,6 +221,11 @@ body {
     border-color: #8B5E3C;
 }
 
+.input-group input[type="password"]::-ms-reveal,
+.input-group input[type="password"]::-ms-clear {
+    display: none;
+}
+
 .form-options {
     display: flex;
     justify-content: space-between;
